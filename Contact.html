@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>Contact David Kirk</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="styles.css">
+    <!-- Font Awesome for social media icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Netlify Identity Widget -->
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  </head>
+  <body>
+    <!-- Header placeholder -->
+    <div id="header-placeholder"></div>
+    
+    <main>
+      <div class="page-kicker">Say hello</div>
+      <h1>Staying in touch, the easy way.</h1>
+      <p class="lede">
+        If you've landed here, we probably already share a few chapters. This page is 
+        simply a way to keep the conversation going.
+      </p>
+      
+      <section class="contact-card">
+        <h2>Send a note</h2>
+        <p>
+          Use this form to send me a message. It will open an email to me at 
+          <strong>Davidkirk@theprguy.com</strong> using your usual mail program.
+        </p>
+        
+        <!-- Simple mailto form -->
+        <form action="mailto:Davidkirk@theprguy.com" method="POST" enctype="text/plain">
+          <div style="display:flex; flex-direction:column; gap:10px; margin-top:10px;">
+            <div>
+              <label for="name">Name</label>
+              <input id="name" name="Name" required="" type="text">
+            </div>
+            <div>
+              <label for="email">Email</label>
+              <input id="email" name="Email" required="" type="email">
+            </div>
+            <div>
+              <label for="subject">Subject</label>
+              <input id="subject" name="Subject" type="text">
+            </div>
+            <div>
+              <label for="message">Message</label>
+              <textarea id="message" name="Message" rows="5" required=""></textarea>
+            </div>
+            <div>
+              <button type="submit" class="btn-primary" style="margin-top:4px;">
+                Open email to David
+              </button>
+            </div>
+          </div>
+        </form>
+        
+        <p class="note">
+          After you click "Open email to David", your email program will open with the 
+          form details. You can review and send it from there.
+        </p>
+      </section>
+      
+      <section class="contact-card">
+        <h2>Prefer direct email?</h2>
+        <p>You can always email me directly without using the form:</p>
+        <ul class="contact-details">
+          <li><strong>Email:</strong> <a href="mailto:Davidkirk@theprguy.com">Davidkirk@theprguy.com</a></li>
+        </ul>
+      </section>
+    </main>
+    
+    <!-- Footer placeholder -->
+    <div id="footer-placeholder"></div>
+    
+    <!-- Load shared header and footer -->
+    <script src="shared.js"></script>
+  </body>
+</html>

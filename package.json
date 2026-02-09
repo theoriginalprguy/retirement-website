@@ -1,0 +1,16 @@
+{
+  "name": "david-kirk-website",
+  "version": "2.0.0",
+  "description": "Personal website for David Kirk",
+  "scripts": {
+    "build": "npx -y pagefind --site . --glob '**/*.html' --exclude-selectors 'header,footer,nav,.site-header,.site-footer'",
+    "dev": "npx -y pagefind --site . --serve"
+  },
+  "keywords": ["personal-website", "netlify"],
+  "author": "David Kirk",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "pagefind": "^1.0.0"
+  }
+}

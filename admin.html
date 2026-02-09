@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - David Kirk</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="admin.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- TinyMCE WYSIWYG Editor -->
+  <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+  
+  <!-- Netlify Identity Widget -->
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+</head>
+<body>
+  <div class="admin-wrapper">
+    <aside class="admin-sidebar">
+      <div class="admin-logo">
+        <a href="index.html">
+          <img src="images/dk-logo-header.png" alt="David Kirk">
+        </a>
+      </div>
+      
+      <nav class="admin-nav">
+        <button class="admin-nav-btn active" data-section="photos">
+          <i class="fas fa-images"></i> Photo Gallery
+        </button>
+        <button class="admin-nav-btn" data-section="content">
+          <i class="fas fa-edit"></i> Edit Pages
+        </button>
+        <button class="admin-nav-btn" data-section="settings">
+          <i class="fas fa-cog"></i> Settings
+        </button>
+      </nav>
+      
+      <div class="admin-user">
+        <div class="admin-user-info">
+          <i class="fas fa-user-circle"></i>
+          <span id="admin-username">Loading...</span>
+        </div>
+        <button id="logout-btn" class="btn-secondary">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+      </div>
+    </aside>
+    
+    <main class="admin-main">
+      <!-- Photo Gallery Management Section -->
+      <section id="section-photos" class="admin-section active">
+        <div class="admin-header">
+          <h1><i class="fas fa-images"></i> Photo Gallery Management</h1>
+          <p class="admin-subtitle">Upload and manage photos for your gallery</p>
+        </div>
+        
+        <div class="admin-card">
+          <h2>Upload New Photos</h2>
+          <p class="help-text">Drag and drop multiple photos or click to select files. Images will be automatically optimized.</p>
+          
+          <div class="upload-area" id="uploadArea">
+            <div class="upload-content">
+              <i class="fas fa-cloud-upload-alt"></i>
+              <p>Drag photos here or click to browse</p>
+              <input type="file" id="photoInput" accept="image/*" multiple hidden>
+              <button class="btn-primary" onclick="document.getElementById('photoInput').click()">
+                Select Photos
+              </button>
+            </div>
+          </div>
+          
+          <div id="uploadProgress" class="upload-progress" style="display: none;">
+            <div class="progress-bar">
+              <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <p id="progressText">Uploading...</p>
+          </div>
+          
+          <div id="uploadResults" class="upload-results"></div>
+        </div>
+        
+        <div class="admin-card">
+          <h2>Current Gallery Photos</h2>
+          <div id="currentPhotos" class="current-photos-grid">
+            <p class="help-text">Loading photos...</p>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Content Editing Section -->
+      <section id="section-content" class="admin-section">
+        <div class="admin-header">
+          <h1><i class="fas fa-edit"></i> Edit Page Content</h1>
+          <p class="admin-subtitle">Edit any page on your website using the WYSIWYG editor</p>
+        </div>
+        
+        <div class="admin-card">
+          <h2>Select Page to Edit</h2>
+          <div class="page-selector">
+            <button class="page-btn" data-page="index.html">Home</button>
+            <button class="page-btn" data-page="about.html">About</button>
+            <button class="page-btn" data-page="projects.html">Projects</button>
+            <button class="page-btn" data-page="contact.html">Contact</button>
+            <button class="page-btn" data-page="gallery.html">Gallery</button>
+          </div>
+        </div>
+        
+        <div class="admin-card" id="editorCard" style="display: none;">
+          <div class="editor-header">
+            <h2 id="editingPageTitle">Editing: <span></span></h2>
+            <button class="btn-primary" id="saveContentBtn">
+              <i class="fas fa-save"></i> Save Changes
+            </button>
+          </div>
+          
+          <textarea id="contentEditor"></textarea>
+          
+          <div id="saveStatus" class="save-status"></div>
+        </div>
+      </section>
+      
+      <!-- Settings Section -->
+      <section id="section-settings" class="admin-section">
+        <div class="admin-header">
+          <h1><i class="fas fa-cog"></i> Settings</h1>
+          <p class="admin-subtitle">Manage your account and site settings</p>
+        </div>
+        
+        <div class="admin-card">
+          <h2>Account Information</h2>
+          <div class="settings-info">
+            <p><strong>Email:</strong> <span id="userEmail">Loading...</span></p>
+            <p><strong>Role:</strong> <span id="userRole">Admin</span></p>
+            <p><strong>Access Level:</strong> Full (Admin)</p>
+          </div>
+          
+          <button class="btn-secondary" onclick="netlifyIdentity.open('login')">
+            <i class="fas fa-key"></i> Change Password
+          </button>
+        </div>
+        
+        <div class="admin-card">
+          <h2>Quick Links</h2>
+          <div class="quick-links">
+            <a href="index.html" target="_blank" class="quick-link">
+              <i class="fas fa-external-link-alt"></i> View Public Site
+            </a>
+            <a href="https://app.netlify.com" target="_blank" class="quick-link">
+              <i class="fas fa-cog"></i> Netlify Dashboard
+            </a>
+            <a href="https://cloudinary.com/console" target="_blank" class="quick-link">
+              <i class="fas fa-cloud"></i> Cloudinary Dashboard
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  
+  <script src="admin.js"></script>
+</body>
+</html>

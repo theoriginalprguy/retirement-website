@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Search Results - David Kirk</title>
+  <meta name="description" content="Search David Kirk's website for articles, photos, projects, and more.">
+  
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Netlify Identity Widget -->
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  
+  <!-- Pagefind CSS and JS -->
+  <link href="/pagefind/pagefind-ui.css" rel="stylesheet">
+  <script src="/pagefind/pagefind-ui.js"></script>
+  
+  <style>
+    /* Custom Pagefind styling to match desert theme */
+    .pagefind-ui__search-input {
+      background: var(--card) !important;
+      border: 1px solid var(--border) !important;
+      border-radius: var(--radius-lg) !important;
+      padding: 12px 16px !important;
+      color: var(--text) !important;
+      font-size: 1rem !important;
+    }
+    
+    .pagefind-ui__search-input:focus {
+      outline: none !important;
+      border-color: var(--accent-vibrant) !important;
+      box-shadow: 0 0 0 3px rgba(255,107,53,0.1) !important;
+    }
+    
+    .pagefind-ui__button {
+      background: linear-gradient(135deg, var(--accent-vibrant), var(--accent-pink)) !important;
+      color: white !important;
+      border: none !important;
+      border-radius: 999px !important;
+      padding: 10px 20px !important;
+      font-weight: 600 !important;
+    }
+    
+    .pagefind-ui__result {
+      background: var(--card) !important;
+      border: 1px solid var(--border) !important;
+      border-radius: var(--radius-lg) !important;
+      padding: 18px !important;
+      margin-bottom: 20px !important;
+      box-shadow: var(--shadow-soft) !important;
+      transition: border-color 0.3s ease !important;
+    }
+    
+    .pagefind-ui__result:hover {
+      border-color: var(--accent-purple) !important;
+    }
+    
+    .pagefind-ui__result-title {
+      color: var(--accent-strong) !important;
+      font-size: 1.1rem !important;
+      margin-bottom: 8px !important;
+    }
+    
+    .pagefind-ui__result-title:hover {
+      color: var(--accent-vibrant) !important;
+    }
+    
+    .pagefind-ui__result-excerpt {
+      color: var(--text) !important;
+      font-size: 0.95rem !important;
+      line-height: 1.6 !important;
+    }
+    
+    .pagefind-ui__result-link {
+      color: var(--muted) !important;
+      font-size: 0.85rem !important;
+    }
+    
+    mark {
+      background: rgba(255,107,53,0.2) !important;
+      color: var(--accent-strong) !important;
+      padding: 2px 4px !important;
+      border-radius: 3px !important;
+    }
+    
+    .search-container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="site-wrapper">
+    <div id="header-placeholder"></div>
+    
+    <div class="site-main">
+      <main>
+        <div class="page-kicker">Search</div>
+        <h1>Find What You're Looking For</h1>
+        <p class="lede">Search across articles, photos, and projects on this site.</p>
+        
+        <div class="search-container">
+          <div id="search"></div>
+        </div>
+        
+        <div class="story-card" style="margin-top: 40px;">
+          <h2>Search Tips</h2>
+          <ul style="margin-left: 20px; color: var(--text);">
+            <li>Use specific keywords for better results</li>
+            <li>Try different variations of your search terms</li>
+            <li>Search works across all page content including headings and text</li>
+          </ul>
+        </div>
+      </main>
+    </div>
+    
+    <div id="footer-placeholder"></div>
+  </div>
+  
+  <script>
+    // Initialize Pagefind UI
+    window.addEventListener('DOMContentLoaded', (event) => {
+      new PagefindUI({ 
+        element: "#search",
+        showImages: false,
+        excerptLength: 30,
+        processResult: function(result) {
+          // Customize result display if needed
+          return result;
+        }
+      });
+      
+      // Pre-fill search if query parameter exists
+      const urlParams = new URLSearchParams(window.location.search);
+      const query = urlParams.get('q');
+      if (query) {
+        const searchInput = document.querySelector('.pagefind-ui__search-input');
+        if (searchInput) {
+          searchInput.value = query;
+          searchInput.dispatchEvent(new Event('input'));
+        }
+      }
+    });
+  </script>
+  
+  <script src="shared.js"></script>
+</body>
+</html>
