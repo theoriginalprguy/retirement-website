@@ -1,0 +1,43 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "Images"
+public_folder: "/Images"
+
+collections:
+  - name: "pages"
+    label: "Pages"
+    files:
+      - label: "Home Page"
+        name: "home"
+        file: "index.html"
+        fields:
+          - {label: "Title", name: "title", widget: "string"}
+          - {label: "Body", name: "body", widget: "markdown"}
+      - label: "About Page"
+        name: "about"
+        file: "About.html"
+        fields:
+          - {label: "Title", name: "title", widget: "string"}
+          - {label: "Body", name: "body", widget: "markdown"}
+      - label: "Projects Page"
+        name: "projects"
+        file: "Projects.html"
+        fields:
+          - {label: "Title", name: "title", widget: "string"}
+          - {label: "Body", name: "body", widget: "markdown"}
+      - label: "Contact Page"
+        name: "contact"
+        file: "Contact.html"
+        fields:
+          - {label: "Title", name: "title", widget: "string"}
+          - {label: "Body", name: "body", widget: "markdown"}
+  
+  - name: "gallery"
+    label: "Gallery Photos"
+    folder: "Images"
+    create: true
+    fields:
+      - {label: "Image", name: "image", widget: "image"}
+      - {label: "Caption", name: "caption", widget: "string", required: false}
