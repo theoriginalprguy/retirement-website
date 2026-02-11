@@ -36,8 +36,11 @@ collections:
   
   - name: "gallery"
     label: "Gallery Photos"
-    folder: "Images"
+    folder: "_gallery"
     create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     fields:
+      - {label: "Title", name: "title", widget: "string"}
       - {label: "Image", name: "image", widget: "image"}
       - {label: "Caption", name: "caption", widget: "string", required: false}
+      - {label: "Description", name: "description", widget: "text", required: false}

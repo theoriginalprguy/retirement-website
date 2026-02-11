@@ -29,8 +29,7 @@
       <div class="page-kicker">Desert life</div>
       <h1>Scenes from this chapter.</h1>
       <p class="lede">
-        To add a photo, upload it to the <strong>images</strong> folder and add 
-        its filename to the list in this page's script.
+        Add photos through the admin panel to populate this gallery.
       </p>
       <section class="gallery-grid" id="gallery"></section>
     </main>
@@ -55,39 +54,40 @@
     <div id="footer-placeholder"></div>
     
     <script>
-      // 1) LIST YOUR IMAGES HERE
-      const galleryImages = [
-        "Agave stalk.jpg",
-        "Cactus Wren.jpg"
-      ];
-
-      // 2) BUILD THE GALLERY FROM THE LIST
-      function buildGallery() {
+      // Fetch all gallery items from _gallery folder
+      async function loadGallery() {
         const gallery = document.getElementById('gallery');
+        
+        try {
+          // This will need to fetch the gallery JSON files
+          // For now, we'll use a simple fetch approach
+          const response = await fetch('gallery-data.json');
+          const photos = await response.json();
+          
+          photos.forEach(photo => {
+            const figure = document.createElement("figure");
+            figure.className = "gallery-item";
+            figure.setAttribute("data-full", photo.image);
+            figure.setAttribute("data-title", photo.title);
+            figure.setAttribute("data-description", photo.description || "");
 
-        galleryImages.forEach(file => {
-          const fullPath = "images/" + file;
-          const prettyName = file.replace(/\.[^.]+$/, "").replace(/[-_]/g, " ");
+            figure.innerHTML = `
+              <img src="${photo.image}" alt="${photo.title}">
+              <figcaption class="gallery-caption">${photo.caption || photo.title}</figcaption>
+              <span class="gallery-tag">Photo</span>
+            `;
 
-          const figure = document.createElement("figure");
-          figure.className = "gallery-item";
-          figure.setAttribute("data-full", fullPath);
-          figure.setAttribute("data-title", prettyName);
-          figure.setAttribute("data-description", "");
-
-          figure.innerHTML = `
-            <img src="${fullPath}" alt="${prettyName}">
-            <figcaption class="gallery-caption">${prettyName}</figcaption>
-            <span class="gallery-tag">Photo</span>
-          `;
-
-          gallery.appendChild(figure);
-        });
+            gallery.appendChild(figure);
+          });
+        } catch (error) {
+          console.log('Gallery data not yet available');
+          gallery.innerHTML = '<p>No photos yet. Add photos through the admin panel.</p>';
+        }
       }
 
-      buildGallery();
+      loadGallery();
 
-      // 3) LIGHTBOX
+      // LIGHTBOX CODE
       const lightbox = document.getElementById('lightbox');
       const lightboxImage = document.getElementById('lightboxImage');
       const lightboxTitle = document.getElementById('lightboxTitle');
