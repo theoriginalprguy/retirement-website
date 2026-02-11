@@ -21,7 +21,7 @@
   --shadow-soft: 0 16px 40px rgba(0,0,0,0.16);
   --radius-lg: 18px;
   --radius-pill: 999px;
-  --nav-height: 100px;
+  --nav-height: 130px;
 }
 
 /* ----------------------------------------------------------
@@ -97,7 +97,7 @@ img {
 }
 
 .site-logo img {
-  height: 80px;
+  height: 110px;
   width: auto;
   display: block;
   object-fit: contain;
