@@ -5,12 +5,7 @@
     <title>David's Desert Life – Gallery</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="styles.css">
-    <!-- Font Awesome for social media icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
-    <!-- Netlify Identity Widget -->
-    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-    
     <style>
       .gallery-item img {
         width: 100%;
@@ -29,10 +24,11 @@
       <div class="page-kicker">Desert life</div>
       <h1>Scenes from this chapter.</h1>
       <p class="lede">
-        To add a photo, upload it to the <strong>images</strong> folder and add 
-        its filename to the list in this page's script.
+        Photos from the Sonoran Desert and beyond.
       </p>
-      <section class="gallery-grid" id="gallery"></section>
+      <section class="gallery-grid" id="gallery">
+        <p id="gallery-loading">Loading photos...</p>
+      </section>
     </main>
     
     <!-- Lightbox -->
@@ -55,28 +51,81 @@
     <div id="footer-placeholder"></div>
     
     <script>
-      // 1) LIST YOUR IMAGES HERE
+      const CLOUD_NAME = "dlxmgewap";
+
+      // These are your gallery images by public_id
+      // To add photos: upload to Cloudinary and add the public_id to this list
+      // To remove photos: delete the line with that public_id
       const galleryImages = [
-        "Agave stalk.jpg",
-        "Cactus Wren.jpg"
+        "docent_action_figure_lgx7bc",
+        "saguaro_flowrs_and_f",
+        "Saguaro_Cross_Sectio",
+        "Rattle_Snake_hmrwed",
+        "Road_Runner_kdr7sf",
+        "prickly_pear_flowers_",
+        "Paper-Spine_Cactus_",
+        "Palo_Verde_in_Bloom_",
+        "Owl_in_Saguaro_ocy5cj",
+        "Mesquite_Pods_qppr3z",
+        "Javelina_c1xylv",
+        "Hummingbird_vmgbzx",
+        "Hummingbird_Nest_b",
+        "Great_Horned_Owl_gp",
+        "Gopher_Snake_tyg3hr",
+        "Gustav_Starck_peoshq",
+        "Gila_Woodpecker_clljqd",
+        "Gilded_Flicker_fpkvyo",
+        "Gilded_Flicker_Woodp",
+        "Gertrude_With_",
+        "DBG_Groundbreaking",
+        "Dagger-Cholla_gdf84v",
+        "Gambel_s_Quail_tr3anc",
+        "Gertrude_Divine_Web",
+        "DBG_Entrance_1941_g",
+        "DBG_Early_Trail_isyxtc",
+        "Curved-Billed_Thrash",
+        "DBG_Crested_Saguar",
+        "Crested_Saguar",
+        "Curve-Billed_Thrasher",
+        "Cholla_Skeleton_xxaa2a",
+        "Cholla_Flower_crezch",
+        "Coyote_p1ifja",
+        "Cardons_Heritage_Ga",
+        "Cactus_Wren_Nest_m",
+        "Agave_hearts_pg_djnf",
+        "California_King_Snake",
+        "Saguaro_Skeleton_rhn",
+        "Scorpion_xdx5t1",
+        "Saguaro_in_Bloom_kjk",
+        "Agave_stalk_tjbp5v",
+        "desert-bg_kwdmh5",
+        "Cactus_Wren_obieiq"
       ];
 
-      // 2) BUILD THE GALLERY FROM THE LIST
       function buildGallery() {
         const gallery = document.getElementById('gallery');
+        const loading = document.getElementById('gallery-loading');
+        if (loading) loading.remove();
 
-        galleryImages.forEach(file => {
-          const fullPath = "images/" + file;
-          const prettyName = file.replace(/\.[^.]+$/, "").replace(/[-_]/g, " ");
+        galleryImages.forEach(publicId => {
+          const thumbUrl = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/w_600,h_440,c_fill/${publicId}.jpg`;
+          const fullUrl = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/${publicId}.jpg`;
+
+          // Convert public_id to readable caption
+          const prettyName = publicId
+            .replace(/[_-]/g, ' ')
+            .replace(/\s[a-z0-9]{4,8}$/, '')
+            .replace(/\b\w/g, c => c.toUpperCase())
+            .trim();
 
           const figure = document.createElement("figure");
           figure.className = "gallery-item";
-          figure.setAttribute("data-full", fullPath);
+          figure.setAttribute("data-full", fullUrl);
           figure.setAttribute("data-title", prettyName);
           figure.setAttribute("data-description", "");
 
           figure.innerHTML = `
-            <img src="${fullPath}" alt="${prettyName}">
+            <img src="${thumbUrl}" alt="${prettyName}" loading="lazy">
             <figcaption class="gallery-caption">${prettyName}</figcaption>
             <span class="gallery-tag">Photo</span>
           `;
@@ -87,21 +136,20 @@
 
       buildGallery();
 
-      // 3) LIGHTBOX
+      // Lightbox
       const lightbox = document.getElementById('lightbox');
       const lightboxImage = document.getElementById('lightboxImage');
       const lightboxTitle = document.getElementById('lightboxTitle');
       const lightboxDescription = document.getElementById('lightboxDescription');
       const lightboxClose = document.getElementById('lightboxClose');
 
-      document.getElementById('gallery').addEventListener('click', function (e) {
+      document.getElementById('gallery').addEventListener('click', function(e) {
         const figure = e.target.closest('.gallery-item');
         if (!figure) return;
 
         lightboxImage.src = figure.getAttribute('data-full');
         lightboxTitle.textContent = figure.getAttribute('data-title');
         lightboxDescription.textContent = figure.getAttribute('data-description');
-
         lightbox.classList.add('open');
       });
 
@@ -112,11 +160,11 @@
 
       lightboxClose.addEventListener('click', closeLightbox);
 
-      lightbox.addEventListener('click', function (e) {
+      lightbox.addEventListener('click', function(e) {
         if (e.target === lightbox) closeLightbox();
       });
 
-      document.addEventListener('keydown', function (e) {
+      document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape' && lightbox.classList.contains('open')) closeLightbox();
       });
     </script>
