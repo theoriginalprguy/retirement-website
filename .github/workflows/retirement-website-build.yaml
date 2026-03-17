@@ -13,6 +13,9 @@ on:
       branch-id:
         required: true
         type: string
+      project-id:
+        required: true
+        type: string
 
 env:
   DEPLOYMENT_FOLDER: ./
@@ -28,6 +31,7 @@ jobs:
         with:
           api-key: ${{ secrets.IONOS_API_KEY }}
           service-host: api-us.ionos.space
+          project-id: ${{ inputs.project-id }}
           branch-id: ${{ inputs.branch-id }}
           folder: ${{ env.DEPLOYMENT_FOLDER }}
           action: upload

@@ -35,6 +35,7 @@ jobs:
     with:
       site-url: https://IONOS_DEPLOY_NOW_SITE_URL
       branch-id: ${{ needs.retrieve-project.outputs.branch-id }}
+      project-id: 8ae4611c-1d47-4c7b-b697-963989b769c6
     secrets: inherit
 
   deploy:
