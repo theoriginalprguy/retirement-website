@@ -24,8 +24,9 @@ jobs:
         with:
           api-key: ${{ secrets.IONOS_API_KEY }}
           service-host: api-us.ionos.space
-          project-id: 8ae4611c-1d47-4c7b-b697-963989b769c6
+          project-id: 100ddd77-db44-4d7f-98a9-424c0402a22d
           action: retrieve-info
+
 
   build:
     name: build
@@ -35,7 +36,6 @@ jobs:
     with:
       site-url: https://IONOS_DEPLOY_NOW_SITE_URL
       branch-id: ${{ needs.retrieve-project.outputs.branch-id }}
-      project-id: 8ae4611c-1d47-4c7b-b697-963989b769c6
     secrets: inherit
 
   deploy:
@@ -50,6 +50,6 @@ jobs:
         with:
           api-key: ${{ secrets.IONOS_API_KEY }}
           service-host: api-us.ionos.space
-          project-id: 8ae4611c-1d47-4c7b-b697-963989b769c6
+          project-id: 100ddd77-db44-4d7f-98a9-424c0402a22d
           branch-id: ${{ needs.retrieve-project.outputs.branch-id }}
           action: dispatch-deployments
