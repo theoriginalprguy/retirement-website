@@ -52,59 +52,35 @@
     
     <script>
       const CLOUD_NAME = "dlxmgewap";
+      const TAG = "gallery";
 
-      const galleryImages = [
-        "docent_action_figure_lgx7bc",
-        "saguaro_flowrs_and_fruit_dbdm1e",
-        "Saguaro_Cross_Section_jrwvca",
-        "Rattle_Snake_hmrwed",
-        "Road_Runner_kdr7sf",
-        "prickly_pear_flowers_and_fruit_t5pl7q",
-        "Paper-Spine_Cactus_mxqt5m",
-        "Palo_Verde_in_Bloom_e2kwlm",
-        "Owl_in_Saguaro_ocy5cj",
-        "Mesquite_Pods_qppr3z",
-        "Javelina_c1xylv",
-        "Hummingbird_vmgbzx",
-        "Hummingbird_Nest_bqt9md",
-        "Great_Horned_Owl_gpscah",
-        "Gopher_Snake_tyg3hr",
-        "Gustav_Starck_peoshq",
-        "Gila_Woodpecker_clljqd",
-        "Gilded_Flicker_fpkvyo",
-        "Gilded_Flicker_Woodpecker_o0legd",
-        "Gertrude_With_Cactus_ehrlsr",
-        "DBG_Groundbreaking_dlxir9",
-        "Dagger-Cholla_gdf84v",
-        "Gambel_s_Quail_tr3anc",
-        "Gertrude_Divine_Webster_baaqg7",
-        "DBG_Entrance_1941_gnxckl",
-        "DBG_Early_Trail_isyxtc",
-        "Curved-Billed_Thrasher_Nest_fe6ulr",
-        "DBG_Crested_Saguaro_lmgq0r",
-        "Crested_Saguaro_xgkcw8",
-        "Curve-Billed_Thrasher_sgn2rs",
-        "Cholla_Skeleton_xxaa2a",
-        "Cholla_Flower_crezch",
-        "Coyote_p1ifja",
-        "Cardons_Heritage_Garden_hwmhvv",
-        "Cactus_Wren_Nest_m325cl",
-        "Agave_hearts_pg_djnfwv",
-        "California_King_Snake_dmnt37",
-        "Saguaro_Skeleton_rhntsy",
-        "Scorpion_xdx5t1",
-        "Saguaro_in_Bloom_kjk1f1",
-        "Agave_stalk_tjbp5v",
-        "desert-bg_kwdmh5",
-        "Cactus_Wren_obieiq"
-      ];
+      async function loadGallery() {
+        try {
+          const response = await fetch(
+            `https://res.cloudinary.com/${CLOUD_NAME}/image/list/${TAG}.json`
+          );
 
-      function buildGallery() {
+          if (!response.ok) {
+            throw new Error('Could not load gallery');
+          }
+
+          const data = await response.json();
+          buildGallery(data.resources);
+
+        } catch (error) {
+          const loading = document.getElementById('gallery-loading');
+          if (loading) loading.textContent = 'Gallery temporarily unavailable. Please try again shortly.';
+          console.error('Gallery load error:', error);
+        }
+      }
+
+      function buildGallery(images) {
         const gallery = document.getElementById('gallery');
         const loading = document.getElementById('gallery-loading');
         if (loading) loading.remove();
 
-        galleryImages.forEach(publicId => {
+        images.forEach(image => {
+          const publicId = image.public_id;
           const thumbUrl = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/w_600,h_440,c_fill/${publicId}.jpg`;
           const fullUrl = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/${publicId}.jpg`;
 
@@ -130,7 +106,7 @@
         });
       }
 
-      buildGallery();
+      loadGallery();
 
       // Lightbox
       const lightbox = document.getElementById('lightbox');
