@@ -18,13 +18,42 @@
         background: var(--card);
         border: 1px solid var(--border);
         border-radius: var(--radius-lg);
-        padding: 24px 28px;
         box-shadow: var(--shadow-soft);
         transition: border-color 0.3s ease;
+        overflow: hidden;
+        display: flex;
+        flex-direction: row;
       }
 
       .post-item:hover {
         border-color: var(--accent-vibrant);
+      }
+
+      .post-thumbnail {
+        width: 180px;
+        min-width: 180px;
+        height: 180px;
+        object-fit: cover;
+        display: block;
+      }
+
+      .post-thumbnail-placeholder {
+        width: 180px;
+        min-width: 180px;
+        height: 180px;
+        background: var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--muted);
+        font-size: 2rem;
+      }
+
+      .post-content {
+        padding: 24px 28px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
       }
 
       .post-date {
@@ -101,6 +130,18 @@
         font-style: italic;
         margin-top: 24px;
       }
+
+      @media (max-width: 600px) {
+        .post-item {
+          flex-direction: column;
+        }
+        .post-thumbnail,
+        .post-thumbnail-placeholder {
+          width: 100%;
+          min-width: 100%;
+          height: 200px;
+        }
+      }
     </style>
   </head>
   <body>
@@ -174,13 +215,32 @@
               ? post.description.replace(/<[^>]+>/g, '').slice(0, 200).trim() + '...'
               : '';
 
+            // Get thumbnail from enclosure, media thumbnail, or description image
+            let thumbnail = '';
+            if (post.enclosure && post.enclosure.link) {
+              thumbnail = post.enclosure.link;
+            } else if (post.thumbnail) {
+              thumbnail = post.thumbnail;
+            } else {
+              // Try to extract first image from description HTML
+              const imgMatch = post.description && post.description.match(/<img[^>]+src="([^">]+)"/);
+              if (imgMatch) thumbnail = imgMatch[1];
+            }
+
+            const thumbnailHtml = thumbnail
+              ? `<img src="${thumbnail}" alt="${post.title}" class="post-thumbnail" loading="lazy">`
+              : `<div class="post-thumbnail-placeholder"><i class="fas fa-feather-alt"></i></div>`;
+
             const item = document.createElement('div');
             item.className = 'post-item';
             item.innerHTML = `
-              <div class="post-date">${date}</div>
-              <div class="post-title"><a href="${post.link}" target="_blank" rel="noopener noreferrer">${post.title}</a></div>
-              ${excerpt ? `<div class="post-excerpt">${excerpt}</div>` : ''}
-              <a href="${post.link}" target="_blank" rel="noopener noreferrer" class="post-read-more">Read on Substack →</a>
+              ${thumbnailHtml}
+              <div class="post-content">
+                <div class="post-date">${date}</div>
+                <div class="post-title"><a href="${post.link}" target="_blank" rel="noopener noreferrer">${post.title}</a></div>
+                ${excerpt ? `<div class="post-excerpt">${excerpt}</div>` : ''}
+                <a href="${post.link}" target="_blank" rel="noopener noreferrer" class="post-read-more">Read on Substack →</a>
+              </div>
             `;
 
             postList.appendChild(item);
