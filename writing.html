@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>Writing | David Kirk</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+      .post-list {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+        margin-top: 32px;
+      }
+
+      .post-item {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 24px 28px;
+        box-shadow: var(--shadow-soft);
+        transition: border-color 0.3s ease;
+      }
+
+      .post-item:hover {
+        border-color: var(--accent-vibrant);
+      }
+
+      .post-date {
+        font-size: 0.85rem;
+        color: var(--muted);
+        margin-bottom: 8px;
+      }
+
+      .post-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+      }
+
+      .post-title a {
+        color: var(--accent-strong);
+        text-decoration: none;
+      }
+
+      .post-title a:hover {
+        color: var(--accent-vibrant);
+      }
+
+      .post-excerpt {
+        color: var(--text);
+        font-size: 0.95rem;
+        line-height: 1.6;
+        margin-bottom: 14px;
+      }
+
+      .post-read-more {
+        font-size: 0.9rem;
+        color: var(--accent-vibrant);
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      .post-read-more:hover {
+        text-decoration: underline;
+      }
+
+      .substack-cta {
+        margin-top: 40px;
+        text-align: center;
+        padding: 32px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+      }
+
+      .substack-cta p {
+        color: var(--muted);
+        margin-bottom: 16px;
+      }
+
+      .btn-substack {
+        display: inline-block;
+        background: linear-gradient(135deg, var(--accent-vibrant), var(--accent-pink));
+        color: white;
+        padding: 12px 28px;
+        border-radius: 999px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.95rem;
+        transition: opacity 0.2s ease;
+      }
+
+      .btn-substack:hover {
+        opacity: 0.85;
+      }
+
+      .loading-message {
+        color: var(--muted);
+        font-style: italic;
+        margin-top: 24px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="nav-blur"></div>
+
+    <div id="header-placeholder"></div>
+
+    <main>
+      <div class="page-kicker">Writing</div>
+      <h1>Words from the desert.</h1>
+      <p class="lede">
+        Essays, observations, and dispatches from a life lived mostly outdoors and occasionally at a keyboard. 
+        Published on Substack, collected here.
+      </p>
+
+      <div class="story-card">
+        <p>
+          I started writing more seriously after retirement -- not because I had more time, 
+          but because I finally had fewer excuses. The desert has a way of slowing things 
+          down enough to notice them. These pieces are about what I notice.
+        </p>
+        <p>
+          Topics wander: desert ecology, Phoenix life, the occasional dispatch from Mexico, 
+          and whatever crosses my path on a Tuesday morning at Desert Botanical Garden.
+        </p>
+      </div>
+
+      <h2 style="margin-top: 40px;">Recent posts</h2>
+      <p id="loading-message" class="loading-message">Loading latest posts...</p>
+      <div class="post-list" id="post-list"></div>
+
+      <div class="substack-cta">
+        <p>Read the full archive and subscribe for free on Substack.</p>
+        <a href="https://davidkirktheprguy.substack.com" target="_blank" rel="noopener noreferrer" class="btn-substack">
+          Visit on Substack
+        </a>
+      </div>
+    </main>
+
+    <div id="footer-placeholder"></div>
+
+    <script>
+      async function loadPosts() {
+        const feedUrl = 'https://davidkirktheprguy.substack.com/feed';
+        const proxyUrl = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(feedUrl);
+
+        try {
+          const response = await fetch(proxyUrl);
+          const data = await response.json();
+
+          const loading = document.getElementById('loading-message');
+          const postList = document.getElementById('post-list');
+
+          if (data.status !== 'ok' || !data.items.length) {
+            loading.textContent = 'Posts unavailable right now. Visit Substack to read the latest.';
+            return;
+          }
+
+          loading.remove();
+
+          const posts = data.items.slice(0, 6);
+
+          posts.forEach(post => {
+            const date = new Date(post.pubDate).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            });
+
+            const excerpt = post.description
+              ? post.description.replace(/<[^>]+>/g, '').slice(0, 200).trim() + '...'
+              : '';
+
+            const item = document.createElement('div');
+            item.className = 'post-item';
+            item.innerHTML = `
+              <div class="post-date">${date}</div>
+              <div class="post-title"><a href="${post.link}" target="_blank" rel="noopener noreferrer">${post.title}</a></div>
+              ${excerpt ? `<div class="post-excerpt">${excerpt}</div>` : ''}
+              <a href="${post.link}" target="_blank" rel="noopener noreferrer" class="post-read-more">Read on Substack →</a>
+            `;
+
+            postList.appendChild(item);
+          });
+
+        } catch (error) {
+          document.getElementById('loading-message').textContent =
+            'Posts unavailable right now. Visit Substack to read the latest.';
+        }
+      }
+
+      loadPosts();
+    </script>
+
+    <script src="shared.js"></script>
+  </body>
+</html>
