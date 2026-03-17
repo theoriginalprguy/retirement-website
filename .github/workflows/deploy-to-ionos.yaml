@@ -9,19 +9,6 @@ on:
     branches:
       - main
   workflow_dispatch:
-    inputs:
-      version:
-        required: true
-        type: string
-      project-id:
-        required: true
-        type: string
-      branch-id:
-        required: true
-        type: string
-      deployment-ids:
-        require: true
-        type: string
 
 jobs:
   # Please do not rename this job
@@ -31,14 +18,13 @@ jobs:
       contents: read
     strategy:
       matrix:
-        deployment-id: ${{ fromJson(inputs.deployment-ids || '["cb11f58d-6f8a-457a-bb88-a7ba320a5b57"]') }}
+        deployment-id: ["cb11f58d-6f8a-457a-bb88-a7ba320a5b57"]
     steps:
       - uses: actions/checkout@v4
-      - uses: ionos-deploy-now/deploy-now-github-action@v1
+      - uses: ionos-deploy-now/deploy-now-action@v1
         with:
-          service-host: ${{ secrets.IONOS_API_KEY }}
           api-key: ${{ secrets.IONOS_API_KEY }}
-          branch-id: ${{ inputs.branch-id || 'main' }}
+          branch-id: main
           deployment-id: ${{ matrix.deployment-id }}
           ssh-key: ${{ secrets.IONOS_SSH_KEY }}
           ssh-username: ${{ secrets.IONOS_DEPLOYMENT_CB11F58D_6F8A_457A_BB88_A7BA320A5B57_SSH_USERNAME }}
