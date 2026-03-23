@@ -184,70 +184,133 @@
     <div id="footer-placeholder"></div>
 
     <script>
-      async function loadPosts() {
-        const feedUrl = 'https://davidkirktheprguy.substack.com/feed';
-        const proxyUrl = 'https://api.rss2json.com/v1/api.json?count=20&rss_url=' + encodeURIComponent(feedUrl);
+      const FEED_URL = 'https://davidkirktheprguy.substack.com/feed';
 
-        try {
-          const response = await fetch(proxyUrl);
-          const data = await response.json();
+      // Try multiple CORS proxies in order until one works
+      const PROXIES = [
+        url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+        url => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
+        url => `https://api.rss2json.com/v1/api.json?count=20&rss_url=${encodeURIComponent(url)}`
+      ];
 
-          const loading = document.getElementById('loading-message');
-          const postList = document.getElementById('post-list');
+      async function fetchWithProxy(proxyFn, feedUrl) {
+        const proxyUrl = proxyFn(feedUrl);
+        const response = await fetch(proxyUrl);
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+        const text = await response.text();
 
-          if (data.status !== 'ok' || !data.items.length) {
-            loading.textContent = 'Posts unavailable right now. Visit Substack to read the latest.';
-            return;
+        // rss2json returns JSON; the others return XML (possibly wrapped)
+        if (proxyUrl.includes('rss2json')) {
+          const data = JSON.parse(text);
+          if (data.status !== 'ok') throw new Error('rss2json error');
+          return data.items;
+        }
+
+        // allorigins wraps the response in a JSON envelope
+        let xml = text;
+        if (proxyUrl.includes('allorigins')) {
+          const wrapper = JSON.parse(text);
+          xml = wrapper.contents;
+        }
+
+        return parseXML(xml);
+      }
+
+      function parseXML(xmlText) {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(xmlText, 'text/xml');
+        const items = Array.from(doc.querySelectorAll('item'));
+
+        return items.map(item => {
+          const get = tag => item.querySelector(tag)?.textContent?.trim() || '';
+          const link = get('link') || item.querySelector('link')?.getAttribute('href') || '';
+          const description = get('description') || get('content\\:encoded') || '';
+
+          // Extract thumbnail from media:content or enclosure or first img in description
+          let thumbnail = '';
+          const media = item.querySelector('media\\:content, content');
+          if (media) thumbnail = media.getAttribute('url') || '';
+          if (!thumbnail) {
+            const enclosure = item.querySelector('enclosure');
+            if (enclosure) thumbnail = enclosure.getAttribute('url') || '';
+          }
+          if (!thumbnail) {
+            const imgMatch = description.match(/<img[^>]+src="([^">]+)"/);
+            if (imgMatch) thumbnail = imgMatch[1];
           }
 
-          loading.remove();
+          return {
+            title: get('title'),
+            link,
+            pubDate: get('pubDate'),
+            description,
+            thumbnail
+          };
+        });
+      }
 
-          const posts = data.items;
+      function renderPosts(posts) {
+        const loading = document.getElementById('loading-message');
+        const postList = document.getElementById('post-list');
 
-          posts.forEach(post => {
-            const date = new Date(post.pubDate).toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric'
-            });
-
-            const excerpt = post.description
-              ? post.description.replace(/<[^>]+>/g, '').slice(0, 200).trim() + '...'
-              : '';
-
-            let thumbnail = '';
-            if (post.enclosure && post.enclosure.link) {
-              thumbnail = post.enclosure.link;
-            } else if (post.thumbnail) {
-              thumbnail = post.thumbnail;
-            } else {
-              const imgMatch = post.description && post.description.match(/<img[^>]+src="([^">]+)"/);
-              if (imgMatch) thumbnail = imgMatch[1];
-            }
-
-            const thumbnailHtml = thumbnail
-              ? `<img src="${thumbnail}" alt="${post.title}" class="post-thumbnail" loading="lazy">`
-              : `<div class="post-thumbnail-placeholder"><i class="fas fa-feather-alt"></i></div>`;
-
-            const item = document.createElement('div');
-            item.className = 'post-item';
-            item.innerHTML = `
-              ${thumbnailHtml}
-              <div class="post-content">
-                <div class="post-date">${date}</div>
-                <div class="post-title"><a href="${post.link}" target="_blank" rel="noopener noreferrer">${post.title}</a></div>
-                ${excerpt ? `<div class="post-excerpt">${excerpt}</div>` : ''}
-                <a href="${post.link}" target="_blank" rel="noopener noreferrer" class="post-read-more">Read on Substack →</a>
-              </div>
-            `;
-
-            postList.appendChild(item);
-          });
-
-        } catch (error) {
-          document.getElementById('loading-message').textContent =
-            'Posts unavailable right now. Visit Substack to read the latest.';
+        if (!posts || posts.length === 0) {
+          loading.textContent = 'Posts unavailable right now. Visit Substack to read the latest.';
+          return;
         }
+
+        loading.remove();
+
+        posts.forEach(post => {
+          const date = post.pubDate
+            ? new Date(post.pubDate).toLocaleDateString('en-US', {
+                year: 'numeric', month: 'long', day: 'numeric'
+              })
+            : '';
+
+          const excerpt = post.description
+            ? post.description.replace(/<[^>]+>/g, '').slice(0, 200).trim() + '...'
+            : '';
+
+          // For rss2json items, thumbnail may come back as post.thumbnail directly
+          const thumb = post.thumbnail ||
+            (post.enclosure && post.enclosure.link ? post.enclosure.link : '');
+
+          const thumbnailHtml = thumb
+            ? `<img src="${thumb}" alt="${post.title}" class="post-thumbnail" loading="lazy">`
+            : `<div class="post-thumbnail-placeholder"><i class="fas fa-feather-alt"></i></div>`;
+
+          const item = document.createElement('div');
+          item.className = 'post-item';
+          item.innerHTML = `
+            ${thumbnailHtml}
+            <div class="post-content">
+              <div class="post-date">${date}</div>
+              <div class="post-title">
+                <a href="${post.link}" target="_blank" rel="noopener noreferrer">${post.title}</a>
+              </div>
+              ${excerpt ? `<div class="post-excerpt">${excerpt}</div>` : ''}
+              <a href="${post.link}" target="_blank" rel="noopener noreferrer" class="post-read-more">Read on Substack →</a>
+            </div>
+          `;
+
+          postList.appendChild(item);
+        });
+      }
+
+      async function loadPosts() {
+        for (const proxyFn of PROXIES) {
+          try {
+            const posts = await fetchWithProxy(proxyFn, FEED_URL);
+            renderPosts(posts);
+            return;
+          } catch (e) {
+            // Try next proxy
+            continue;
+          }
+        }
+        // All proxies failed
+        document.getElementById('loading-message').textContent =
+          'Posts unavailable right now. Visit Substack to read the latest.';
       }
 
       loadPosts();
