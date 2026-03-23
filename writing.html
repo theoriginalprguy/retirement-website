@@ -153,18 +153,18 @@
       <div class="page-kicker">Writing</div>
       <h1>Words from the desert.</h1>
       <p class="lede">
-        Essays, observations, and dispatches from a life lived mostly outdoors and occasionally at a keyboard. 
+        Essays, observations, and dispatches from a life lived mostly outdoors and occasionally at a keyboard.
         Published on Substack, collected here.
       </p>
 
       <div class="story-card">
         <p>
-          I started writing more seriously after retirement -- not because I had more time, 
-          but because I finally had fewer excuses. The desert has a way of slowing things 
+          I started writing more seriously after retirement -- not because I had more time,
+          but because I finally had fewer excuses. The desert has a way of slowing things
           down enough to notice them. These pieces are about what I notice.
         </p>
         <p>
-          Topics wander: desert ecology, Phoenix life, the occasional dispatch from Mexico, 
+          Topics wander: desert ecology, Phoenix life, the occasional dispatch from Mexico,
           and whatever crosses my path on a Tuesday morning at Desert Botanical Garden.
         </p>
       </div>
@@ -186,7 +186,7 @@
     <script>
       async function loadPosts() {
         const feedUrl = 'https://davidkirktheprguy.substack.com/feed';
-        const proxyUrl = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(feedUrl);
+        const proxyUrl = 'https://api.rss2json.com/v1/api.json?count=20&rss_url=' + encodeURIComponent(feedUrl);
 
         try {
           const response = await fetch(proxyUrl);
@@ -202,7 +202,7 @@
 
           loading.remove();
 
-          const posts = data.items.slice(0, 6);
+          const posts = data.items;
 
           posts.forEach(post => {
             const date = new Date(post.pubDate).toLocaleDateString('en-US', {
@@ -215,14 +215,12 @@
               ? post.description.replace(/<[^>]+>/g, '').slice(0, 200).trim() + '...'
               : '';
 
-            // Get thumbnail from enclosure, media thumbnail, or description image
             let thumbnail = '';
             if (post.enclosure && post.enclosure.link) {
               thumbnail = post.enclosure.link;
             } else if (post.thumbnail) {
               thumbnail = post.thumbnail;
             } else {
-              // Try to extract first image from description HTML
               const imgMatch = post.description && post.description.match(/<img[^>]+src="([^">]+)"/);
               if (imgMatch) thumbnail = imgMatch[1];
             }
