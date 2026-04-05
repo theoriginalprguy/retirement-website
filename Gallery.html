@@ -16,10 +16,10 @@
   </head>
   <body>
     <div class="nav-blur"></div>
-    
+
     <!-- Header placeholder -->
     <div id="header-placeholder"></div>
-    
+
     <main>
       <div class="page-kicker">Desert life</div>
       <h1>Scenes from this chapter.</h1>
@@ -30,7 +30,7 @@
         <p id="gallery-loading">Loading photos...</p>
       </section>
     </main>
-    
+
     <!-- Lightbox -->
     <div class="lightbox" id="lightbox">
       <div class="lightbox-inner">
@@ -46,27 +46,99 @@
         </div>
       </div>
     </div>
-    
+
     <!-- Footer placeholder -->
     <div id="footer-placeholder"></div>
-    
+
     <script>
-      const CLOUD_NAME = "dlxmgewap";
-      const TAG = "gallery";
+      const INAT_USER = "theprguy";
+      const PER_PAGE  = 200;   // max per request; we paginate automatically
+
+      async function fetchAllObservations() {
+        let page    = 1;
+        let allObs  = [];
+        let total   = null;
+
+        while (true) {
+          const url =
+            `https://api.inaturalist.org/v1/observations` +
+            `?user_login=${INAT_USER}` +
+            `&has[]=photos` +
+            `&per_page=${PER_PAGE}` +
+            `&page=${page}` +
+            `&order=desc` +
+            `&order_by=observed_on`;
+
+          const resp = await fetch(url);
+          if (!resp.ok) throw new Error(`iNaturalist API error: ${resp.status}`);
+
+          const data = await resp.json();
+          if (total === null) total = data.total_results;
+
+          allObs = allObs.concat(data.results);
+
+          if (allObs.length >= total || data.results.length === 0) break;
+          page++;
+        }
+
+        return allObs;
+      }
+
+      function buildGallery(observations) {
+        const gallery = document.getElementById('gallery');
+        const loading = document.getElementById('gallery-loading');
+        if (loading) loading.remove();
+
+        observations.forEach(obs => {
+          // Skip observations with no photos or no taxon
+          if (!obs.photos || obs.photos.length === 0) return;
+          if (!obs.taxon) return;
+
+          const photo       = obs.photos[0];
+          const thumbUrl    = photo.url.replace('square', 'medium');
+          const fullUrl     = photo.url.replace('square', 'large');
+
+          const commonName  = obs.taxon.preferred_common_name
+                                ? capitalizeWords(obs.taxon.preferred_common_name)
+                                : null;
+          const sciName     = obs.taxon.name || '';
+
+          // Caption: "Common Name (Scientific name)" or just scientific if no common
+          const captionText = commonName
+            ? `${commonName} <em>(${sciName})</em>`
+            : `<em>${sciName}</em>`;
+
+          // Lightbox title: plain text version
+          const titleText   = commonName ? `${commonName} (${sciName})` : sciName;
+
+          const figure = document.createElement('figure');
+          figure.className = 'gallery-item';
+          figure.setAttribute('data-full',        fullUrl);
+          figure.setAttribute('data-title',       titleText);
+          figure.setAttribute('data-description', '');
+
+          figure.innerHTML = `
+            <img src="${thumbUrl}" alt="${titleText}" loading="lazy">
+            <figcaption class="gallery-caption">${captionText}</figcaption>
+            <span class="gallery-tag">Photo</span>
+          `;
+
+          gallery.appendChild(figure);
+        });
+
+        if (gallery.querySelectorAll('.gallery-item').length === 0) {
+          gallery.innerHTML = '<p>No photos found.</p>';
+        }
+      }
+
+      function capitalizeWords(str) {
+        return str.replace(/\b\w/g, c => c.toUpperCase());
+      }
 
       async function loadGallery() {
         try {
-          const response = await fetch(
-            `https://res.cloudinary.com/${CLOUD_NAME}/image/list/${TAG}.json`
-          );
-
-          if (!response.ok) {
-            throw new Error('Could not load gallery');
-          }
-
-          const data = await response.json();
-          buildGallery(data.resources);
-
+          const observations = await fetchAllObservations();
+          buildGallery(observations);
         } catch (error) {
           const loading = document.getElementById('gallery-loading');
           if (loading) loading.textContent = 'Gallery temporarily unavailable. Please try again shortly.';
@@ -74,53 +146,21 @@
         }
       }
 
-      function buildGallery(images) {
-        const gallery = document.getElementById('gallery');
-        const loading = document.getElementById('gallery-loading');
-        if (loading) loading.remove();
-
-        images.forEach(image => {
-          const publicId = image.public_id;
-          const thumbUrl = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/w_600,h_440,c_fill/${publicId}.jpg`;
-          const fullUrl = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/${publicId}.jpg`;
-
-          const prettyName = publicId
-            .replace(/[_-]/g, ' ')
-            .replace(/\s[a-z0-9]{4,8}$/, '')
-            .replace(/\b\w/g, c => c.toUpperCase())
-            .trim();
-
-          const figure = document.createElement("figure");
-          figure.className = "gallery-item";
-          figure.setAttribute("data-full", fullUrl);
-          figure.setAttribute("data-title", prettyName);
-          figure.setAttribute("data-description", "");
-
-          figure.innerHTML = `
-            <img src="${thumbUrl}" alt="${prettyName}" loading="lazy">
-            <figcaption class="gallery-caption">${prettyName}</figcaption>
-            <span class="gallery-tag">Photo</span>
-          `;
-
-          gallery.appendChild(figure);
-        });
-      }
-
       loadGallery();
 
       // Lightbox
-      const lightbox = document.getElementById('lightbox');
-      const lightboxImage = document.getElementById('lightboxImage');
-      const lightboxTitle = document.getElementById('lightboxTitle');
+      const lightbox            = document.getElementById('lightbox');
+      const lightboxImage       = document.getElementById('lightboxImage');
+      const lightboxTitle       = document.getElementById('lightboxTitle');
       const lightboxDescription = document.getElementById('lightboxDescription');
-      const lightboxClose = document.getElementById('lightboxClose');
+      const lightboxClose       = document.getElementById('lightboxClose');
 
       document.getElementById('gallery').addEventListener('click', function(e) {
         const figure = e.target.closest('.gallery-item');
         if (!figure) return;
 
-        lightboxImage.src = figure.getAttribute('data-full');
-        lightboxTitle.textContent = figure.getAttribute('data-title');
+        lightboxImage.src             = figure.getAttribute('data-full');
+        lightboxTitle.textContent     = figure.getAttribute('data-title');
         lightboxDescription.textContent = figure.getAttribute('data-description');
         lightbox.classList.add('open');
       });
@@ -140,7 +180,7 @@
         if (e.key === 'Escape' && lightbox.classList.contains('open')) closeLightbox();
       });
     </script>
-    
+
     <!-- Load shared header and footer -->
     <script src="shared.js"></script>
   </body>
