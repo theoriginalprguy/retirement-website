@@ -12,6 +12,53 @@
         height: 220px;
         object-fit: cover;
       }
+
+      /* Lightbox nav arrows */
+      .lightbox-nav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(0,0,0,0.45);
+        color: #fff;
+        border: none;
+        font-size: 2rem;
+        padding: 0.4em 0.7em;
+        cursor: pointer;
+        border-radius: 4px;
+        z-index: 10;
+        line-height: 1;
+        transition: background 0.2s;
+      }
+      .lightbox-nav:hover { background: rgba(0,0,0,0.75); }
+      .lightbox-nav.prev  { left:  12px; }
+      .lightbox-nav.next  { right: 12px; }
+
+      /* Back-to-top button */
+      #back-to-top {
+        position: fixed;
+        bottom: 32px;
+        right: 32px;
+        background: rgba(0,0,0,0.55);
+        color: #fff;
+        border: none;
+        border-radius: 50%;
+        width: 46px;
+        height: 46px;
+        font-size: 1.3rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s;
+        z-index: 999;
+      }
+      #back-to-top.visible {
+        opacity: 1;
+        pointer-events: auto;
+      }
+      #back-to-top:hover { background: rgba(0,0,0,0.8); }
     </style>
   </head>
   <body>
@@ -34,9 +81,11 @@
     <!-- Lightbox -->
     <div class="lightbox" id="lightbox">
       <div class="lightbox-inner">
+        <button class="lightbox-nav prev" id="lightboxPrev">&#8592;</button>
         <div class="lightbox-image-wrapper">
           <img src="" alt="" id="lightboxImage">
         </div>
+        <button class="lightbox-nav next" id="lightboxNext">&#8594;</button>
         <div class="lightbox-meta">
           <div>
             <div class="lightbox-title" id="lightboxTitle"></div>
@@ -47,17 +96,26 @@
       </div>
     </div>
 
+    <!-- Back to top -->
+    <button id="back-to-top" title="Back to top">
+      <i class="fa fa-chevron-up"></i>
+    </button>
+
     <!-- Footer placeholder -->
     <div id="footer-placeholder"></div>
 
     <script>
       const INAT_USER = "theprguy";
-      const PER_PAGE  = 200;   // max per request; we paginate automatically
+      const PER_PAGE  = 200;
+
+      // Holds all gallery figures in DOM order for lightbox navigation
+      let galleryItems = [];
+      let currentIndex = 0;
 
       async function fetchAllObservations() {
-        let page    = 1;
-        let allObs  = [];
-        let total   = null;
+        let page   = 1;
+        let allObs = [];
+        let total  = null;
 
         while (true) {
           const url =
@@ -90,26 +148,23 @@
         if (loading) loading.remove();
 
         observations.forEach(obs => {
-          // Skip observations with no photos or no taxon
           if (!obs.photos || obs.photos.length === 0) return;
           if (!obs.taxon) return;
 
-          const photo       = obs.photos[0];
-          const thumbUrl    = photo.url.replace('square', 'medium');
-          const fullUrl     = photo.url.replace('square', 'large');
+          const photo      = obs.photos[0];
+          const thumbUrl   = photo.url.replace('square', 'medium');
+          const fullUrl    = photo.url.replace('square', 'large');
 
-          const commonName  = obs.taxon.preferred_common_name
-                                ? capitalizeWords(obs.taxon.preferred_common_name)
-                                : null;
-          const sciName     = obs.taxon.name || '';
+          const commonName = obs.taxon.preferred_common_name
+                               ? capitalizeWords(obs.taxon.preferred_common_name)
+                               : null;
+          const sciName    = obs.taxon.name || '';
 
-          // Caption: "Common Name (Scientific name)" or just scientific if no common
           const captionText = commonName
             ? `${commonName} <em>(${sciName})</em>`
             : `<em>${sciName}</em>`;
 
-          // Lightbox title: plain text version
-          const titleText   = commonName ? `${commonName} (${sciName})` : sciName;
+          const titleText = commonName ? `${commonName} (${sciName})` : sciName;
 
           const figure = document.createElement('figure');
           figure.className = 'gallery-item';
@@ -126,7 +181,10 @@
           gallery.appendChild(figure);
         });
 
-        if (gallery.querySelectorAll('.gallery-item').length === 0) {
+        // Cache all items for arrow navigation
+        galleryItems = Array.from(gallery.querySelectorAll('.gallery-item'));
+
+        if (galleryItems.length === 0) {
           gallery.innerHTML = '<p>No photos found.</p>';
         }
       }
@@ -148,36 +206,77 @@
 
       loadGallery();
 
-      // Lightbox
+      // ── Lightbox ──────────────────────────────────────────────
       const lightbox            = document.getElementById('lightbox');
       const lightboxImage       = document.getElementById('lightboxImage');
       const lightboxTitle       = document.getElementById('lightboxTitle');
       const lightboxDescription = document.getElementById('lightboxDescription');
       const lightboxClose       = document.getElementById('lightboxClose');
+      const lightboxPrev        = document.getElementById('lightboxPrev');
+      const lightboxNext        = document.getElementById('lightboxNext');
 
-      document.getElementById('gallery').addEventListener('click', function(e) {
-        const figure = e.target.closest('.gallery-item');
-        if (!figure) return;
-
-        lightboxImage.src             = figure.getAttribute('data-full');
-        lightboxTitle.textContent     = figure.getAttribute('data-title');
+      function openLightbox(index) {
+        currentIndex = index;
+        const figure = galleryItems[currentIndex];
+        lightboxImage.src               = figure.getAttribute('data-full');
+        lightboxImage.alt               = figure.getAttribute('data-title');
+        lightboxTitle.textContent       = figure.getAttribute('data-title');
         lightboxDescription.textContent = figure.getAttribute('data-description');
         lightbox.classList.add('open');
-      });
+
+        // Hide arrows at the ends
+        lightboxPrev.style.visibility = currentIndex === 0 ? 'hidden' : 'visible';
+        lightboxNext.style.visibility = currentIndex === galleryItems.length - 1 ? 'hidden' : 'visible';
+      }
 
       function closeLightbox() {
         lightbox.classList.remove('open');
         lightboxImage.src = '';
       }
 
+      function showPrev() {
+        if (currentIndex > 0) openLightbox(currentIndex - 1);
+      }
+
+      function showNext() {
+        if (currentIndex < galleryItems.length - 1) openLightbox(currentIndex + 1);
+      }
+
+      document.getElementById('gallery').addEventListener('click', function(e) {
+        const figure = e.target.closest('.gallery-item');
+        if (!figure) return;
+        const index = galleryItems.indexOf(figure);
+        if (index !== -1) openLightbox(index);
+      });
+
       lightboxClose.addEventListener('click', closeLightbox);
+      lightboxPrev.addEventListener('click', function(e) { e.stopPropagation(); showPrev(); });
+      lightboxNext.addEventListener('click', function(e) { e.stopPropagation(); showNext(); });
 
       lightbox.addEventListener('click', function(e) {
         if (e.target === lightbox) closeLightbox();
       });
 
       document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && lightbox.classList.contains('open')) closeLightbox();
+        if (!lightbox.classList.contains('open')) return;
+        if (e.key === 'Escape')      closeLightbox();
+        if (e.key === 'ArrowLeft')   showPrev();
+        if (e.key === 'ArrowRight')  showNext();
+      });
+
+      // ── Back to top ───────────────────────────────────────────
+      const backToTop = document.getElementById('back-to-top');
+
+      window.addEventListener('scroll', function() {
+        if (window.scrollY > 400) {
+          backToTop.classList.add('visible');
+        } else {
+          backToTop.classList.remove('visible');
+        }
+      });
+
+      backToTop.addEventListener('click', function() {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       });
     </script>
 
