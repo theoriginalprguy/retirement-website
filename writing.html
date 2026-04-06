@@ -186,11 +186,11 @@
     <script>
       const FEED_URL = 'https://davidkirktheprguy.substack.com/feed';
 
-      // Try multiple CORS proxies in order until one works
+      // rss2json is most reliable — no count parameter needed on free tier
       const PROXIES = [
+        url => `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`,
         url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
-        url => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
-        url => `https://api.rss2json.com/v1/api.json?count=20&rss_url=${encodeURIComponent(url)}`
+        url => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`
       ];
 
       async function fetchWithProxy(proxyFn, feedUrl) {
@@ -304,7 +304,6 @@
             renderPosts(posts);
             return;
           } catch (e) {
-            // Try next proxy
             continue;
           }
         }
