@@ -75,16 +75,16 @@ img {
   position: fixed;
   top: 50%;
   transform: translateY(-50%);
-  /* Position it just outside the 1040px content column */
-  left: calc(50% - 580px);
+  /* Right edge of logo sits 20px left of content column */
+  left: calc(50% - 520px - 140px);
   z-index: 20;
   display: block;
   transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
 .site-logo-floating img {
-  width: 140px;
-  height: 140px;
+  width: 160px;
+  height: 160px;
   object-fit: contain;
   border-radius: 50%;
   box-shadow: 0 4px 24px rgba(0,0,0,0.18);
