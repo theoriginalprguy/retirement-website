@@ -6,6 +6,118 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+      /* Icon card layout matching Projects page */
+      .about-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-soft);
+        transition: border-color 0.3s ease;
+        overflow: hidden;
+        display: flex;
+        flex-direction: row;
+        margin-bottom: 28px;
+      }
+
+      .about-card:hover {
+        border-color: var(--accent-vibrant);
+      }
+
+      .about-icon-panel {
+        width: 140px;
+        min-width: 140px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(160deg, var(--accent-strong), var(--accent-vibrant));
+        padding: 24px 16px;
+      }
+
+      .about-icon-panel svg {
+        width: 64px;
+        height: 64px;
+        opacity: 0.92;
+      }
+
+      .about-card-body {
+        padding: 28px 32px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 12px;
+      }
+
+      .about-card-body h2 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--accent-strong);
+        margin: 0;
+      }
+
+      .about-card-body p {
+        font-size: 0.97rem;
+        line-height: 1.7;
+        color: var(--text);
+        margin: 0;
+      }
+
+      /* Roles list with subtle dot markers */
+      .roles-list {
+        list-style: none;
+        padding: 0;
+        margin: 4px 0 0 0;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .roles-list li {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        font-size: 0.97rem;
+        line-height: 1.6;
+        color: var(--text);
+      }
+
+      .roles-list li::before {
+        content: '';
+        display: block;
+        width: 8px;
+        height: 8px;
+        min-width: 8px;
+        border-radius: 50%;
+        background: var(--accent-vibrant);
+        margin-top: 7px;
+      }
+
+      .inline-pill {
+        display: inline-block;
+        background: linear-gradient(135deg, var(--accent-strong), var(--accent-vibrant));
+        color: white;
+        font-size: 0.85rem;
+        font-weight: 600;
+        padding: 5px 14px;
+        border-radius: 999px;
+        margin-top: 4px;
+      }
+
+      @media (max-width: 600px) {
+        .about-card {
+          flex-direction: column;
+        }
+        .about-icon-panel {
+          width: 100%;
+          min-width: 100%;
+          height: 100px;
+          padding: 16px;
+        }
+        .about-card-body {
+          padding: 20px;
+        }
+      }
+    </style>
   </head>
   <body>
     <div class="nav-blur"></div>
@@ -32,86 +144,135 @@
         and scientific presentations — all in situations where every word mattered.
       </p>
 
-      <div class="story-card">
-        <h2>Media, messages, and the art of not panicking</h2>
-        <p>
-          For decades, my world was full of microphones, cameras, deadlines, and the constant
-          buzz of "Don't mess this up." I worked in public relations and crisis management,
-          writing and coaching for leaders who had to walk into the brightest, least-forgiving
-          rooms and actually be human.
-        </p>
-        <p>
-          It was equal parts language, logistics, and emotional triage. My job was to take
-          complexity, pressure, profit motives, and politics and turn them into something an
-          ordinary person could listen to and think, "Okay, that makes sense, I agree, and
-          will take the actions to support you."
-        </p>
-        <p>
-          Along the way I built creative projects, public-facing campaigns, and the occasional
-          oddball idea that made people smile instead of cringe.
-        </p>
-        <span class="inline-pill">High stakes, low drama whenever possible.</span>
+      <!-- Card 1: PR Career -->
+      <div class="about-card">
+        <div class="about-icon-panel">
+          <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Microphone body -->
+            <rect x="24" y="8" width="16" height="26" rx="8" fill="white" opacity="0.9"/>
+            <!-- Microphone stand -->
+            <line x1="32" y1="34" x2="32" y2="50" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+            <!-- Base -->
+            <line x1="20" y1="50" x2="44" y2="50" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+            <!-- Sound arc 1 -->
+            <path d="M16 22 Q12 28 16 34" stroke="white" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.7"/>
+            <!-- Sound arc 2 -->
+            <path d="M10 18 Q4 28 10 38" stroke="white" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.4"/>
+            <!-- Sound arc 3 right -->
+            <path d="M48 22 Q52 28 48 34" stroke="white" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.7"/>
+            <!-- Sound arc 4 right -->
+            <path d="M54 18 Q60 28 54 38" stroke="white" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.4"/>
+          </svg>
+        </div>
+        <div class="about-card-body">
+          <h2>Media, messages, and the art of not panicking</h2>
+          <p>
+            For decades, my world was full of microphones, cameras, deadlines, and the constant
+            buzz of "Don't mess this up." I worked in public relations and crisis management,
+            writing and coaching for leaders who had to walk into the brightest, least-forgiving
+            rooms and actually be human.
+          </p>
+          <p>
+            It was equal parts language, logistics, and emotional triage. My job was to take
+            complexity, pressure, profit motives, and politics and turn them into something an
+            ordinary person could listen to and think, "Okay, that makes sense, I agree, and
+            will take the actions to support you."
+          </p>
+          <p>
+            Along the way I built creative projects, public-facing campaigns, and the occasional
+            oddball idea that made people smile instead of cringe.
+          </p>
+          <span class="inline-pill">High stakes, low drama whenever possible.</span>
+        </div>
       </div>
 
-      <div class="story-card">
-        <h2>Why retirement doesn't feel like an expiration date</h2>
-        <p>
-          Since 2012, the desert has been both a backdrop and my teacher. It rewards people
-          who pay attention. It demands a slow, deliberate pace and keen observation. I am
-          trying to pay close attention and to STFD (Slow the F*** Down).
-        </p>
-        <p>
-          These days, I'm more likely to have appointments or "plans" rather than deadlines.
-          My calendar and to-do list are kinder to my psyche. I even have calendar entries
-          now like "change CPAP filter" and "trash day." But the drive to wake up, get moving,
-          and do something useful hasn't changed. Once OCD-adjacent, always OCD-adjacent.
-        </p>
-        <p>
-          I'm not building a brand here and I have nothing to sell. I'm building a record:
-          of the places and people I care about, and the small, ordinary details that would
-          never make it into a press release. I'm also
-          <a href="Projects.html" style="color: var(--accent-vibrant); text-decoration: none; font-weight: 600;">sharing some projects</a>
-          I've done that have meaning to me and, with luck, at least a few others. When my
-          expiration date does arrive a couple of decades from now, my husband can make the
-          memorial video in a few clicks.
-        </p>
+      <!-- Card 2: Retirement -->
+      <div class="about-card">
+        <div class="about-icon-panel">
+          <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Saguaro -->
+            <rect x="29" y="20" width="6" height="32" rx="3" fill="white"/>
+            <rect x="14" y="30" width="6" height="18" rx="3" fill="white"/>
+            <rect x="14" y="30" width="22" height="6" rx="3" fill="white"/>
+            <rect x="44" y="34" width="6" height="14" rx="3" fill="white"/>
+            <rect x="29" y="34" width="22" height="6" rx="3" fill="white"/>
+            <!-- Sun -->
+            <circle cx="52" cy="16" r="5" fill="white" opacity="0.75"/>
+            <line x1="52" y1="7" x2="52" y2="10" stroke="white" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+            <line x1="52" y1="22" x2="52" y2="25" stroke="white" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+            <line x1="43" y1="16" x2="46" y2="16" stroke="white" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+            <line x1="58" y1="16" x2="61" y2="16" stroke="white" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+            <!-- Ground -->
+            <line x1="4" y1="52" x2="60" y2="52" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.45"/>
+          </svg>
+        </div>
+        <div class="about-card-body">
+          <h2>Why retirement doesn't feel like an expiration date</h2>
+          <p>
+            Since 2012, the desert has been both a backdrop and my teacher. It rewards people
+            who pay attention. It demands a slow, deliberate pace and keen observation. I am
+            trying to pay close attention and to STFD (Slow the F*** Down).
+          </p>
+          <p>
+            These days, I'm more likely to have appointments or "plans" rather than deadlines.
+            My calendar and to-do list are kinder to my psyche. I even have calendar entries
+            now like "change CPAP filter" and "trash day." But the drive to wake up, get moving,
+            and do something useful hasn't changed. Once OCD-adjacent, always OCD-adjacent.
+          </p>
+          <p>
+            I'm not building a brand here and I have nothing to sell. I'm building a record:
+            of the places and people I care about, and the small, ordinary details that would
+            never make it into a press release. I'm also
+            <a href="Projects.html" style="color: white; text-decoration: underline; font-weight: 600;">sharing some projects</a>
+            I've done that have meaning to me and, with luck, at least a few others. When my
+            expiration date does arrive a couple of decades from now, my husband can make the
+            memorial video in a few clicks.
+          </p>
+        </div>
       </div>
 
-      <!-- Roles / Timeline card -->
-      <div class="story-card">
-        <h2>Some of the roles I've played</h2>
-        <ul class="aside-list" style="margin-top: 12px;">
-          <li>
-            Youngest member of the 1968&ndash;1969 Cast A of Up With People.
-          </li>
-          <li>
-            The eponymous role in The Scottish Play; 42nd Street's Leading Character Actor.
-          </li>
-          <li>
-            Pizza and hoagie maker; hospital orderly, ambulance attendant, and discharge
-            cashier; bakery pot-washer and pastry salesman; pipe and tobacco store clerk;
-            salesman for a menswear store; overnight mall cleaning crew member.
-          </li>
-          <li>
-            Manager of front-of-house, box office, and promotions for university and
-            summer stock theatres.
-          </li>
-          <li>
-            Owner of an independent public relations firm, and SVP of a national agency.
-          </li>
-          <li>
-            Consultant in public relations, public affairs, and crisis communications.
-          </li>
-          <li>
-            Chaired the group that created the modern-day Examination for Accreditation
-            in Public Relations.
-          </li>
-          <li>
-            Docent on the Interpretation Team at Desert Botanical Garden.
-          </li>
-        </ul>
+      <!-- Card 3: Roles -->
+      <div class="about-card">
+        <div class="about-icon-panel">
+          <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Scroll / timeline -->
+            <rect x="10" y="12" width="44" height="40" rx="4" fill="white" opacity="0.15" stroke="white" stroke-width="2"/>
+            <!-- Top curl -->
+            <path d="M10 16 Q10 8 18 8 Q26 8 26 16" stroke="white" stroke-width="2" fill="none" opacity="0.7"/>
+            <!-- Timeline line -->
+            <line x1="20" y1="24" x2="20" y2="46" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+            <!-- Dots on timeline -->
+            <circle cx="20" cy="26" r="3" fill="white"/>
+            <circle cx="20" cy="34" r="3" fill="white"/>
+            <circle cx="20" cy="42" r="3" fill="white"/>
+            <!-- Text lines -->
+            <line x1="27" y1="26" x2="48" y2="26" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.8"/>
+            <line x1="27" y1="30" x2="44" y2="30" stroke="white" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+            <line x1="27" y1="34" x2="48" y2="34" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.8"/>
+            <line x1="27" y1="38" x2="42" y2="38" stroke="white" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+            <line x1="27" y1="42" x2="48" y2="42" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.8"/>
+          </svg>
+        </div>
+        <div class="about-card-body">
+          <h2>Some of the roles I've played</h2>
+          <ul class="roles-list">
+            <li>Youngest member of the 1968&ndash;1969 Cast A of Up With People.</li>
+            <li>The eponymous role in The Scottish Play; 42nd Street's Leading Character Actor.</li>
+            <li>Pizza and hoagie maker; hospital orderly, ambulance attendant, and discharge
+                cashier; bakery pot-washer and pastry salesman; pipe and tobacco store clerk;
+                salesman for a menswear store; overnight mall cleaning crew member.</li>
+            <li>Manager of front-of-house, box office, and promotions for university and
+                summer stock theatres.</li>
+            <li>Owner of an independent public relations firm, and SVP of a national agency.</li>
+            <li>Consultant in public relations, public affairs, and crisis communications.</li>
+            <li>Chaired the group that created the modern-day Examination for Accreditation
+                in Public Relations.</li>
+            <li>Docent on the Interpretation Team at Desert Botanical Garden.</li>
+          </ul>
+        </div>
       </div>
 
+      <!-- Closing callout -->
       <div class="callout" style="margin-top: 8px;">
         <strong>If you're here, you probably know me already.</strong> I'm grateful to
         know you and that you are here. This site is a way to keep you in the loop without
