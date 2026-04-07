@@ -7,12 +7,12 @@
   --accent: #c86b3c;          /* terracotta */
   --accent-soft: rgba(200,107,60,0.14);
   --accent-strong: #9b4120;
-  
-  /* NEW: Color pops for modern feel */
+
+  /* Color pops for modern feel */
   --accent-vibrant: #ff6b35;  /* sunset orange */
   --accent-purple: #8b5cf6;   /* desert flower purple */
   --accent-pink: #ec4899;     /* cactus flower pink */
-  
+
   --text: #2b2118;            /* deep brown */
   --muted: #7b6a59;           /* soft clay */
   --card: #fff8ee;            /* light card */
@@ -21,7 +21,7 @@
   --shadow-soft: 0 16px 40px rgba(0,0,0,0.16);
   --radius-lg: 18px;
   --radius-pill: 999px;
-  --nav-height: 180px;
+  --nav-height: 60px;
 }
 
 /* ----------------------------------------------------------
@@ -69,7 +69,42 @@ img {
 }
 
 /* ----------------------------------------------------------
-   Navigation – header with logo + search
+   Floating logo – desktop only, sits in left margin
+---------------------------------------------------------- */
+.site-logo-floating {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  /* Position it just outside the 1040px content column */
+  left: calc(50% - 580px);
+  z-index: 20;
+  display: block;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.site-logo-floating img {
+  width: 140px;
+  height: 140px;
+  object-fit: contain;
+  border-radius: 50%;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.site-logo-floating:hover img {
+  transform: scale(1.06);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.24);
+}
+
+/* Hide floating logo on smaller screens */
+@media (max-width: 1280px) {
+  .site-logo-floating {
+    display: none;
+  }
+}
+
+/* ----------------------------------------------------------
+   Navigation – slim header, no logo on desktop
 ---------------------------------------------------------- */
 .site-header {
   position: fixed;
@@ -84,8 +119,6 @@ img {
   background: rgba(247,240,228,0.96);
   backdrop-filter: blur(6px);
   border-bottom: 1px solid rgba(224,201,166,0.6);
-  padding: 25px 0;
-  overflow: visible;
 }
 
 .header-inner {
@@ -97,13 +130,16 @@ img {
   gap: 20px;
 }
 
-.site-logo img {
-  height: 200px;
+/* Logo in header – only shown on tablet/mobile */
+.site-logo-mobile {
+  display: none;
+}
+
+.site-logo-mobile img {
+  height: 44px;
   width: auto;
   display: block;
   object-fit: contain;
-  position: relative;
-  z-index: 11;
 }
 
 .site-nav {
@@ -166,7 +202,7 @@ img {
   color: #fffaf3;
   font-size: 0.8rem;
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .site-search button:hover {
@@ -837,7 +873,7 @@ textarea:focus {
 }
 
 /* ----------------------------------------------------------
-   Projects page - cards without background images
+   Projects page
 ---------------------------------------------------------- */
 .project-card {
   background: var(--card);
@@ -879,13 +915,17 @@ textarea:focus {
 /* ----------------------------------------------------------
    Responsive
 ---------------------------------------------------------- */
+@media (max-width: 1280px) {
+  /* Below 1280px there is not enough margin for the floating logo
+     so we show the logo back in the header instead */
+  .site-logo-mobile {
+    display: block;
+  }
+}
+
 @media (max-width: 840px) {
   :root {
-    --nav-height: 80px;
-  }
-
-  .site-logo img {
-    height: 75px;
+    --nav-height: 64px;
   }
 
   .overview-grid {
@@ -922,15 +962,15 @@ textarea:focus {
 
 @media (max-width: 640px) {
   :root {
-    --nav-height: 70px;
+    --nav-height: 56px;
   }
 
   body {
     padding-top: var(--nav-height);
   }
 
-  .site-logo img {
-    height: 60px;
+  .site-logo-mobile img {
+    height: 40px;
   }
 
   .header-inner {
