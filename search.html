@@ -5,14 +5,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Search - David Kirk</title>
   <meta name="description" content="Search David Kirk's website for articles, photos, projects, and more.">
-  
+
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Google Custom Search Engine -->
+  <script async src="https://cse.google.com/cse.js?cx=d4eb18e73eff54efb"></script>
 
   <style>
     .search-container {
       max-width: 800px;
       margin: 0 auto;
+      min-height: 60px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    /* Ensure the CSE widget and its iframe are never clipped on mobile */
+    .gcse-search,
+    .gcse-search *,
+    .gsc-control-cse,
+    .gsc-control-cse * {
+      max-width: 100% !important;
+      box-sizing: border-box !important;
     }
 
     /* Override Google CSE styling to blend with desert theme */
@@ -72,6 +87,31 @@
     .gsc-webResult.gsc-result:hover {
       border-color: var(--accent-vibrant) !important;
     }
+
+    @media (max-width: 600px) {
+      .search-container {
+        padding: 0;
+        width: 100%;
+      }
+
+      /* Force the Google iframe to respect mobile width */
+      .gsc-control-cse {
+        padding: 0 !important;
+        width: 100% !important;
+      }
+
+      .gsc-search-box {
+        width: 100% !important;
+      }
+
+      .gsc-input-box {
+        width: 100% !important;
+      }
+
+      .gsc-search-button {
+        margin-left: 8px !important;
+      }
+    }
   </style>
 </head>
 <body>
@@ -85,7 +125,6 @@
         <p class="lede">Search across articles, photos, and projects on this site.</p>
 
         <div class="search-container">
-          <script async src="https://cse.google.com/cse.js?cx=d4eb18e73eff54efb"></script>
           <div class="gcse-search"></div>
         </div>
 
