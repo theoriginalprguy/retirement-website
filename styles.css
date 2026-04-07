@@ -76,7 +76,7 @@ img {
   top: 50%;
   transform: translateY(-50%);
   /* Right edge of logo sits 20px left of content column */
- left: calc(50% - 520px - 180px)
+ left: calc(50% - 520px - 210px)
   z-index: 20;
   display: block;
   transition: transform 0.3s ease, opacity 0.3s ease;
