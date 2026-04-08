@@ -5,9 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Search - David Kirk</title>
   <meta name="description" content="Search David Kirk's website for articles, photos, projects, and more.">
+  <meta name="theme-color" content="#ff6b35">
 
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="icon" type="image/png" href="images/favicon.png">
 
   <!-- Google Custom Search Engine -->
   <script async src="https://cse.google.com/cse.js?cx=d4eb18e73eff54efb"></script>
@@ -21,7 +23,6 @@
       box-sizing: border-box;
     }
 
-    /* Ensure the CSE widget and its iframe are never clipped on mobile */
     .gcse-search,
     .gcse-search *,
     .gsc-control-cse,
@@ -30,7 +31,6 @@
       box-sizing: border-box !important;
     }
 
-    /* Override Google CSE styling to blend with desert theme */
     .gsc-control-cse {
       background: transparent !important;
       border: none !important;
@@ -93,21 +93,16 @@
         padding: 0;
         width: 100%;
       }
-
-      /* Force the Google iframe to respect mobile width */
       .gsc-control-cse {
         padding: 0 !important;
         width: 100% !important;
       }
-
       .gsc-search-box {
         width: 100% !important;
       }
-
       .gsc-input-box {
         width: 100% !important;
       }
-
       .gsc-search-button {
         margin-left: 8px !important;
       }

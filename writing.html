@@ -4,8 +4,10 @@
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <title>Writing | David Kirk</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#ff6b35">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="icon" type="image/png" href="images/favicon.png">
     <style>
       .post-list {
         display: flex;
@@ -131,7 +133,6 @@
         margin-top: 24px;
       }
 
-      /* Back to top button */
       #back-to-top {
         position: fixed;
         bottom: 32px;
@@ -176,8 +177,6 @@
     </style>
   </head>
   <body>
-    <div class="nav-blur"></div>
-
     <div id="header-placeholder"></div>
 
     <main>
@@ -211,7 +210,6 @@
       </div>
     </main>
 
-    <!-- Back to top -->
     <button id="back-to-top" title="Back to top">
       <i class="fa fa-chevron-up"></i>
     </button>
@@ -221,7 +219,6 @@
     <script>
       const FEED_URL = 'https://davidkirktheprguy.substack.com/feed';
 
-      // rss2json is most reliable — no count parameter needed on free tier
       const PROXIES = [
         url => `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`,
         url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
@@ -344,7 +341,6 @@
 
       loadPosts();
 
-      // ── Back to top ───────────────────────────────────────────
       const backToTop = document.getElementById('back-to-top');
 
       window.addEventListener('scroll', function() {
