@@ -191,8 +191,6 @@
       }
 
       function buildTaxonUrl(taxon) {
-        // Builds the iNaturalist taxon page URL e.g.
-        // https://www.inaturalist.org/taxa/430581-Cenchrus-setaceus
         if (!taxon || !taxon.id) return null;
         const slug = (taxon.name || '').replace(/\s+/g, '-');
         return `https://www.inaturalist.org/taxa/${taxon.id}-${slug}`;
@@ -215,11 +213,9 @@
                                ? capitalizeWords(obs.taxon.preferred_common_name)
                                : null;
           const sciName    = obs.taxon.name || '';
-
           const captionText = commonName
             ? `${commonName} <em>(${sciName})</em>`
             : `<em>${sciName}</em>`;
-
           const titleText   = commonName ? `${commonName} (${sciName})` : sciName;
           const obsUrl      = obs.uri || '';
           const taxonUrl    = buildTaxonUrl(obs.taxon) || '';
@@ -231,7 +227,6 @@
           figure.setAttribute('data-obs-url',   obsUrl);
           figure.setAttribute('data-taxon-url', taxonUrl);
 
-          // Build thumbnail link pills
           const linkPills = `
             <div class="gallery-links">
               ${obsUrl   ? `<a href="${obsUrl}"   class="gallery-link" target="_blank" rel="noopener noreferrer">My observation <i class="fas fa-arrow-up-right-from-square"></i></a>` : ''}
@@ -246,7 +241,6 @@
             ${linkPills}
           `;
 
-          // Prevent clicks on the link pills from opening the lightbox
           figure.querySelectorAll('.gallery-link').forEach(a => {
             a.addEventListener('click', e => e.stopPropagation());
           });
@@ -299,7 +293,6 @@
         lightboxTitle.textContent = figure.getAttribute('data-title');
         lightboxDescription.textContent = '';
 
-        // Build lightbox link pills
         lightboxLinks.innerHTML = `
           ${obsUrl   ? `<a href="${obsUrl}"   class="lightbox-link" target="_blank" rel="noopener noreferrer">My observation <i class="fas fa-arrow-up-right-from-square"></i></a>` : ''}
           ${taxonUrl ? `<a href="${taxonUrl}" class="lightbox-link" target="_blank" rel="noopener noreferrer">About this species <i class="fas fa-arrow-up-right-from-square"></i></a>` : ''}
@@ -324,7 +317,6 @@
       }
 
       document.getElementById('gallery').addEventListener('click', function(e) {
-        // Don't open lightbox if a link was clicked
         if (e.target.closest('.gallery-link')) return;
         const figure = e.target.closest('.gallery-item');
         if (!figure) return;
