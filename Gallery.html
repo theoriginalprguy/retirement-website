@@ -15,6 +15,33 @@
         object-fit: cover;
       }
 
+      /* Caption links */
+      .gallery-links {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        padding: 4px 8px 6px;
+        background: rgba(247,240,228,0.97);
+        border-top: 1px solid rgba(224,201,166,0.5);
+      }
+
+      .gallery-link {
+        font-size: 0.68rem;
+        font-weight: 600;
+        color: var(--accent-vibrant);
+        text-decoration: none;
+        padding: 2px 8px;
+        border-radius: 999px;
+        border: 1px solid var(--accent-vibrant);
+        transition: background 0.2s, color 0.2s;
+        white-space: nowrap;
+      }
+
+      .gallery-link:hover {
+        background: var(--accent-vibrant);
+        color: white;
+      }
+
       /* Lightbox nav arrows */
       .lightbox-nav {
         position: absolute;
@@ -34,6 +61,31 @@
       .lightbox-nav:hover { background: rgba(0,0,0,0.75); }
       .lightbox-nav.prev  { left:  12px; }
       .lightbox-nav.next  { right: 12px; }
+
+      /* Lightbox links */
+      .lightbox-links {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 8px;
+      }
+
+      .lightbox-link {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--accent-vibrant);
+        text-decoration: none;
+        padding: 4px 12px;
+        border-radius: 999px;
+        border: 1px solid var(--accent-vibrant);
+        transition: background 0.2s, color 0.2s;
+        white-space: nowrap;
+      }
+
+      .lightbox-link:hover {
+        background: var(--accent-vibrant);
+        color: white;
+      }
 
       /* Back-to-top button */
       #back-to-top {
@@ -87,6 +139,7 @@
           <div>
             <div class="lightbox-title" id="lightboxTitle"></div>
             <div id="lightboxDescription"></div>
+            <div class="lightbox-links" id="lightboxLinks"></div>
           </div>
           <button class="lightbox-close" id="lightboxClose">Close</button>
         </div>
@@ -137,6 +190,14 @@
         return allObs;
       }
 
+      function buildTaxonUrl(taxon) {
+        // Builds the iNaturalist taxon page URL e.g.
+        // https://www.inaturalist.org/taxa/430581-Cenchrus-setaceus
+        if (!taxon || !taxon.id) return null;
+        const slug = (taxon.name || '').replace(/\s+/g, '-');
+        return `https://www.inaturalist.org/taxa/${taxon.id}-${slug}`;
+      }
+
       function buildGallery(observations) {
         const gallery = document.getElementById('gallery');
         const loading = document.getElementById('gallery-loading');
@@ -159,19 +220,36 @@
             ? `${commonName} <em>(${sciName})</em>`
             : `<em>${sciName}</em>`;
 
-          const titleText = commonName ? `${commonName} (${sciName})` : sciName;
+          const titleText   = commonName ? `${commonName} (${sciName})` : sciName;
+          const obsUrl      = obs.uri || '';
+          const taxonUrl    = buildTaxonUrl(obs.taxon) || '';
 
           const figure = document.createElement('figure');
           figure.className = 'gallery-item';
-          figure.setAttribute('data-full',        fullUrl);
-          figure.setAttribute('data-title',       titleText);
-          figure.setAttribute('data-description', '');
+          figure.setAttribute('data-full',      fullUrl);
+          figure.setAttribute('data-title',     titleText);
+          figure.setAttribute('data-obs-url',   obsUrl);
+          figure.setAttribute('data-taxon-url', taxonUrl);
+
+          // Build thumbnail link pills
+          const linkPills = `
+            <div class="gallery-links">
+              ${obsUrl   ? `<a href="${obsUrl}"   class="gallery-link" target="_blank" rel="noopener noreferrer">My observation <i class="fas fa-arrow-up-right-from-square"></i></a>` : ''}
+              ${taxonUrl ? `<a href="${taxonUrl}" class="gallery-link" target="_blank" rel="noopener noreferrer">About this species <i class="fas fa-arrow-up-right-from-square"></i></a>` : ''}
+            </div>
+          `;
 
           figure.innerHTML = `
             <img src="${thumbUrl}" alt="${titleText}" loading="lazy">
             <figcaption class="gallery-caption">${captionText}</figcaption>
             <span class="gallery-tag">Photo</span>
+            ${linkPills}
           `;
+
+          // Prevent clicks on the link pills from opening the lightbox
+          figure.querySelectorAll('.gallery-link').forEach(a => {
+            a.addEventListener('click', e => e.stopPropagation());
+          });
 
           gallery.appendChild(figure);
         });
@@ -200,22 +278,33 @@
 
       loadGallery();
 
-      // Lightbox
+      // ── Lightbox ──────────────────────────────────────────────
       const lightbox            = document.getElementById('lightbox');
       const lightboxImage       = document.getElementById('lightboxImage');
       const lightboxTitle       = document.getElementById('lightboxTitle');
       const lightboxDescription = document.getElementById('lightboxDescription');
+      const lightboxLinks       = document.getElementById('lightboxLinks');
       const lightboxClose       = document.getElementById('lightboxClose');
       const lightboxPrev        = document.getElementById('lightboxPrev');
       const lightboxNext        = document.getElementById('lightboxNext');
 
       function openLightbox(index) {
         currentIndex = index;
-        const figure = galleryItems[currentIndex];
-        lightboxImage.src               = figure.getAttribute('data-full');
-        lightboxImage.alt               = figure.getAttribute('data-title');
-        lightboxTitle.textContent       = figure.getAttribute('data-title');
-        lightboxDescription.textContent = figure.getAttribute('data-description');
+        const figure   = galleryItems[currentIndex];
+        const obsUrl   = figure.getAttribute('data-obs-url');
+        const taxonUrl = figure.getAttribute('data-taxon-url');
+
+        lightboxImage.src         = figure.getAttribute('data-full');
+        lightboxImage.alt         = figure.getAttribute('data-title');
+        lightboxTitle.textContent = figure.getAttribute('data-title');
+        lightboxDescription.textContent = '';
+
+        // Build lightbox link pills
+        lightboxLinks.innerHTML = `
+          ${obsUrl   ? `<a href="${obsUrl}"   class="lightbox-link" target="_blank" rel="noopener noreferrer">My observation <i class="fas fa-arrow-up-right-from-square"></i></a>` : ''}
+          ${taxonUrl ? `<a href="${taxonUrl}" class="lightbox-link" target="_blank" rel="noopener noreferrer">About this species <i class="fas fa-arrow-up-right-from-square"></i></a>` : ''}
+        `;
+
         lightbox.classList.add('open');
         lightboxPrev.style.visibility = currentIndex === 0 ? 'hidden' : 'visible';
         lightboxNext.style.visibility = currentIndex === galleryItems.length - 1 ? 'hidden' : 'visible';
@@ -235,6 +324,8 @@
       }
 
       document.getElementById('gallery').addEventListener('click', function(e) {
+        // Don't open lightbox if a link was clicked
+        if (e.target.closest('.gallery-link')) return;
         const figure = e.target.closest('.gallery-item');
         if (!figure) return;
         const index = galleryItems.indexOf(figure);
@@ -256,7 +347,7 @@
         if (e.key === 'ArrowRight')  showNext();
       });
 
-      // Back to top
+      // ── Back to top ───────────────────────────────────────────
       const backToTop = document.getElementById('back-to-top');
 
       window.addEventListener('scroll', function() {
