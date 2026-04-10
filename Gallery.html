@@ -114,6 +114,16 @@
         pointer-events: auto;
       }
       #back-to-top:hover { background: rgba(0,0,0,0.8); }
+
+      /* Hidden from visitors, readable by Google */
+      .seo-description {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0,0,0,0);
+        white-space: nowrap;
+      }
     </style>
   </head>
   <body>
@@ -124,16 +134,15 @@
       <h1>Field notes in color. Rooted here, wandering wide.</h1>
       <p class="lede">Photos from the Sonoran Desert and beyond.</p>
 
-      <!-- Static content for search engine crawlers -->
-      <noscript>
-        <p>
-          This gallery displays David Kirk's nature observations from the Sonoran Desert
-          and surrounding region, including photos of saguaro cactus, palo verde, agave,
-          mesquite, desert wildflowers, birds, and other desert plants and wildlife from
-          Phoenix, Arizona. Photos are sourced from iNaturalist. Please enable JavaScript
-          to view the full interactive gallery.
-        </p>
-      </noscript>
+      <!-- Static descriptive content for search engine indexing -->
+      <p class="seo-description">
+        A visual field journal of desert plants, wildlife, and nature observations
+        from Phoenix, Arizona and the Sonoran Desert. Photos include saguaro cactus,
+        palo verde, agave, mesquite, desert wildflowers, Gambel's quail, cactus wren,
+        curve-billed thrasher, and many other species native to the Sonoran Desert
+        ecosystem. All observations logged on iNaturalist by David Kirk, Docent at
+        Desert Botanical Garden.
+      </p>
 
       <section class="gallery-grid" id="gallery">
         <p id="gallery-loading">Loading photos...</p>
