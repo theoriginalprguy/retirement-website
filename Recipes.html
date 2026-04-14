@@ -9,15 +9,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="icon" type="image/png" href="Images/favicon.png">
     <style>
-
-      /* ── Category grid ─────────────────────────────────────── */
       .category-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
         gap: 20px;
         margin-top: 32px;
       }
-
       .category-card {
         background: var(--card);
         border: 1px solid var(--border);
@@ -29,12 +26,10 @@
         display: flex;
         flex-direction: column;
       }
-
       .category-card:hover {
         border-color: var(--accent-vibrant);
         transform: translateY(-2px);
       }
-
       .category-icon-panel {
         height: 90px;
         display: flex;
@@ -43,40 +38,33 @@
         background: linear-gradient(160deg, var(--accent-strong), var(--accent-vibrant));
         font-size: 2.4rem;
       }
-
       .category-info {
         padding: 16px 18px;
       }
-
       .category-name {
         font-size: 1.05rem;
         font-weight: 700;
         color: var(--accent-strong);
         margin: 0 0 4px 0;
       }
-
       .category-count {
         font-size: 0.85rem;
         color: var(--muted);
       }
-
-      /* ── Recipe grid ───────────────────────────────────────── */
       .recipe-section {
         display: none;
         margin-top: 8px;
       }
-
       .recipe-section.active {
         display: block;
       }
-
       .recipe-section-header {
         display: flex;
         align-items: center;
         gap: 16px;
         margin-bottom: 24px;
+        flex-wrap: wrap;
       }
-
       .back-btn {
         display: inline-flex;
         align-items: center;
@@ -91,26 +79,22 @@
         cursor: pointer;
         transition: background 0.2s, border-color 0.2s;
       }
-
       .back-btn:hover {
         background: var(--accent-vibrant);
         color: white;
         border-color: var(--accent-vibrant);
       }
-
       .recipe-section-title {
         font-size: 1.4rem;
         font-weight: 700;
         color: var(--accent-strong);
         margin: 0;
       }
-
       .recipe-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
         gap: 16px;
       }
-
       .recipe-card {
         background: var(--card);
         border: 1px solid var(--border);
@@ -122,12 +106,10 @@
         display: flex;
         flex-direction: column;
       }
-
       .recipe-card:hover {
         border-color: var(--accent-vibrant);
         transform: translateY(-2px);
       }
-
       .recipe-thumb {
         width: 100%;
         height: 140px;
@@ -135,18 +117,6 @@
         display: block;
         background: var(--border);
       }
-
-      .recipe-thumb-pdf {
-        width: 100%;
-        height: 140px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: linear-gradient(160deg, var(--accent-strong), var(--accent-vibrant));
-        font-size: 2.8rem;
-        color: white;
-      }
-
       .recipe-name {
         padding: 10px 12px;
         font-size: 0.82rem;
@@ -154,8 +124,6 @@
         color: var(--text);
         line-height: 1.4;
       }
-
-      /* ── Lightbox ──────────────────────────────────────────── */
       .recipe-lightbox {
         display: none;
         position: fixed;
@@ -166,11 +134,9 @@
         justify-content: center;
         padding: 20px;
       }
-
       .recipe-lightbox.open {
         display: flex;
       }
-
       .recipe-lightbox-inner {
         position: relative;
         max-width: 900px;
@@ -180,7 +146,6 @@
         flex-direction: column;
         align-items: center;
       }
-
       .recipe-lightbox-img {
         max-width: 100%;
         max-height: 82vh;
@@ -188,7 +153,6 @@
         border-radius: 8px;
         box-shadow: 0 8px 40px rgba(0,0,0,0.5);
       }
-
       .recipe-lightbox-close {
         position: absolute;
         top: -14px;
@@ -206,7 +170,6 @@
         justify-content: center;
         z-index: 10;
       }
-
       .recipe-lightbox-title {
         margin-top: 12px;
         color: white;
@@ -214,28 +177,14 @@
         font-weight: 600;
         text-align: center;
       }
-
-      /* ── Loading state ─────────────────────────────────────── */
-      .loading-recipes {
-        text-align: center;
-        padding: 48px;
-        color: var(--muted);
-        font-style: italic;
-      }
-
       @media (max-width: 600px) {
-        .category-grid {
-          grid-template-columns: repeat(2, 1fr);
-        }
-        .recipe-grid {
-          grid-template-columns: repeat(2, 1fr);
-        }
+        .category-grid { grid-template-columns: repeat(2, 1fr); }
+        .recipe-grid   { grid-template-columns: repeat(2, 1fr); }
       }
     </style>
   </head>
   <body>
     <div id="header-placeholder"></div>
-
     <main>
       <div class="page-kicker">Mom's recipes</div>
       <h1>Good Times, Good Eatin'.</h1>
@@ -244,14 +193,10 @@
         and the occasional mystery stain. Welcome to my mother's kitchen.
       </p>
 
-      <!-- Category view -->
       <div id="category-view">
-        <div class="category-grid" id="category-grid">
-          <!-- Cards injected by JS -->
-        </div>
+        <div class="category-grid" id="category-grid"></div>
       </div>
 
-      <!-- Recipe view (hidden until category clicked) -->
       <div class="recipe-section" id="recipe-section">
         <div class="recipe-section-header">
           <button class="back-btn" id="back-btn">
@@ -259,13 +204,10 @@
           </button>
           <h2 class="recipe-section-title" id="recipe-section-title"></h2>
         </div>
-        <div class="recipe-grid" id="recipe-grid">
-          <!-- Recipe cards injected by JS -->
-        </div>
+        <div class="recipe-grid" id="recipe-grid"></div>
       </div>
     </main>
 
-    <!-- Lightbox for image recipes -->
     <div class="recipe-lightbox" id="recipe-lightbox">
       <div class="recipe-lightbox-inner">
         <button class="recipe-lightbox-close" id="lightbox-close">
@@ -279,46 +221,406 @@
     <div id="footer-placeholder"></div>
 
     <script>
-      const CLOUD_NAME = 'dlxmgewap';
+      const C = 'dlxmgewap';
 
-      // Category definitions: folder slug, display name, emoji icon, file count
-      const CATEGORIES = [
-        { slug: 'appetizers-and-dips',  label: 'Appetizers and Dips',  icon: '🥗', count: 17 },
-        { slug: 'biscuits-and-bread',   label: 'Biscuits and Bread',   icon: '🍞', count: 7  },
-        { slug: 'cakes-and-cookies',    label: 'Cakes and Cookies',    icon: '🍰', count: 42 },
-        { slug: 'candy',                label: 'Candy',                icon: '🍬', count: 8  },
-        { slug: 'casseroles',           label: 'Casseroles',           icon: '🥘', count: 19 },
-        { slug: 'desserts',             label: 'Desserts',             icon: '🍮', count: 35 },
-        { slug: 'entrees',              label: 'Entrees',              icon: '🍽️', count: 8  },
-        { slug: 'miscellaneous',        label: 'Miscellaneous',        icon: '📋', count: 19 },
-        { slug: 'salads-and-sides',     label: 'Salads and Sides',     icon: '🥙', count: 34 },
-        { slug: 'sandwiches',           label: 'Sandwiches',           icon: '🥪', count: 5  },
-        { slug: 'soups-and-stews',      label: 'Soups and Stews',      icon: '🍲', count: 18 },
-        { slug: 'vegetables',           label: 'Vegetables',           icon: '🥦', count: 30 },
-      ];
+      // ── Complete hardcoded file list ───────────────────────
+      // Each entry: { id: 'public_id_without_extension', fmt: 'jpg'|'png' }
+      // Folder path is prepended when building URLs.
 
-      // Map display slugs to actual Cloudinary folder names
-      // soups-and-stews display name maps to soups-stews folder
-      const FOLDER_MAP = {
-        'soups-and-stews': 'soups-stews'
+      const RECIPES = {
+        'appetizers-and-dips': [
+          {id:'recipes/appetizers-and-dips/Cheese-Dip-3_o1cfdx',fmt:'png'},
+          {id:'recipes/appetizers-and-dips/Bacon-Dressing_rc1sqo',fmt:'png'},
+          {id:'recipes/appetizers-and-dips/Salmon-Ring_dcl5rh',fmt:'jpg'},
+          {id:'recipes/appetizers-and-dips/Topping-for-Party-Loaf_tki55b',fmt:'jpg'},
+          {id:'recipes/appetizers-and-dips/Spinach-Balls-b_mowavq',fmt:'jpg'},
+          {id:'recipes/appetizers-and-dips/Spinach-Balls-a_vl1bo3',fmt:'jpg'},
+          {id:'recipes/appetizers-and-dips/Red-Beet-Eggs-b_ngitee',fmt:'jpg'},
+          {id:'recipes/appetizers-and-dips/Cheese-Dip-1b_iccllq',fmt:'jpg'},
+          {id:'recipes/appetizers-and-dips/Fruit-Dip-1_mlodru',fmt:'jpg'},
+          {id:'recipes/appetizers-and-dips/Red-Beet-Eggs-a_imfhch',fmt:'jpg'},
+          {id:'recipes/appetizers-and-dips/Fruit-Dip-2_bbdn8d',fmt:'jpg'},
+          {id:'recipes/appetizers-and-dips/Crab-Almond-Spread_cleimc',fmt:'jpg'},
+          {id:'recipes/appetizers-and-dips/Cheese-Dip-2_ztdw1t',fmt:'jpg'},
+          {id:'recipes/appetizers-and-dips/Cheese-Dip-3_fkjv6o',fmt:'jpg'},
+          {id:'recipes/appetizers-and-dips/Cheese-Dip-1a_oqjkmk',fmt:'jpg'},
+          {id:'recipes/appetizers-and-dips/Cheese-Balls_ots6ku',fmt:'jpg'},
+          {id:'recipes/appetizers-and-dips/Bacon-Dressing_btrttp',fmt:'jpg'},
+        ],
+        'biscuits-and-bread': [
+          {id:'recipes/biscuits-and-bread/Cheese-Bread-Squares_tqio34',fmt:'jpg'},
+          {id:'recipes/biscuits-and-bread/Pumpkin-Bread-b_qveiyq',fmt:'jpg'},
+          {id:'recipes/biscuits-and-bread/Pumpkin-Bread-a_nzmuvw',fmt:'jpg'},
+          {id:'recipes/biscuits-and-bread/Bran-Muffins-2b_rij3bb',fmt:'jpg'},
+          {id:'recipes/biscuits-and-bread/Bran-Muffins-2a_ywiwg6',fmt:'jpg'},
+          {id:'recipes/biscuits-and-bread/Bran-Muffins-1a_e9w7sm',fmt:'jpg'},
+          {id:'recipes/biscuits-and-bread/Bran-Muffins-1b_fqpi9b',fmt:'jpg'},
+        ],
+        'cakes-and-cookies': [
+          {id:'recipes/cakes-and-cookies/Polynesian-Cake_q8tjpm',fmt:'jpg'},
+          {id:'recipes/cakes-and-cookies/Sand-Tarts-2_awpzlt',fmt:'jpg'},
+          {id:'recipes/cakes-and-cookies/Rum-Cake-JaneEarly_mrhpjr',fmt:'jpg'},
+          {id:'recipes/cakes-and-cookies/Rocky-Mountain-Toffee-Wafers_shujkq',fmt:'jpg'},
+          {id:'recipes/cakes-and-cookies/Golden-Honey-Fruit-Cake-1-b_c5cdxt',fmt:'png'},
+          {id:'recipes/cakes-and-cookies/Golden-Honey-Fruit-Cake-1-a_bkgsag',fmt:'png'},
+          {id:'recipes/cakes-and-cookies/Soft-Sugar-Cookies-1_u0szeh',fmt:'png'},
+          {id:'recipes/cakes-and-cookies/Busy-Day-Lemon-Cake_zcs752',fmt:'png'},
+          {id:'recipes/cakes-and-cookies/Krispix-Snack-Mix_yxu1s4',fmt:'jpg'},
+          {id:'recipes/cakes-and-cookies/Ice-Cream-Cake_lf3dag',fmt:'png'},
+          {id:'recipes/cakes-and-cookies/Worlds-Easiest-Scratch-Cake_fqmoi2',fmt:'png'},
+          {id:'recipes/cakes-and-cookies/Frosted-Cashew-Clusters-b_cqd7c0',fmt:'jpg'},
+          {id:'recipes/cakes-and-cookies/Rum-Cake-a_bku9r7',fmt:'jpg'},
+          {id:'recipes/cakes-and-cookies/Frosted-Cashew-Clusters-a_bpxrsr',fmt:'jpg'},
+          {id:'recipes/cakes-and-cookies/Cheerios-Nuggets-a_fvenmd',fmt:'jpg'},
+          {id:'recipes/cakes-and-cookies/Cheerios-Nuggets-b_pkg1fj',fmt:'jpg'},
+          {id:'recipes/cakes-and-cookies/Rum-Cake-b_ldlopr',fmt:'jpg'},
+          {id:'recipes/cakes-and-cookies/Sand-Tarts-1-a_fywhcv',fmt:'jpg'},
+          {id:'recipes/cakes-and-cookies/Dorothys-Cinnamon-Apples_lj16fl',fmt:'png'},
+          {id:'recipes/cakes-and-cookies/Golden-Honey-Fruit-Cake-1-a_zvqs1t',fmt:'jpg'},
+          {id:'recipes/cakes-and-cookies/Soft-Sugar-Cookies-1_cp0abc',fmt:'jpg'},
+          {id:'recipes/cakes-and-cookies/Golden-Honey-Fruit-Cake-1-b_l5jumb',fmt:'jpg'},
+          {id:'recipes/cakes-and-cookies/Sand-Tarts-1-b_upjxu5',fmt:'jpg'},
+          {id:'recipes/cakes-and-cookies/Golden-Honey-Fruit-Cake-2-b_opycqd',fmt:'jpg'},
+          {id:'recipes/cakes-and-cookies/Apple-Caramel-Cake_wyotl7',fmt:'jpg'},
+          {id:'recipes/cakes-and-cookies/Pumpkin-Pie-Squares-b_jdvpfn',fmt:'jpg'},
+          {id:'recipes/cakes-and-cookies/Pumpkin-Pie-Squares-a_isvqxq',fmt:'jpg'},
+          {id:'recipes/cakes-and-cookies/Ice-Cream-Cake_aivo97',fmt:'jpg'},
+          {id:'recipes/cakes-and-cookies/Golden-Honey-Fruit-Cake-2-a_rnedac',fmt:'jpg'},
+          {id:'recipes/cakes-and-cookies/Chewy-Oatmeal-Cookies-a_cyyvix',fmt:'jpg'},
+          {id:'recipes/cakes-and-cookies/Busy-Day-Lemon-Cake_jfyz0x',fmt:'jpg'},
+          {id:'recipes/cakes-and-cookies/Worlds-Easiest-Scratch-Cake_zc3ss1',fmt:'jpg'},
+          {id:'recipes/cakes-and-cookies/Date-and-Nut-Bars_iofyf7',fmt:'jpg'},
+          {id:'recipes/cakes-and-cookies/Angelfood-Supreme-Cake-a_sq0rub',fmt:'jpg'},
+          {id:'recipes/cakes-and-cookies/Soft-Sugar-Cookies-2-a_ezajsv',fmt:'jpg'},
+          {id:'recipes/cakes-and-cookies/Lemon-Whippersnaps-b_quo6c5',fmt:'jpg'},
+          {id:'recipes/cakes-and-cookies/Soft-Sugar-Cookies-3_fmrxk3',fmt:'jpg'},
+          {id:'recipes/cakes-and-cookies/Soft-Sugar-Cookies-2-b_afd7is',fmt:'jpg'},
+          {id:'recipes/cakes-and-cookies/Lemon-Whippersnaps-a_egg9hx',fmt:'jpg'},
+          {id:'recipes/cakes-and-cookies/Chewy-Oatmeal-Cookies-b_xng1mi',fmt:'jpg'},
+          {id:'recipes/cakes-and-cookies/Angelfood-Supreme-Cake-b_d3jeya',fmt:'jpg'},
+          {id:'recipes/cakes-and-cookies/Dorothys-Cinnamon-Apples_em77go',fmt:'jpg'},
+        ],
+        'candy': [
+          {id:'recipes/candy/Scotcheroos_s7uesp',fmt:'jpg'},
+          {id:'recipes/candy/Scotcheroos_im27xh',fmt:'jpg'},
+          {id:'recipes/candy/Fudge-a_zhuv5j',fmt:'jpg'},
+          {id:'recipes/candy/Fudge-b_p5hwlz',fmt:'jpg'},
+          {id:'recipes/candy/Patty-b_sc5fh3',fmt:'jpg'},
+          {id:'recipes/candy/Patty-a_xml2og',fmt:'jpg'},
+          {id:'recipes/candy/Fudge-a_uq9xxo',fmt:'jpg'},
+          {id:'recipes/candy/Fudge-b_emc7v4',fmt:'jpg'},
+        ],
+        'casseroles': [
+          {id:'recipes/casseroles/Tuna-Casserole_o9jpiw',fmt:'jpg'},
+          {id:'recipes/casseroles/Favorite-Cheese-Casserole_zooyiw',fmt:'jpg'},
+          {id:'recipes/casseroles/Favorite-Cheese-Casserole_omdx3l',fmt:'jpg'},
+          {id:'recipes/casseroles/Dried-Beef-Casserole-a_owymeh',fmt:'jpg'},
+          {id:'recipes/casseroles/Leslies-Chicken-a_qv9xbk',fmt:'jpg'},
+          {id:'recipes/casseroles/Mushrooms-and-Shrimp-in-Casserole-b_iz2vyu',fmt:'jpg'},
+          {id:'recipes/casseroles/Leslies-Chicken-b_qotvtl',fmt:'jpg'},
+          {id:'recipes/casseroles/Lez-s-Chicken-Casserole-a_lnnl8t',fmt:'jpg'},
+          {id:'recipes/casseroles/Baked-Seafood-Salad-b_fjwzif',fmt:'jpg'},
+          {id:'recipes/casseroles/Dried-Beef-Casserole-b_lhlcvo',fmt:'jpg'},
+          {id:'recipes/casseroles/Mushrooms-and-Shrimp-in-Casserole-a_snwqci',fmt:'jpg'},
+          {id:'recipes/casseroles/Tuna-Casserole_wjg7zk',fmt:'jpg'},
+          {id:'recipes/casseroles/Lez-s-Chicken-Casserole-b_axsrng',fmt:'jpg'},
+          {id:'recipes/casseroles/Crab-Meat-Casserole_wf1duy',fmt:'jpg'},
+          {id:'recipes/casseroles/Baked-Seafood-Salad-a_d3gqxj',fmt:'jpg'},
+          {id:'recipes/casseroles/Chicken-Casserole-1-a_ypskjj',fmt:'jpg'},
+          {id:'recipes/casseroles/Salmon-Casserole_tgqvmu',fmt:'jpg'},
+          {id:'recipes/casseroles/Chicken-Casserole-1-b_ikfzht',fmt:'jpg'},
+          {id:'recipes/casseroles/Sirloin-Casserole_zrrbaa',fmt:'jpg'},
+        ],
+        'desserts': [
+          {id:'recipes/desserts/Various_vaauff',fmt:'jpg'},
+          {id:'recipes/desserts/Cinnamon-Flop-b_tuovfl',fmt:'jpg'},
+          {id:'recipes/desserts/Cinnamon-Flop-a_oofzdn',fmt:'jpg'},
+          {id:'recipes/desserts/Cherry-Pudding_ecqjxr',fmt:'jpg'},
+          {id:'recipes/desserts/Cherry-Crunch_emvdkb',fmt:'jpg'},
+          {id:'recipes/desserts/Peach-Dessert_cotb3a',fmt:'jpg'},
+          {id:'recipes/desserts/Coconut-Cream-Dessert-a_kflfce',fmt:'jpg'},
+          {id:'recipes/desserts/Coconut-Cream-Dessert-b_ywcmnm',fmt:'jpg'},
+          {id:'recipes/desserts/Cherry-Delight_wbjx5g',fmt:'jpg'},
+          {id:'recipes/desserts/Apple-Crisp_yhji33',fmt:'jpg'},
+          {id:'recipes/desserts/Cinnamon-Flop-a_vfidjj',fmt:'jpg'},
+          {id:'recipes/desserts/Cinnamon-Flop-b_djp3cg',fmt:'jpg'},
+          {id:'recipes/desserts/Apples-in-Wine-Sauce-YUM_j19wjp',fmt:'jpg'},
+          {id:'recipes/desserts/Ice-Cream-Pie_ptdnmv',fmt:'jpg'},
+          {id:'recipes/desserts/Old-Fashioned-Baked-Apples_llxsdf',fmt:'jpg'},
+          {id:'recipes/desserts/Coconut-Cream-Dessert-a_jbglbe',fmt:'jpg'},
+          {id:'recipes/desserts/Apple-Crisp_ahjtdo',fmt:'jpg'},
+          {id:'recipes/desserts/Jimmy-Carter-Dessert-a_d8qu9x',fmt:'jpg'},
+          {id:'recipes/desserts/Coconut-Cream-Dessert-b_lp9mjg',fmt:'jpg'},
+          {id:'recipes/desserts/Lemon-Dessert-a_ci9zwj',fmt:'jpg'},
+          {id:'recipes/desserts/Strawberry-Delight_jz97d6',fmt:'jpg'},
+          {id:'recipes/desserts/Heavenly-Hawaiian-Cream-a_mnhh7o',fmt:'jpg'},
+          {id:'recipes/desserts/Jello-Dessert_fya7zg',fmt:'jpg'},
+          {id:'recipes/desserts/Mandarin-Orange-Dessert_wxza1w',fmt:'jpg'},
+          {id:'recipes/desserts/Lemon-Dessert-b_kgv2di',fmt:'jpg'},
+          {id:'recipes/desserts/Jimmy-Carter-Dessert-b_k7ylio',fmt:'jpg'},
+          {id:'recipes/desserts/Apple-Crisp-a_iaaxt8',fmt:'jpg'},
+          {id:'recipes/desserts/Ice-Cream-Pie_zhhiii',fmt:'jpg'},
+        ],
+        'desserts/miscellaneous': [
+          {id:'recipes/desserts/miscellaneous/Multiple-Newspaper_ot9ar4',fmt:'jpg'},
+          {id:'recipes/desserts/miscellaneous/Wine-Sauce_zqjcff',fmt:'jpg'},
+          {id:'recipes/desserts/miscellaneous/Pickled-Watermelon-Rind_qauluj',fmt:'jpg'},
+          {id:'recipes/desserts/miscellaneous/Cranberry-Recipes_uwgis5',fmt:'jpg'},
+          {id:'recipes/desserts/miscellaneous/Cornstarch_n25zhw',fmt:'png'},
+          {id:'recipes/desserts/miscellaneous/Dishwasher-Cleaner_jg0brh',fmt:'jpg'},
+          {id:'recipes/desserts/miscellaneous/Christmas-Punch_r2ikz6',fmt:'jpg'},
+          {id:'recipes/desserts/miscellaneous/Crumbs-for-Coating-Meats_kohicq',fmt:'jpg'},
+          {id:'recipes/desserts/miscellaneous/Oyster-Crackers_ykclyd',fmt:'jpg'},
+          {id:'recipes/desserts/miscellaneous/Solution-to-wash-Sheers_p5h6ne',fmt:'jpg'},
+          {id:'recipes/desserts/miscellaneous/Loveys-Caramel-Popcorn-b_dghawb',fmt:'jpg'},
+          {id:'recipes/desserts/miscellaneous/Cornstarch_etmnoc',fmt:'jpg'},
+          {id:'recipes/desserts/miscellaneous/Sauce-for-Steak-Sandwiches_q8u7xe',fmt:'jpg'},
+          {id:'recipes/desserts/miscellaneous/Pork-BBQ-Sauce_tji5kc',fmt:'jpg'},
+          {id:'recipes/desserts/miscellaneous/Punch_iqmpxu',fmt:'jpg'},
+          {id:'recipes/desserts/miscellaneous/Spaghetti-Sauce_d143gd',fmt:'jpg'},
+          {id:'recipes/desserts/miscellaneous/Lemon-Lime-Drink_izu4ub',fmt:'jpg'},
+          {id:'recipes/desserts/miscellaneous/Loveys-Caramel-Popcorn-a_tcdpyu',fmt:'jpg'},
+          {id:'recipes/desserts/miscellaneous/Cool-Drink_gggrbq',fmt:'jpg'},
+        ],
+        'desserts/Pies-and-Pastries': [
+          {id:'recipes/desserts/Pies-and-Pastries/Amazing-Coconut-Pie_y90zux',fmt:'png'},
+          {id:'recipes/desserts/Pies-and-Pastries/Pumpkin-Pie-Tarts_ulolim',fmt:'jpg'},
+          {id:'recipes/desserts/Pies-and-Pastries/Lemon-Lime-Pie_rq441l',fmt:'png'},
+          {id:'recipes/desserts/Pies-and-Pastries/GrapeNuts-Southern-Nut-Pie_wpnqvv',fmt:'png'},
+          {id:'recipes/desserts/Pies-and-Pastries/Hershey-Dream-Pie-b_b0sgwz',fmt:'png'},
+          {id:'recipes/desserts/Pies-and-Pastries/Hershey-Dream-Pie-a_ojva8s',fmt:'png'},
+          {id:'recipes/desserts/Pies-and-Pastries/Cherry-O-Cream-Cheese-Pie_bf2ybu',fmt:'png'},
+          {id:'recipes/desserts/Pies-and-Pastries/Graham-Cracker-Pie-Filling-b_hwbtzd',fmt:'png'},
+          {id:'recipes/desserts/Pies-and-Pastries/GrapeNuts-Southern-Nut-Pie_rpo4ju',fmt:'jpg'},
+          {id:'recipes/desserts/Pies-and-Pastries/Graham-Cracker-Pie-Filling-a_vnfowd',fmt:'png'},
+          {id:'recipes/desserts/Pies-and-Pastries/Amazing-Coconut-Pie_egxp7b',fmt:'jpg'},
+          {id:'recipes/desserts/Pies-and-Pastries/Cherry-O-Cream-Cheese-Pie_s0jvta',fmt:'jpg'},
+          {id:'recipes/desserts/Pies-and-Pastries/Marshmallow-Lime-Chiffon-Pie-b_ronjm9',fmt:'jpg'},
+          {id:'recipes/desserts/Pies-and-Pastries/Norwegian-Apple-Pie_mwyigw',fmt:'jpg'},
+          {id:'recipes/desserts/Pies-and-Pastries/Marshmallow-Lime-Chiffon-Pie-a_xlvzev',fmt:'jpg'},
+          {id:'recipes/desserts/Pies-and-Pastries/Lemon-Lime-Pie_sh9ic8',fmt:'jpg'},
+          {id:'recipes/desserts/Pies-and-Pastries/Lemon-Cheesecake_tqte1s',fmt:'jpg'},
+          {id:'recipes/desserts/Pies-and-Pastries/Impossible-Pie_nscc0y',fmt:'jpg'},
+          {id:'recipes/desserts/Pies-and-Pastries/Impossible-French-Apple-Pie_hd2n9z',fmt:'jpg'},
+          {id:'recipes/desserts/Pies-and-Pastries/Hershey-Dream-Pie-b_pboscb',fmt:'jpg'},
+          {id:'recipes/desserts/Pies-and-Pastries/Hershey-Dream-Pie-a_bweoty',fmt:'jpg'},
+          {id:'recipes/desserts/Pies-and-Pastries/Graham-Cracker-Pie-Filling-b_wv96hm',fmt:'jpg'},
+          {id:'recipes/desserts/Pies-and-Pastries/Graham-Cracker-Pie-Filling-a_q3wsy5',fmt:'jpg'},
+          {id:'recipes/desserts/Pies-and-Pastries/Crustless-Apple-Pie-b_pldzt r',fmt:'jpg'},
+          {id:'recipes/desserts/Pies-and-Pastries/Crustless-Apple-Pie-a_nkyelv',fmt:'jpg'},
+          {id:'recipes/desserts/Pies-and-Pastries/Cranberry-Pie-b_oljh6i',fmt:'jpg'},
+          {id:'recipes/desserts/Pies-and-Pastries/Cranberry-Pie-a_q6ovpn',fmt:'jpg'},
+        ],
+        'entrees': [
+          {id:'recipes/entrees/Cocktail-Franks-ala-Spatini_nknuwh',fmt:'png'},
+          {id:'recipes/entrees/Cocktail-Franks-ala-Spatini_c5hwn0',fmt:'jpg'},
+          {id:'recipes/entrees/Barbecued-Franks_womy4m',fmt:'jpg'},
+        ],
+        'entrees/Beef': [
+          {id:'recipes/entrees/Beef/Swedish-BBQ-Meatballs-b_vyusqk',fmt:'png'},
+          {id:'recipes/entrees/Beef/Swedish-BBQ-Meatballs-a_bnte3h',fmt:'png'},
+          {id:'recipes/entrees/Beef/Meatloaf_zqbwfv',fmt:'png'},
+          {id:'recipes/entrees/Beef/Hamburger-Barbecue_q88fqc',fmt:'png'},
+          {id:'recipes/entrees/Beef/Swedish-BBQ-Meatballs-b_kuedyk',fmt:'jpg'},
+          {id:'recipes/entrees/Beef/Swedish-BBQ-Meatballs-a_i7apk3',fmt:'jpg'},
+          {id:'recipes/entrees/Beef/Roast-w-Sauce_lbkxa0',fmt:'jpg'},
+          {id:'recipes/entrees/Beef/Meatloaf_rpo0l0',fmt:'jpg'},
+          {id:'recipes/entrees/Beef/Hamburgers_rtd1pk',fmt:'jpg'},
+          {id:'recipes/entrees/Beef/Broiled-Thrift-Steak-b_bd5jbv',fmt:'jpg'},
+          {id:'recipes/entrees/Beef/Hamburger-Barbecue_x3ilpe',fmt:'jpg'},
+          {id:'recipes/entrees/Beef/Broiled-Thrift-Steak-a_wdusmv',fmt:'jpg'},
+        ],
+        'entrees/Lamb': [
+          {id:'recipes/entrees/Lamb/Barbequed-Lamb_rkuveo',fmt:'jpg'},
+        ],
+        'entrees/Pork': [
+          {id:'recipes/entrees/Pork/Pork-Tenderloin-a_mbn1z8',fmt:'jpg'},
+          {id:'recipes/entrees/Pork/Pork-Tenderloin-b_ho06gg',fmt:'jpg'},
+          {id:'recipes/entrees/Pork/Pork-Loin-Chops-w-AppleRice_gbmcxn',fmt:'png'},
+          {id:'recipes/entrees/Pork/Saucy-Porkchops_g5lzcu',fmt:'jpg'},
+          {id:'recipes/entrees/Pork/Pork-Loin-Chops-w-AppleRice_wwj0rx',fmt:'jpg'},
+          {id:'recipes/entrees/Pork/Chow-Mein_bm9wnf',fmt:'jpg'},
+          {id:'recipes/entrees/Pork/Barbequed-Pork-b_pk25su',fmt:'jpg'},
+          {id:'recipes/entrees/Pork/Barbequed-Pork-a_eqhwnp',fmt:'jpg'},
+        ],
+        'entrees/Poultry': [
+          {id:'recipes/entrees/Poultry/Chicken-Breasts-au-Gratin-b_kwsl8d',fmt:'jpg'},
+          {id:'recipes/entrees/Poultry/Chicken-Breasts-au-Gratin-a_twnxd1',fmt:'jpg'},
+          {id:'recipes/entrees/Poultry/Oven-Fried-Chicken_fr7o0l',fmt:'jpg'},
+          {id:'recipes/entrees/Poultry/Chicken-Shirley_e1gtap',fmt:'png'},
+          {id:'recipes/entrees/Poultry/Chicken-Breasts-2_vr1pu3',fmt:'png'},
+          {id:'recipes/entrees/Poultry/Chicken-ala-King_fx6fjz',fmt:'jpg'},
+          {id:'recipes/entrees/Poultry/Lemon-Herb-Marinated-Chicken_wssfcb',fmt:'jpg'},
+          {id:'recipes/entrees/Poultry/Glazed-Turkey-Breast_caclbp',fmt:'jpg'},
+          {id:'recipes/entrees/Poultry/Far-Eastern-Chicken-a_dfdh4c',fmt:'jpg'},
+          {id:'recipes/entrees/Poultry/Far-Eastern-Chicken-b_gglmpe',fmt:'jpg'},
+          {id:'recipes/entrees/Poultry/Chicken-Shirley_nm2fe2',fmt:'jpg'},
+          {id:'recipes/entrees/Poultry/Chicken-Provencale-b_vview8',fmt:'jpg'},
+          {id:'recipes/entrees/Poultry/Chicken-Provencale-a_svzuh3',fmt:'jpg'},
+          {id:'recipes/entrees/Poultry/Chicken-Piccata-b_sy2ld1',fmt:'jpg'},
+          {id:'recipes/entrees/Poultry/Chicken-Piccata-a_yh0vqo',fmt:'jpg'},
+          {id:'recipes/entrees/Poultry/Chicken-Parisienne_cbwkrn',fmt:'jpg'},
+          {id:'recipes/entrees/Poultry/Chicken-Orange-Sauce-b_au3fpi',fmt:'jpg'},
+          {id:'recipes/entrees/Poultry/Chicken-Orange-Sauce-a_pd0grk',fmt:'jpg'},
+          {id:'recipes/entrees/Poultry/Chicken-Coque-au-Vin_rdfhfu',fmt:'jpg'},
+          {id:'recipes/entrees/Poultry/Chicken-Breasts-2_bf8bex',fmt:'jpg'},
+          {id:'recipes/entrees/Poultry/Chicken-Breasts-1b_ykrnap',fmt:'jpg'},
+          {id:'recipes/entrees/Poultry/Chicken-Breasts-1a_nshqof',fmt:'jpg'},
+        ],
+        'entrees/Seafood': [
+          {id:'recipes/entrees/Seafood/Tuna-Souffle_vespyb',fmt:'png'},
+          {id:'recipes/entrees/Seafood/Tuna-Souffle_oiclme',fmt:'jpg'},
+          {id:'recipes/entrees/Seafood/Sea-Food-Special-b_f59ejx',fmt:'jpg'},
+          {id:'recipes/entrees/Seafood/Sea-Food-Special-a_ow779n',fmt:'jpg'},
+          {id:'recipes/entrees/Seafood/Salmon-Steak_rm5lrh',fmt:'jpg'},
+          {id:'recipes/entrees/Seafood/Salmon-Croquetts_ngtcj0',fmt:'jpg'},
+          {id:'recipes/entrees/Seafood/Fresh-Shrimp_i3n2i2',fmt:'jpg'},
+        ],
+        'miscellaneous': [
+          {id:'recipes/miscellaneous/Multiple-Newspaper_ss28u7',fmt:'jpg'},
+          {id:'recipes/miscellaneous/Wine-Sauce_nnzsdr',fmt:'jpg'},
+          {id:'recipes/miscellaneous/Pickled-Watermelon-Rind_bxvkve',fmt:'jpg'},
+          {id:'recipes/miscellaneous/Cranberry-Recipes_am4acu',fmt:'jpg'},
+          {id:'recipes/miscellaneous/Cornstarch_ottnba',fmt:'png'},
+          {id:'recipes/miscellaneous/Spaghetti-Sauce_uh3omk',fmt:'jpg'},
+          {id:'recipes/miscellaneous/Solution-to-wash-Sheers_shxt1s',fmt:'jpg'},
+          {id:'recipes/miscellaneous/Sauce-for-Steak-Sandwiches_ubn5gd',fmt:'jpg'},
+          {id:'recipes/miscellaneous/Pork-BBQ-Sauce_gea5pv',fmt:'jpg'},
+          {id:'recipes/miscellaneous/Punch_e4ylvc',fmt:'jpg'},
+          {id:'recipes/miscellaneous/Oyster-Crackers_zdo6ad',fmt:'jpg'},
+          {id:'recipes/miscellaneous/Loveys-Caramel-Popcorn-b_hnbgja',fmt:'jpg'},
+          {id:'recipes/miscellaneous/Loveys-Caramel-Popcorn-a_h87jxm',fmt:'jpg'},
+          {id:'recipes/miscellaneous/Lemon-Lime-Drink_fd4b22',fmt:'jpg'},
+          {id:'recipes/miscellaneous/Dishwasher-Cleaner_auihgu',fmt:'jpg'},
+          {id:'recipes/miscellaneous/Crumbs-for-Coating-Meats_nbyttd',fmt:'jpg'},
+          {id:'recipes/miscellaneous/Cornstarch_xm47k0',fmt:'jpg'},
+          {id:'recipes/miscellaneous/Cool-Drink_rsdhyf',fmt:'jpg'},
+          {id:'recipes/miscellaneous/Christmas-Punch_qhottq',fmt:'jpg'},
+        ],
+        'salads-and-sides': [
+          {id:'recipes/salads-and-sides/Apple-Noodle-Bake_ve4cos',fmt:'jpg'},
+          {id:'recipes/salads-and-sides/Tuna-Bacon-Macaroni-Bowl_lkmmbx',fmt:'jpg'},
+          {id:'recipes/salads-and-sides/Strawberry-Jello-w-Sour-Cream-2_lpcuk9',fmt:'jpg'},
+          {id:'recipes/salads-and-sides/Orange-Salad-Delight_qvvbz5',fmt:'png'},
+          {id:'recipes/salads-and-sides/White-and-Gold-Salad_m3faoo',fmt:'png'},
+          {id:'recipes/salads-and-sides/Broccoli-Salad-1_lhhca8',fmt:'jpg'},
+          {id:'recipes/salads-and-sides/Lois-Salad-Dressing_tbb87h',fmt:'png'},
+          {id:'recipes/salads-and-sides/Jello-Strawb-CottageCheese_hkexte',fmt:'jpg'},
+          {id:'recipes/salads-and-sides/Cucumbers_ywmict',fmt:'png'},
+          {id:'recipes/salads-and-sides/Plaster-of-Paris-Salad_wkuxfu',fmt:'png'},
+          {id:'recipes/salads-and-sides/Orange-Salad-Delight_m2ebqs',fmt:'jpg'},
+          {id:'recipes/salads-and-sides/Pineapple-Stuffing_w0pxst',fmt:'jpg'},
+          {id:'recipes/salads-and-sides/Cranberry-Jewel-Salad_euetpk',fmt:'jpg'},
+          {id:'recipes/salads-and-sides/Layered-Salad-a_yanlyk',fmt:'jpg'},
+          {id:'recipes/salads-and-sides/White-and-Gold-Salad_thrdpp',fmt:'jpg'},
+          {id:'recipes/salads-and-sides/Sauer-Pickles_dvxnqk',fmt:'jpg'},
+          {id:'recipes/salads-and-sides/Orangey-Cranberry-Sauce_pqntsh',fmt:'jpg'},
+          {id:'recipes/salads-and-sides/Lois-Salad-Dressing_xcnowh',fmt:'jpg'},
+          {id:'recipes/salads-and-sides/Layered-Salad-b_k3skcx',fmt:'jpg'},
+          {id:'recipes/salads-and-sides/Sour-Cream-Jello-Mold_apbecx',fmt:'jpg'},
+          {id:'recipes/salads-and-sides/Cucumbers_ffzrp0',fmt:'jpg'},
+          {id:'recipes/salads-and-sides/Cranberry-Sauce_ehxhvt',fmt:'jpg'},
+          {id:'recipes/salads-and-sides/Strawberry-Jello-w-Sour-Cream-1_nldguh',fmt:'jpg'},
+          {id:'recipes/salads-and-sides/Seafoam-Salad_ewmzhu',fmt:'jpg'},
+          {id:'recipes/salads-and-sides/Wonderful-Rice_qgg4vt',fmt:'jpg'},
+          {id:'recipes/salads-and-sides/New-West-Chicken-Salad_kiv0hn',fmt:'jpg'},
+          {id:'recipes/salads-and-sides/Spiced-CranberryMold_ot6dlm',fmt:'jpg'},
+          {id:'recipes/salads-and-sides/Broccoli-Salad-2_tvny1j',fmt:'jpg'},
+          {id:'recipes/salads-and-sides/Waldorf-Turkey-Salad_zw6ym6',fmt:'jpg'},
+        ],
+        'sandwiches': [
+          {id:'recipes/sandwiches/Sandwiches-3_mkmc7b',fmt:'jpg'},
+          {id:'recipes/sandwiches/Sandwiches-2_sclo18',fmt:'jpg'},
+          {id:'recipes/sandwiches/Hot-Crab-Meat-Sandwich-a_j5i1f7',fmt:'jpg'},
+          {id:'recipes/sandwiches/Sandwiches-1_gesgjv',fmt:'jpg'},
+          {id:'recipes/sandwiches/Hot-Crab-Meat-Sandwich-b_ranft1',fmt:'jpg'},
+        ],
+        'soups-stews': [
+          {id:'recipes/soups-stews/Creamy-Potato-Soup_rabt92',fmt:'jpg'},
+          {id:'recipes/soups-stews/Cream-Broccoli-Soup-and-Cauliflower-Chowder_qalueh',fmt:'jpg'},
+          {id:'recipes/soups-stews/Potato-Soup_lvkl2v',fmt:'jpg'},
+          {id:'recipes/soups-stews/Miracle-Soup_xpg2in',fmt:'jpg'},
+          {id:'recipes/soups-stews/Beef-Stew-a_elbtse',fmt:'png'},
+          {id:'recipes/soups-stews/Beef-BarleySoup_njimms',fmt:'jpg'},
+          {id:'recipes/soups-stews/Beef-Stew-b_ctcnm8',fmt:'png'},
+          {id:'recipes/soups-stews/New-Years-Day-Bean-Soup_fmejhn',fmt:'jpg'},
+          {id:'recipes/soups-stews/College-Inn-French-Onion-Soup_qriucc',fmt:'jpg'},
+          {id:'recipes/soups-stews/Chili-con-Carne-a_pmbr7w',fmt:'jpg'},
+          {id:'recipes/soups-stews/Chili-con-Carne-b_clu2on',fmt:'jpg'},
+          {id:'recipes/soups-stews/Hamburger-Kidney-Bean-Casserole_mqiyoo',fmt:'jpg'},
+          {id:'recipes/soups-stews/Clam-Bisque_twf3al',fmt:'jpg'},
+          {id:'recipes/soups-stews/Ham-Bean-Soup-a_ryj53b',fmt:'jpg'},
+          {id:'recipes/soups-stews/Chicken-Vegetable-Soup_gd8nwj',fmt:'jpg'},
+          {id:'recipes/soups-stews/Beef-Stew-a_xmfpkf',fmt:'jpg'},
+          {id:'recipes/soups-stews/Ham-Bean-Soup-b_a4xii8',fmt:'jpg'},
+          {id:'recipes/soups-stews/Beef-Stew-b_nc98wh',fmt:'jpg'},
+        ],
+        'vegetables': [
+          {id:'recipes/vegetables/Marthas-Baked-Beans_jkhrp1',fmt:'jpg'},
+          {id:'recipes/vegetables/Cranberry-Carrots_vd9rxf',fmt:'jpg'},
+          {id:'recipes/vegetables/Baked-Beans-1_jxkh4x',fmt:'jpg'},
+          {id:'recipes/vegetables/Mashed-Sweet-Potatoes_togijq',fmt:'jpg'},
+          {id:'recipes/vegetables/Harvard-Beets_d1xben',fmt:'jpg'},
+          {id:'recipes/vegetables/Corn-Broccoli-Bake-b_qmrudb',fmt:'jpg'},
+          {id:'recipes/vegetables/Carrot-Casserole-1_tza60j',fmt:'jpg'},
+          {id:'recipes/vegetables/Baked-Beans-2_tsctcy',fmt:'jpg'},
+          {id:'recipes/vegetables/Apple-Yam-Casserole-b_ozqwkd',fmt:'jpg'},
+          {id:'recipes/vegetables/Apple-Yam-Casserole-a_jchaoo',fmt:'jpg'},
+          {id:'recipes/vegetables/Potato-Casserole_zimbqj',fmt:'jpg'},
+          {id:'recipes/vegetables/Glazed-Carrots_eufkae',fmt:'jpg'},
+          {id:'recipes/vegetables/Potluck-Potatoes-b_jlmopd',fmt:'jpg'},
+          {id:'recipes/vegetables/Brussel-Sprouts_jqebk7',fmt:'jpg'},
+          {id:'recipes/vegetables/AJs-Broccoli-Casserole_aemkdv',fmt:'jpg'},
+          {id:'recipes/vegetables/Corn-Zuccini-Casserole_k8aqof',fmt:'jpg'},
+          {id:'recipes/vegetables/Candied-Sweet-Potatoes_etzdlg',fmt:'jpg'},
+        ],
       };
 
-      function cloudinaryFolder(slug) {
-        return FOLDER_MAP[slug] || slug;
-      }
+      // ── Category definitions (top-level nav) ───────────────
+      const CATEGORIES = [
+        { key:'appetizers-and-dips', label:'Appetizers and Dips', icon:'🥗' },
+        { key:'biscuits-and-bread',  label:'Biscuits and Bread',  icon:'🍞' },
+        { key:'cakes-and-cookies',   label:'Cakes and Cookies',   icon:'🍰' },
+        { key:'candy',               label:'Candy',               icon:'🍬' },
+        { key:'casseroles',          label:'Casseroles',          icon:'🥘' },
+        {
+          key:'desserts', label:'Desserts', icon:'🍮',
+          subcategories: [
+            { key:'desserts',                    label:'General Desserts'    },
+            { key:'desserts/miscellaneous',      label:'Miscellaneous'       },
+            { key:'desserts/Pies-and-Pastries',  label:'Pies and Pastries'   },
+          ]
+        },
+        {
+          key:'entrees', label:'Entrees', icon:'🍽️',
+          subcategories: [
+            { key:'entrees',          label:'General Entrees' },
+            { key:'entrees/Beef',     label:'Beef'            },
+            { key:'entrees/Lamb',     label:'Lamb'            },
+            { key:'entrees/Pork',     label:'Pork'            },
+            { key:'entrees/Poultry',  label:'Poultry'         },
+            { key:'entrees/Seafood',  label:'Seafood'         },
+          ]
+        },
+        { key:'miscellaneous',   label:'Miscellaneous',   icon:'📋' },
+        { key:'salads-and-sides',label:'Salads and Sides',icon:'🥙' },
+        { key:'sandwiches',      label:'Sandwiches',      icon:'🥪' },
+        { key:'soups-stews',     label:'Soups and Stews', icon:'🍲' },
+        { key:'vegetables',      label:'Vegetables',      icon:'🥦' },
+      ];
 
+      // ── Helpers ────────────────────────────────────────────
       function cleanName(publicId) {
-        // publicId is like "recipes/appetizers-and-dips/Cheese-Dip-3_o1cfdx"
-        // Extract just the filename part, strip _xxxxxx suffix, replace hyphens with spaces
         const filename = publicId.split('/').pop();
-        const stripped = filename.replace(/_[a-z0-9]{6,}$/i, '');
-        return stripped.replace(/-/g, ' ');
+        return filename.replace(/_[a-zA-Z0-9]{4,8}$/i, '').replace(/-/g, ' ');
       }
 
-      function isImage(format) {
-        return ['jpg','jpeg','png','gif','webp','tif','tiff','bmp'].includes(
-          (format || '').toLowerCase()
-        );
+      function thumbUrl(id, fmt) {
+        return `https://res.cloudinary.com/${C}/image/upload/w_360,h_280,c_fill,q_auto,f_auto/${id}.${fmt}`;
+      }
+
+      function fullUrl(id, fmt) {
+        return `https://res.cloudinary.com/${C}/image/upload/q_auto,f_auto/${id}.${fmt}`;
       }
 
       // ── Build category grid ────────────────────────────────
@@ -326,93 +628,70 @@
         const grid = document.getElementById('category-grid');
         grid.innerHTML = '';
         CATEGORIES.forEach(cat => {
+          const count = cat.subcategories
+            ? cat.subcategories.reduce((t, s) => t + (RECIPES[s.key] || []).length, 0)
+            : (RECIPES[cat.key] || []).length;
           const card = document.createElement('div');
           card.className = 'category-card';
           card.innerHTML = `
             <div class="category-icon-panel">${cat.icon}</div>
             <div class="category-info">
               <div class="category-name">${cat.label}</div>
-              <div class="category-count">${cat.count} recipes</div>
-            </div>
-          `;
+              <div class="category-count">${count} recipes</div>
+            </div>`;
           card.addEventListener('click', () => openCategory(cat));
           grid.appendChild(card);
         });
       }
 
-      // ── Open a category ────────────────────────────────────
-      async function openCategory(cat) {
+      // ── Open category ──────────────────────────────────────
+      function openCategory(cat) {
         document.getElementById('category-view').style.display = 'none';
         const section = document.getElementById('recipe-section');
         section.classList.add('active');
         document.getElementById('recipe-section-title').textContent = cat.label;
-
-        const grid = document.getElementById('recipe-grid');
-        grid.innerHTML = '<div class="loading-recipes">Loading recipes...</div>';
-
-        try {
-          const folderName = cloudinaryFolder(cat.slug);
-          const url = `https://res.cloudinary.com/${CLOUD_NAME}/image/list/recipes:${folderName}.json`;
-          const resp = await fetch(url);
-          if (!resp.ok) throw new Error('Failed to load recipes');
-          const data = await resp.json();
-          buildRecipeGrid(data.resources || []);
-        } catch (err) {
-          grid.innerHTML = '<div class="loading-recipes">Could not load recipes. Please try again.</div>';
-          console.error(err);
-        }
-      }
-
-      // ── Build recipe grid ──────────────────────────────────
-      function buildRecipeGrid(resources) {
         const grid = document.getElementById('recipe-grid');
         grid.innerHTML = '';
 
-        if (resources.length === 0) {
-          grid.innerHTML = '<div class="loading-recipes">No recipes found in this category.</div>';
-          return;
+        if (cat.subcategories) {
+          // Show subcategory cards first, then any root-level recipes
+          cat.subcategories.forEach(sub => {
+            const files = RECIPES[sub.key] || [];
+            if (files.length === 0) return;
+            // Subcategory heading
+            const heading = document.createElement('div');
+            heading.style.cssText = 'grid-column:1/-1;font-size:1.1rem;font-weight:700;color:var(--accent-strong);margin-top:16px;padding-bottom:6px;border-bottom:2px solid var(--border);';
+            heading.textContent = sub.label;
+            grid.appendChild(heading);
+            files.forEach(f => grid.appendChild(makeRecipeCard(f)));
+          });
+        } else {
+          (RECIPES[cat.key] || []).forEach(f => grid.appendChild(makeRecipeCard(f)));
         }
+      }
 
-        resources.forEach(res => {
-          const name = cleanName(res.public_id);
-          const format = res.format || '';
-          const card = document.createElement('div');
-          card.className = 'recipe-card';
-
-          if (isImage(format)) {
-            const thumbUrl = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/w_360,h_280,c_fill,q_auto,f_auto/${res.public_id}.${format}`;
-            const fullUrl  = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/q_auto,f_auto/${res.public_id}.${format}`;
-            card.innerHTML = `
-              <img src="${thumbUrl}" alt="${name}" class="recipe-thumb" loading="lazy">
-              <div class="recipe-name">${name}</div>
-            `;
-            card.addEventListener('click', () => openLightbox(fullUrl, name));
-          } else {
-            // PDF — open in new tab
-            const pdfUrl = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/${res.public_id}.pdf`;
-            card.innerHTML = `
-              <div class="recipe-thumb-pdf"><i class="fas fa-file-pdf"></i></div>
-              <div class="recipe-name">${name}</div>
-            `;
-            card.addEventListener('click', () => window.open(pdfUrl, '_blank'));
-          }
-
-          grid.appendChild(card);
-        });
+      // ── Make a recipe card ─────────────────────────────────
+      function makeRecipeCard(f) {
+        const name = cleanName(f.id);
+        const card = document.createElement('div');
+        card.className = 'recipe-card';
+        card.innerHTML = `
+          <img src="${thumbUrl(f.id, f.fmt)}" alt="${name}" class="recipe-thumb" loading="lazy">
+          <div class="recipe-name">${name}</div>`;
+        card.addEventListener('click', () => openLightbox(fullUrl(f.id, f.fmt), name));
+        return card;
       }
 
       // ── Lightbox ───────────────────────────────────────────
       function openLightbox(url, name) {
-        const lb = document.getElementById('recipe-lightbox');
         document.getElementById('lightbox-img').src = url;
         document.getElementById('lightbox-img').alt = name;
         document.getElementById('lightbox-title').textContent = name;
-        lb.classList.add('open');
+        document.getElementById('recipe-lightbox').classList.add('open');
       }
 
       function closeLightbox() {
-        const lb = document.getElementById('recipe-lightbox');
-        lb.classList.remove('open');
+        document.getElementById('recipe-lightbox').classList.remove('open');
         document.getElementById('lightbox-img').src = '';
       }
 
@@ -420,18 +699,15 @@
       document.getElementById('recipe-lightbox').addEventListener('click', function(e) {
         if (e.target === this) closeLightbox();
       });
-      document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') closeLightbox();
-      });
+      document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
 
       // ── Back button ────────────────────────────────────────
-      document.getElementById('back-btn').addEventListener('click', function() {
+      document.getElementById('back-btn').addEventListener('click', () => {
         document.getElementById('recipe-section').classList.remove('active');
         document.getElementById('recipe-grid').innerHTML = '';
         document.getElementById('category-view').style.display = '';
       });
 
-      // ── Init ───────────────────────────────────────────────
       buildCategoryGrid();
     </script>
 
