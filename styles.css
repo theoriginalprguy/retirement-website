@@ -1174,7 +1174,7 @@ textarea:focus {
   position: relative;
 }
 
-.dropdown-menu {
+.nav-dropdown .dropdown-menu {
   display: none;
   position: absolute;
   top: calc(100% + 8px);
@@ -1189,9 +1189,15 @@ textarea:focus {
   z-index: 200;
   list-style: none;
   margin: 0;
+  flex-direction: column;
 }
 
-.dropdown-menu li a {
+.nav-dropdown .dropdown-menu li {
+  display: block;
+  width: 100%;
+}
+
+.nav-dropdown .dropdown-menu li a {
   display: block;
   padding: 10px 20px;
   font-size: 0.9rem;
@@ -1202,7 +1208,7 @@ textarea:focus {
   transition: background 0.15s, color 0.15s;
 }
 
-.dropdown-menu li a:hover {
+.nav-dropdown .dropdown-menu li a:hover {
   background: var(--accent-vibrant);
   color: white;
 }
@@ -1214,7 +1220,7 @@ textarea:focus {
 
 /* Mobile: dropdown appears inline when toggled */
 @media (max-width: 768px) {
-  .dropdown-menu {
+  .nav-dropdown .dropdown-menu {
     position: static;
     transform: none;
     box-shadow: none;
@@ -1230,7 +1236,7 @@ textarea:focus {
     display: block;
   }
 
-  .dropdown-menu li a {
+  .nav-dropdown .dropdown-menu li a {
     padding: 8px 12px;
     font-size: 0.88rem;
     color: var(--text);
