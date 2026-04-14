@@ -223,10 +223,6 @@
     <script>
       const C = 'dlxmgewap';
 
-      // ── Complete hardcoded file list ───────────────────────
-      // Each entry: { id: 'public_id_without_extension', fmt: 'jpg'|'png' }
-      // Folder path is prepended when building URLs.
-
       const RECIPES = {
         'appetizers-and-dips': [
           {id:'recipes/appetizers-and-dips/Cheese-Dip-3_o1cfdx',fmt:'png'},
@@ -576,7 +572,6 @@
         ],
       };
 
-      // ── Category definitions (top-level nav) ───────────────
       const CATEGORIES = [
         { key:'appetizers-and-dips', label:'Appetizers and Dips', icon:'🥗' },
         { key:'biscuits-and-bread',  label:'Biscuits and Bread',  icon:'🍞' },
@@ -602,11 +597,11 @@
             { key:'entrees/Seafood',  label:'Seafood'         },
           ]
         },
-        { key:'miscellaneous',   label:'Miscellaneous',   icon:'📋' },
-        { key:'salads-and-sides',label:'Salads and Sides',icon:'🥙' },
-        { key:'sandwiches',      label:'Sandwiches',      icon:'🥪' },
-        { key:'soups-stews',     label:'Soups and Stews', icon:'🍲' },
-        { key:'vegetables',      label:'Vegetables',      icon:'🥦' },
+        { key:'miscellaneous',    label:'Miscellaneous',    icon:'📋' },
+        { key:'salads-and-sides', label:'Salads and Sides', icon:'🥙' },
+        { key:'sandwiches',       label:'Sandwiches',       icon:'🥪' },
+        { key:'soups-stews',      label:'Soups and Stews',  icon:'🍲' },
+        { key:'vegetables',       label:'Vegetables',       icon:'🥦' },
       ];
 
       // ── Helpers ────────────────────────────────────────────
@@ -615,15 +610,130 @@
         return filename.replace(/_[a-zA-Z0-9]{4,8}$/i, '').replace(/-/g, ' ');
       }
 
-    function thumbUrl(id, fmt) {
-  const filename = id.split('/').pop();
-  return `https://res.cloudinary.com/${C}/image/upload/w_360,h_280,c_fill,q_auto,f_auto/${filename}.${fmt}`;
-}
+      function thumbUrl(id, fmt) {
+        const filename = id.split('/').pop();
+        return `https://res.cloudinary.com/${C}/image/upload/w_360,h_280,c_fill,q_auto,f_auto/${filename}.${fmt}`;
+      }
 
-function fullUrl(id, fmt) {
-  const filename = id.split('/').pop();
-  return `https://res.cloudinary.com/${C}/image/upload/q_auto,f_auto/${filename}.${fmt}`;
-}
+      function fullUrl(id, fmt) {
+        const filename = id.split('/').pop();
+        return `https://res.cloudinary.com/${C}/image/upload/q_auto,f_auto/${filename}.${fmt}`;
+      }
+
+      // ── Find a category by key ─────────────────────────────
+      function findCategory(key) {
+        for (const cat of CATEGORIES) {
+          if (cat.key === key) return cat;
+          if (cat.subcategories) {
+            for (const sub of cat.subcategories) {
+              if (sub.key === key) return cat; // return parent so we render the full category view
+            }
+          }
+        }
+        return null;
+      }
+
+      // ── Find a recipe entry by its public id ───────────────
+      function findRecipe(publicId) {
+        for (const key of Object.keys(RECIPES)) {
+          const found = RECIPES[key].find(r => r.id === publicId);
+          if (found) return found;
+        }
+        return null;
+      }
+
+      // ── URL / hash routing ─────────────────────────────────
+      // Hash formats:
+      //   (empty)                          → category grid
+      //   #category/<catKey>               → category view
+      //   #recipe/<full-public-id>         → category view + lightbox open
+
+      function getHash() {
+        return decodeURIComponent(window.location.hash.slice(1));
+      }
+
+      function setHash(hash, pushState) {
+        const encoded = '#' + encodeURIComponent(hash);
+        if (pushState) {
+          history.pushState(null, '', encoded);
+        } else {
+          history.replaceState(null, '', encoded);
+        }
+      }
+
+      function navigateTo(hash, pushState = true) {
+        setHash(hash, pushState);
+        renderFromHash(hash);
+      }
+
+      function renderFromHash(hash) {
+        if (!hash) {
+          showCategoryGrid();
+          return;
+        }
+
+        if (hash.startsWith('recipe/')) {
+          const publicId = hash.slice('recipe/'.length);
+          const recipe = findRecipe(publicId);
+          if (!recipe) { showCategoryGrid(); return; }
+
+          // Determine which category to display behind the lightbox
+          const catKey = publicId.split('/').slice(1, -1).join('/'); // strip leading 'recipes/' and filename
+          const cat = findCategory(catKey);
+          if (cat) {
+            showCategorySection(cat, false);
+          }
+          openLightbox(fullUrl(recipe.id, recipe.fmt), cleanName(recipe.id), false);
+          return;
+        }
+
+        if (hash.startsWith('category/')) {
+          const catKey = hash.slice('category/'.length);
+          const cat = findCategory(catKey);
+          if (cat) {
+            showCategorySection(cat, false);
+          } else {
+            showCategoryGrid();
+          }
+          return;
+        }
+
+        showCategoryGrid();
+      }
+
+      // ── Show the top-level category grid ──────────────────
+      function showCategoryGrid() {
+        closeLightboxSilent();
+        document.getElementById('recipe-section').classList.remove('active');
+        document.getElementById('recipe-grid').innerHTML = '';
+        document.getElementById('category-view').style.display = '';
+      }
+
+      // ── Show a category's recipe section ──────────────────
+      function showCategorySection(cat, pushState = true) {
+        if (pushState) navigateTo('category/' + cat.key);
+
+        document.getElementById('category-view').style.display = 'none';
+        const section = document.getElementById('recipe-section');
+        section.classList.add('active');
+        document.getElementById('recipe-section-title').textContent = cat.label;
+        const grid = document.getElementById('recipe-grid');
+        grid.innerHTML = '';
+
+        if (cat.subcategories) {
+          cat.subcategories.forEach(sub => {
+            const files = RECIPES[sub.key] || [];
+            if (files.length === 0) return;
+            const heading = document.createElement('div');
+            heading.style.cssText = 'grid-column:1/-1;font-size:1.1rem;font-weight:700;color:var(--accent-strong);margin-top:16px;padding-bottom:6px;border-bottom:2px solid var(--border);';
+            heading.textContent = sub.label;
+            grid.appendChild(heading);
+            files.forEach(f => grid.appendChild(makeRecipeCard(f)));
+          });
+        } else {
+          (RECIPES[cat.key] || []).forEach(f => grid.appendChild(makeRecipeCard(f)));
+        }
+      }
 
       // ── Build category grid ────────────────────────────────
       function buildCategoryGrid() {
@@ -641,35 +751,9 @@ function fullUrl(id, fmt) {
               <div class="category-name">${cat.label}</div>
               <div class="category-count">${count} recipes</div>
             </div>`;
-          card.addEventListener('click', () => openCategory(cat));
+          card.addEventListener('click', () => showCategorySection(cat));
           grid.appendChild(card);
         });
-      }
-
-      // ── Open category ──────────────────────────────────────
-      function openCategory(cat) {
-        document.getElementById('category-view').style.display = 'none';
-        const section = document.getElementById('recipe-section');
-        section.classList.add('active');
-        document.getElementById('recipe-section-title').textContent = cat.label;
-        const grid = document.getElementById('recipe-grid');
-        grid.innerHTML = '';
-
-        if (cat.subcategories) {
-          // Show subcategory cards first, then any root-level recipes
-          cat.subcategories.forEach(sub => {
-            const files = RECIPES[sub.key] || [];
-            if (files.length === 0) return;
-            // Subcategory heading
-            const heading = document.createElement('div');
-            heading.style.cssText = 'grid-column:1/-1;font-size:1.1rem;font-weight:700;color:var(--accent-strong);margin-top:16px;padding-bottom:6px;border-bottom:2px solid var(--border);';
-            heading.textContent = sub.label;
-            grid.appendChild(heading);
-            files.forEach(f => grid.appendChild(makeRecipeCard(f)));
-          });
-        } else {
-          (RECIPES[cat.key] || []).forEach(f => grid.appendChild(makeRecipeCard(f)));
-        }
       }
 
       // ── Make a recipe card ─────────────────────────────────
@@ -680,21 +764,34 @@ function fullUrl(id, fmt) {
         card.innerHTML = `
           <img src="${thumbUrl(f.id, f.fmt)}" alt="${name}" class="recipe-thumb" loading="lazy">
           <div class="recipe-name">${name}</div>`;
-        card.addEventListener('click', () => openLightbox(fullUrl(f.id, f.fmt), name));
+        card.addEventListener('click', () => {
+          navigateTo('recipe/' + f.id);
+        });
         return card;
       }
 
       // ── Lightbox ───────────────────────────────────────────
-      function openLightbox(url, name) {
+      function openLightbox(url, name, pushState = true) {
         document.getElementById('lightbox-img').src = url;
         document.getElementById('lightbox-img').alt = name;
         document.getElementById('lightbox-title').textContent = name;
         document.getElementById('recipe-lightbox').classList.add('open');
       }
 
-      function closeLightbox() {
+      function closeLightboxSilent() {
         document.getElementById('recipe-lightbox').classList.remove('open');
         document.getElementById('lightbox-img').src = '';
+      }
+
+      function closeLightbox() {
+        closeLightboxSilent();
+        // Navigate back to the category if we're on a recipe hash
+        const hash = getHash();
+        if (hash.startsWith('recipe/')) {
+          const publicId = hash.slice('recipe/'.length);
+          const catKey = publicId.split('/').slice(1, -1).join('/');
+          history.back(); // let popstate handle the re-render
+        }
       }
 
       document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
@@ -705,12 +802,17 @@ function fullUrl(id, fmt) {
 
       // ── Back button ────────────────────────────────────────
       document.getElementById('back-btn').addEventListener('click', () => {
-        document.getElementById('recipe-section').classList.remove('active');
-        document.getElementById('recipe-grid').innerHTML = '';
-        document.getElementById('category-view').style.display = '';
+        history.back();
       });
 
+      // ── Handle browser back/forward ────────────────────────
+      window.addEventListener('popstate', () => {
+        renderFromHash(getHash());
+      });
+
+      // ── Init ───────────────────────────────────────────────
       buildCategoryGrid();
+      renderFromHash(getHash());
     </script>
 
     <script src="shared.js"></script>
