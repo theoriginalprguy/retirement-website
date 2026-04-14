@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>Mom's Recipes | David Kirk</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#ff6b35">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="icon" type="image/png" href="Images/favicon.png">
+    <style>
+
+      /* ── Category grid ─────────────────────────────────────── */
+      .category-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 20px;
+        margin-top: 32px;
+      }
+
+      .category-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-soft);
+        cursor: pointer;
+        transition: border-color 0.3s ease, transform 0.2s ease;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .category-card:hover {
+        border-color: var(--accent-vibrant);
+        transform: translateY(-2px);
+      }
+
+      .category-icon-panel {
+        height: 90px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(160deg, var(--accent-strong), var(--accent-vibrant));
+        font-size: 2.4rem;
+      }
+
+      .category-info {
+        padding: 16px 18px;
+      }
+
+      .category-name {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--accent-strong);
+        margin: 0 0 4px 0;
+      }
+
+      .category-count {
+        font-size: 0.85rem;
+        color: var(--muted);
+      }
+
+      /* ── Recipe grid ───────────────────────────────────────── */
+      .recipe-section {
+        display: none;
+        margin-top: 8px;
+      }
+
+      .recipe-section.active {
+        display: block;
+      }
+
+      .recipe-section-header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+
+      .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: none;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 6px 16px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--accent-vibrant);
+        cursor: pointer;
+        transition: background 0.2s, border-color 0.2s;
+      }
+
+      .back-btn:hover {
+        background: var(--accent-vibrant);
+        color: white;
+        border-color: var(--accent-vibrant);
+      }
+
+      .recipe-section-title {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--accent-strong);
+        margin: 0;
+      }
+
+      .recipe-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 16px;
+      }
+
+      .recipe-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-soft);
+        cursor: pointer;
+        transition: border-color 0.3s ease, transform 0.2s ease;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .recipe-card:hover {
+        border-color: var(--accent-vibrant);
+        transform: translateY(-2px);
+      }
+
+      .recipe-thumb {
+        width: 100%;
+        height: 140px;
+        object-fit: cover;
+        display: block;
+        background: var(--border);
+      }
+
+      .recipe-thumb-pdf {
+        width: 100%;
+        height: 140px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(160deg, var(--accent-strong), var(--accent-vibrant));
+        font-size: 2.8rem;
+        color: white;
+      }
+
+      .recipe-name {
+        padding: 10px 12px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: var(--text);
+        line-height: 1.4;
+      }
+
+      /* ── Lightbox ──────────────────────────────────────────── */
+      .recipe-lightbox {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.88);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+
+      .recipe-lightbox.open {
+        display: flex;
+      }
+
+      .recipe-lightbox-inner {
+        position: relative;
+        max-width: 900px;
+        width: 100%;
+        max-height: 90vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .recipe-lightbox-img {
+        max-width: 100%;
+        max-height: 82vh;
+        object-fit: contain;
+        border-radius: 8px;
+        box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+      }
+
+      .recipe-lightbox-close {
+        position: absolute;
+        top: -14px;
+        right: -14px;
+        background: var(--accent-vibrant);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        font-size: 1.1rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+      }
+
+      .recipe-lightbox-title {
+        margin-top: 12px;
+        color: white;
+        font-size: 1rem;
+        font-weight: 600;
+        text-align: center;
+      }
+
+      /* ── Loading state ─────────────────────────────────────── */
+      .loading-recipes {
+        text-align: center;
+        padding: 48px;
+        color: var(--muted);
+        font-style: italic;
+      }
+
+      @media (max-width: 600px) {
+        .category-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .recipe-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="header-placeholder"></div>
+
+    <main>
+      <div class="page-kicker">Mom's recipes</div>
+      <h1>Good Times, Good Eatin'.</h1>
+      <p class="lede">
+        A floral-patterned 3x5 file box, handwritten cards, magazine clippings,
+        and the occasional mystery stain. Welcome to my mother's kitchen.
+      </p>
+
+      <!-- Category view -->
+      <div id="category-view">
+        <div class="category-grid" id="category-grid">
+          <!-- Cards injected by JS -->
+        </div>
+      </div>
+
+      <!-- Recipe view (hidden until category clicked) -->
+      <div class="recipe-section" id="recipe-section">
+        <div class="recipe-section-header">
+          <button class="back-btn" id="back-btn">
+            <i class="fas fa-arrow-left"></i> All categories
+          </button>
+          <h2 class="recipe-section-title" id="recipe-section-title"></h2>
+        </div>
+        <div class="recipe-grid" id="recipe-grid">
+          <!-- Recipe cards injected by JS -->
+        </div>
+      </div>
+    </main>
+
+    <!-- Lightbox for image recipes -->
+    <div class="recipe-lightbox" id="recipe-lightbox">
+      <div class="recipe-lightbox-inner">
+        <button class="recipe-lightbox-close" id="lightbox-close">
+          <i class="fas fa-times"></i>
+        </button>
+        <img src="" alt="" class="recipe-lightbox-img" id="lightbox-img">
+        <div class="recipe-lightbox-title" id="lightbox-title"></div>
+      </div>
+    </div>
+
+    <div id="footer-placeholder"></div>
+
+    <script>
+      const CLOUD_NAME = 'dlxmgewap';
+
+      // Category definitions: folder slug, display name, emoji icon, file count
+      const CATEGORIES = [
+        { slug: 'appetizers-and-dips',  label: 'Appetizers and Dips',  icon: '🥗', count: 17 },
+        { slug: 'biscuits-and-bread',   label: 'Biscuits and Bread',   icon: '🍞', count: 7  },
+        { slug: 'cakes-and-cookies',    label: 'Cakes and Cookies',    icon: '🍰', count: 42 },
+        { slug: 'candy',                label: 'Candy',                icon: '🍬', count: 8  },
+        { slug: 'casseroles',           label: 'Casseroles',           icon: '🥘', count: 19 },
+        { slug: 'desserts',             label: 'Desserts',             icon: '🍮', count: 35 },
+        { slug: 'entrees',              label: 'Entrees',              icon: '🍽️', count: 8  },
+        { slug: 'miscellaneous',        label: 'Miscellaneous',        icon: '📋', count: 19 },
+        { slug: 'salads-and-sides',     label: 'Salads and Sides',     icon: '🥙', count: 34 },
+        { slug: 'sandwiches',           label: 'Sandwiches',           icon: '🥪', count: 5  },
+        { slug: 'soups-and-stews',      label: 'Soups and Stews',      icon: '🍲', count: 18 },
+        { slug: 'vegetables',           label: 'Vegetables',           icon: '🥦', count: 30 },
+      ];
+
+      // Map display slugs to actual Cloudinary folder names
+      // soups-and-stews display name maps to soups-stews folder
+      const FOLDER_MAP = {
+        'soups-and-stews': 'soups-stews'
+      };
+
+      function cloudinaryFolder(slug) {
+        return FOLDER_MAP[slug] || slug;
+      }
+
+      function cleanName(publicId) {
+        // publicId is like "recipes/appetizers-and-dips/Cheese-Dip-3_o1cfdx"
+        // Extract just the filename part, strip _xxxxxx suffix, replace hyphens with spaces
+        const filename = publicId.split('/').pop();
+        const stripped = filename.replace(/_[a-z0-9]{6,}$/i, '');
+        return stripped.replace(/-/g, ' ');
+      }
+
+      function isImage(format) {
+        return ['jpg','jpeg','png','gif','webp','tif','tiff','bmp'].includes(
+          (format || '').toLowerCase()
+        );
+      }
+
+      // ── Build category grid ────────────────────────────────
+      function buildCategoryGrid() {
+        const grid = document.getElementById('category-grid');
+        grid.innerHTML = '';
+        CATEGORIES.forEach(cat => {
+          const card = document.createElement('div');
+          card.className = 'category-card';
+          card.innerHTML = `
+            <div class="category-icon-panel">${cat.icon}</div>
+            <div class="category-info">
+              <div class="category-name">${cat.label}</div>
+              <div class="category-count">${cat.count} recipes</div>
+            </div>
+          `;
+          card.addEventListener('click', () => openCategory(cat));
+          grid.appendChild(card);
+        });
+      }
+
+      // ── Open a category ────────────────────────────────────
+      async function openCategory(cat) {
+        document.getElementById('category-view').style.display = 'none';
+        const section = document.getElementById('recipe-section');
+        section.classList.add('active');
+        document.getElementById('recipe-section-title').textContent = cat.label;
+
+        const grid = document.getElementById('recipe-grid');
+        grid.innerHTML = '<div class="loading-recipes">Loading recipes...</div>';
+
+        try {
+          const folderName = cloudinaryFolder(cat.slug);
+          const url = `https://res.cloudinary.com/${CLOUD_NAME}/image/list/recipes:${folderName}.json`;
+          const resp = await fetch(url);
+          if (!resp.ok) throw new Error('Failed to load recipes');
+          const data = await resp.json();
+          buildRecipeGrid(data.resources || []);
+        } catch (err) {
+          grid.innerHTML = '<div class="loading-recipes">Could not load recipes. Please try again.</div>';
+          console.error(err);
+        }
+      }
+
+      // ── Build recipe grid ──────────────────────────────────
+      function buildRecipeGrid(resources) {
+        const grid = document.getElementById('recipe-grid');
+        grid.innerHTML = '';
+
+        if (resources.length === 0) {
+          grid.innerHTML = '<div class="loading-recipes">No recipes found in this category.</div>';
+          return;
+        }
+
+        resources.forEach(res => {
+          const name = cleanName(res.public_id);
+          const format = res.format || '';
+          const card = document.createElement('div');
+          card.className = 'recipe-card';
+
+          if (isImage(format)) {
+            const thumbUrl = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/w_360,h_280,c_fill,q_auto,f_auto/${res.public_id}.${format}`;
+            const fullUrl  = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/q_auto,f_auto/${res.public_id}.${format}`;
+            card.innerHTML = `
+              <img src="${thumbUrl}" alt="${name}" class="recipe-thumb" loading="lazy">
+              <div class="recipe-name">${name}</div>
+            `;
+            card.addEventListener('click', () => openLightbox(fullUrl, name));
+          } else {
+            // PDF — open in new tab
+            const pdfUrl = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/${res.public_id}.pdf`;
+            card.innerHTML = `
+              <div class="recipe-thumb-pdf"><i class="fas fa-file-pdf"></i></div>
+              <div class="recipe-name">${name}</div>
+            `;
+            card.addEventListener('click', () => window.open(pdfUrl, '_blank'));
+          }
+
+          grid.appendChild(card);
+        });
+      }
+
+      // ── Lightbox ───────────────────────────────────────────
+      function openLightbox(url, name) {
+        const lb = document.getElementById('recipe-lightbox');
+        document.getElementById('lightbox-img').src = url;
+        document.getElementById('lightbox-img').alt = name;
+        document.getElementById('lightbox-title').textContent = name;
+        lb.classList.add('open');
+      }
+
+      function closeLightbox() {
+        const lb = document.getElementById('recipe-lightbox');
+        lb.classList.remove('open');
+        document.getElementById('lightbox-img').src = '';
+      }
+
+      document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
+      document.getElementById('recipe-lightbox').addEventListener('click', function(e) {
+        if (e.target === this) closeLightbox();
+      });
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeLightbox();
+      });
+
+      // ── Back button ────────────────────────────────────────
+      document.getElementById('back-btn').addEventListener('click', function() {
+        document.getElementById('recipe-section').classList.remove('active');
+        document.getElementById('recipe-grid').innerHTML = '';
+        document.getElementById('category-view').style.display = '';
+      });
+
+      // ── Init ───────────────────────────────────────────────
+      buildCategoryGrid();
+    </script>
+
+    <script src="shared.js"></script>
+  </body>
+</html>
