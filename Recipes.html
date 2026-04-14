@@ -615,13 +615,15 @@
         return filename.replace(/_[a-zA-Z0-9]{4,8}$/i, '').replace(/-/g, ' ');
       }
 
-      function thumbUrl(id, fmt) {
-        return `https://res.cloudinary.com/${C}/image/upload/w_360,h_280,c_fill,q_auto,f_auto/${id}.${fmt}`;
-      }
+    function thumbUrl(id, fmt) {
+  const filename = id.split('/').pop();
+  return `https://res.cloudinary.com/${C}/image/upload/w_360,h_280,c_fill,q_auto,f_auto/${filename}.${fmt}`;
+}
 
-      function fullUrl(id, fmt) {
-        return `https://res.cloudinary.com/${C}/image/upload/q_auto,f_auto/${id}.${fmt}`;
-      }
+function fullUrl(id, fmt) {
+  const filename = id.split('/').pop();
+  return `https://res.cloudinary.com/${C}/image/upload/q_auto,f_auto/${filename}.${fmt}`;
+}
 
       // ── Build category grid ────────────────────────────────
       function buildCategoryGrid() {
