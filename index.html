@@ -157,6 +157,9 @@
             <a href="https://davidkirktheprguy.substack.com" class="overview-card-link" id="latest-post-card">
               <article class="overview-card">
                 <div class="latest-eyebrow">Latest essay</div>
+                <div class="latest-photo-wrap" id="latest-post-image-wrap" style="display:none;">
+                  <img id="latest-post-img" alt="" loading="lazy" />
+                </div>
                 <h2 id="latest-post-title">Loading latest post...</h2>
                 <p id="latest-post-meta"></p>
                 <span class="card-link">Read on Substack →</span>
@@ -198,6 +201,19 @@
             { year: 'numeric', month: 'long', day: 'numeric' });
           document.getElementById('latest-post-meta').textContent = date;
           document.getElementById('latest-post-card').href = post.link;
+
+          // Pull featured image: try thumbnail, then enclosure, then first <img> in description
+          let imgUrl = post.thumbnail || (post.enclosure && post.enclosure.link) || '';
+          if (!imgUrl && post.description) {
+            const match = post.description.match(/<img[^>]+src="([^">]+)"/);
+            if (match) imgUrl = match[1];
+          }
+          if (imgUrl) {
+            const img = document.getElementById('latest-post-img');
+            img.src = imgUrl;
+            img.alt = post.title;
+            document.getElementById('latest-post-image-wrap').style.display = 'block';
+          }
         } catch (e) {
           document.getElementById('latest-post-title').textContent = 'Read the latest essays';
           document.getElementById('latest-post-meta').textContent = 'Visit the Substack archive';
