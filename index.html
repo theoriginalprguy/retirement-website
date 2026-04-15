@@ -57,6 +57,55 @@
     
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="Images/favicon.png">
+
+    <!-- Latest strip styles -->
+    <style>
+      .latest-strip {
+        max-width: 1100px;
+        margin: 3rem auto 1rem;
+        padding: 0 1.5rem;
+      }
+      .latest-strip__heading {
+        text-align: center;
+        font-size: 1.75rem;
+        margin: 0 0 0.25rem;
+      }
+      .latest-strip__sub {
+        text-align: center;
+        margin: 0 0 1.5rem;
+        font-style: italic;
+        opacity: 0.8;
+      }
+      .latest-strip .overview-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      @media (max-width: 720px) {
+        .latest-strip .overview-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .latest-photo-wrap {
+        width: 100%;
+        aspect-ratio: 4 / 3;
+        overflow: hidden;
+        border-radius: 8px;
+        margin-bottom: 0.75rem;
+        background: #ead7bb;
+      }
+      .latest-photo-wrap img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .latest-eyebrow {
+        font-size: 0.75rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        opacity: 0.7;
+        margin-bottom: 0.5rem;
+      }
+    </style>
   </head>
   <body>
     <div class="site-wrapper">
@@ -98,11 +147,89 @@
             </article>
           </a>
         </div>
+
+        <!-- Latest from the desert -->
+        <section class="latest-strip" aria-labelledby="latest-heading">
+          <h2 id="latest-heading" class="latest-strip__heading">Latest from the desert</h2>
+          <p class="latest-strip__sub">Fresh writing and a recent photo from the Sonoran Desert.</p>
+
+          <div class="overview-grid">
+            <a href="https://davidkirktheprguy.substack.com" class="overview-card-link" id="latest-post-card">
+              <article class="overview-card">
+                <div class="latest-eyebrow">Latest essay</div>
+                <h2 id="latest-post-title">Loading latest post...</h2>
+                <p id="latest-post-meta"></p>
+                <span class="card-link">Read on Substack →</span>
+              </article>
+            </a>
+
+            <a href="Gallery.html" class="overview-card-link" id="latest-photo-card">
+              <article class="overview-card">
+                <div class="latest-eyebrow">Latest photo</div>
+                <div class="latest-photo-wrap">
+                  <img id="latest-photo-img" alt="" loading="lazy" />
+                </div>
+                <p id="latest-photo-caption">Loading latest photo...</p>
+                <span class="card-link">Browse the gallery →</span>
+              </article>
+            </a>
+          </div>
+        </section>
       </main>
       
       <div id="footer-placeholder"></div>
     </div>
     
     <script src="shared.js"></script>
+
+    <!-- Latest strip data fetchers -->
+    <script>
+      // Latest Substack post via RSS-to-JSON proxy
+      (async () => {
+        try {
+          const feedUrl = 'https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fdavidkirktheprguy.substack.com%2Ffeed';
+          const res = await fetch(feedUrl);
+          const data = await res.json();
+          const post = data.items && data.items[0];
+          if (!post) throw new Error('No posts');
+
+          document.getElementById('latest-post-title').textContent = post.title;
+          const date = new Date(post.pubDate).toLocaleDateString('en-US',
+            { year: 'numeric', month: 'long', day: 'numeric' });
+          document.getElementById('latest-post-meta').textContent = date;
+          document.getElementById('latest-post-card').href = post.link;
+        } catch (e) {
+          document.getElementById('latest-post-title').textContent = 'Read the latest essays';
+          document.getElementById('latest-post-meta').textContent = 'Visit the Substack archive';
+        }
+      })();
+
+      // Latest gallery image from Cloudinary tag endpoint
+      (async () => {
+        try {
+          const cloudName = 'dlxmgewap';
+          const tag = 'gallery'; // change if your gallery uses a different tag
+          const url = `https://res.cloudinary.com/${cloudName}/image/list/${tag}.json?_=${Date.now()}`;
+          const res = await fetch(url);
+          const data = await res.json();
+          if (!data.resources || !data.resources.length) throw new Error('No images');
+
+          const newest = data.resources.sort((a, b) =>
+            new Date(b.created_at) - new Date(a.created_at))[0];
+
+          const imgUrl = `https://res.cloudinary.com/${cloudName}/image/upload/c_fill,w_800,h_600,q_auto,f_auto/${newest.public_id}.${newest.format}`;
+          const img = document.getElementById('latest-photo-img');
+          img.src = imgUrl;
+
+          const caption = newest.public_id.split('/').pop().split('_').join(' ');
+          img.alt = caption;
+          document.getElementById('latest-photo-caption').textContent = caption;
+        } catch (e) {
+          document.getElementById('latest-photo-caption').textContent = 'Browse the full gallery';
+          const img = document.getElementById('latest-photo-img');
+          if (img) img.remove();
+        }
+      })();
+    </script>
   </body>
 </html>
