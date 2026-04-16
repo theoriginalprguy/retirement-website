@@ -244,6 +244,7 @@
 
           const figure = document.createElement('figure');
           figure.className = 'gallery-item';
+          figure.id = `obs-${obs.id}`;
           figure.setAttribute('data-full',      fullUrl);
           figure.setAttribute('data-title',     titleText);
           figure.setAttribute('data-obs-url',   obsUrl);
@@ -281,10 +282,25 @@
         return str.replace(/\b\w/g, c => c.toUpperCase());
       }
 
+      function handleHashDeepLink() {
+        if (!window.location.hash) return;
+        const targetId = window.location.hash.slice(1); // strip the '#'
+        const figure = document.getElementById(targetId);
+        if (!figure) return;
+
+        figure.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        const index = galleryItems.indexOf(figure);
+        if (index !== -1) {
+          // Small delay so the scroll starts before the lightbox opens
+          setTimeout(() => openLightbox(index), 400);
+        }
+      }
+
       async function loadGallery() {
         try {
           const observations = await fetchAllObservations();
           buildGallery(observations);
+          handleHashDeepLink();
         } catch (error) {
           const loading = document.getElementById('gallery-loading');
           if (loading) loading.textContent = 'Gallery temporarily unavailable. Please try again shortly.';
