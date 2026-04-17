@@ -114,16 +114,6 @@
         pointer-events: auto;
       }
       #back-to-top:hover { background: rgba(0,0,0,0.8); }
-
-      /* Hidden from visitors, readable by Google */
-      .seo-description {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        overflow: hidden;
-        clip: rect(0,0,0,0);
-        white-space: nowrap;
-      }
     </style>
   </head>
   <body>
@@ -134,14 +124,12 @@
       <h1>Field notes in color. Rooted here, wandering wide.</h1>
       <p class="lede">Photos from the Sonoran Desert and beyond.</p>
 
-      <!-- Static descriptive content for search engine indexing -->
-      <p class="seo-description">
+      <p class="gallery-intro">
         A visual field journal of desert plants, wildlife, and nature observations
-        from Phoenix, Arizona and the Sonoran Desert. Photos include saguaro cactus,
+        from Phoenix, Arizona and the Sonoran Desert. Species include saguaro cactus,
         palo verde, agave, mesquite, desert wildflowers, Gambel's quail, cactus wren,
-        curve-billed thrasher, and many other species native to the Sonoran Desert
-        ecosystem. All observations logged on iNaturalist by David Kirk, Docent at
-        Desert Botanical Garden.
+        curve-billed thrasher, and many other natives of the Sonoran Desert ecosystem.
+        All observations logged on iNaturalist by David Kirk, Docent at Desert Botanical Garden.
       </p>
 
       <section class="gallery-grid" id="gallery">
@@ -284,14 +272,13 @@
 
       function handleHashDeepLink() {
         if (!window.location.hash) return;
-        const targetId = window.location.hash.slice(1); // strip the '#'
+        const targetId = window.location.hash.slice(1);
         const figure = document.getElementById(targetId);
         if (!figure) return;
 
         figure.scrollIntoView({ behavior: 'smooth', block: 'center' });
         const index = galleryItems.indexOf(figure);
         if (index !== -1) {
-          // Small delay so the scroll starts before the lightbox opens
           setTimeout(() => openLightbox(index), 400);
         }
       }
@@ -310,7 +297,7 @@
 
       loadGallery();
 
-      // ── Lightbox ──────────────────────────────────────────────
+      // Lightbox
       const lightbox            = document.getElementById('lightbox');
       const lightboxImage       = document.getElementById('lightboxImage');
       const lightboxTitle       = document.getElementById('lightboxTitle');
@@ -377,7 +364,7 @@
         if (e.key === 'ArrowRight')  showNext();
       });
 
-      // ── Back to top ───────────────────────────────────────────
+      // Back to top
       const backToTop = document.getElementById('back-to-top');
 
       window.addEventListener('scroll', function() {
