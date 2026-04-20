@@ -25,26 +25,26 @@
         overflow: hidden;
         display: flex;
         flex-direction: row;
+        align-items: stretch;
       }
 
       .project-card:hover {
         border-color: var(--accent-vibrant);
       }
 
-      .project-icon-panel {
-        width: 140px;
-        min-width: 140px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: linear-gradient(160deg, var(--accent-strong), var(--accent-vibrant));
-        padding: 24px 16px;
+      .project-photo {
+        flex: 0 0 auto;
+        width: 280px;
+        max-width: 280px;
+        align-self: stretch;
+        overflow: hidden;
       }
 
-      .project-icon-panel svg {
-        width: 64px;
-        height: 64px;
-        opacity: 0.92;
+      .project-photo img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
       }
 
       .project-body {
@@ -53,6 +53,8 @@
         flex-direction: column;
         justify-content: center;
         gap: 10px;
+        flex: 1;
+        min-width: 0;
       }
 
       .project-body h2 {
@@ -62,11 +64,58 @@
         margin: 0;
       }
 
-      .project-body p {
+      /* Collapsible text container */
+      .project-text-wrap {
+        position: relative;
+      }
+
+      .project-text {
         font-size: 0.97rem;
         line-height: 1.7;
         color: var(--text);
         margin: 0;
+        overflow: hidden;
+        max-height: calc(1.7em * 4);
+        transition: max-height 0.4s ease;
+      }
+
+      .project-text-wrap.expanded .project-text {
+        max-height: 100rem;
+      }
+
+      /* Fade overlay at bottom of collapsed text */
+      .project-text-wrap:not(.expanded) .project-text::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 32px;
+        height: 1.7em;
+        background: linear-gradient(to bottom, transparent, var(--card));
+        pointer-events: none;
+      }
+
+      .project-toggle {
+        background: none;
+        border: none;
+        padding: 0;
+        margin-top: 4px;
+        font-family: inherit;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--accent-vibrant);
+        cursor: pointer;
+        display: inline-block;
+        align-self: flex-start;
+      }
+
+      .project-toggle:hover {
+        text-decoration: underline;
+      }
+
+      /* Hide toggle if text isn't long enough to need it */
+      .project-toggle.hidden {
+        display: none;
       }
 
       .project-link {
@@ -76,6 +125,7 @@
         font-weight: 600;
         color: var(--accent-vibrant);
         text-decoration: none;
+        align-self: flex-start;
       }
 
       .project-link:hover {
@@ -87,15 +137,20 @@
         font-size: 0.8rem;
       }
 
-      @media (max-width: 600px) {
+      @media (max-width: 700px) {
         .project-card {
           flex-direction: column;
         }
-        .project-icon-panel {
+        .project-photo {
           width: 100%;
-          min-width: 100%;
-          height: 100px;
-          padding: 16px;
+          max-width: 100%;
+          height: 220px;
+        }
+        .project-photo img {
+          height: 100%;
+        }
+        .project-body {
+          padding: 24px 22px;
         }
       }
     </style>
@@ -115,34 +170,25 @@
 
         <!-- Desert Botanical Garden -->
         <div class="project-card">
-          <div class="project-icon-panel">
-            <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect x="29" y="18" width="6" height="36" rx="3" fill="white"/>
-              <rect x="14" y="28" width="6" height="20" rx="3" fill="white"/>
-              <rect x="14" y="28" width="22" height="6" rx="3" fill="white"/>
-              <rect x="44" y="32" width="6" height="16" rx="3" fill="white"/>
-              <rect x="29" y="32" width="22" height="6" rx="3" fill="white"/>
-              <circle cx="52" cy="14" r="6" fill="white" opacity="0.7"/>
-              <line x1="52" y1="4" x2="52" y2="7" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
-              <line x1="52" y1="21" x2="52" y2="24" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
-              <line x1="42" y1="14" x2="45" y2="14" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
-              <line x1="59" y1="14" x2="62" y2="14" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
-              <line x1="4" y1="54" x2="60" y2="54" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
-            </svg>
+          <div class="project-photo">
+            <img src="https://res.cloudinary.com/dlxmgewap/image/upload/v1776652423/dbg.jpg" alt="Desert Botanical Garden">
           </div>
           <div class="project-body">
             <h2>Good Things from Desert Botanical Garden</h2>
-            <p>
-              One of my favorite places in the Valley of the Sun, and the number one thing to do
-              here according to virtually every travel guide known to mankind, is Desert Botanical Garden.
-              My husband, Randy Stopher, has been a Docent there since 2012. I recently joined the ranks
-              of more than 800 volunteers, completed the necessary classroom and field work, and am now
-              a Docent myself. I have the great pleasure of orienting groups of up to 15 people through
-              50 public acres of the Garden, using dialogic interpretation techniques to help visitors
-              appreciate the wonders of desert plant adaptations and ethnobotany, the study of the
-              relationships between humans and plants. There is always something happening there, and I
-              am thrilled to be part of it. If you are coming to town, we would be happy to show you around.
-            </p>
+            <div class="project-text-wrap">
+              <p class="project-text">
+                One of my favorite places in the Valley of the Sun, and the number one thing to do
+                here according to virtually every travel guide known to mankind, is Desert Botanical Garden.
+                My husband, Randy Stopher, has been a Docent there since 2012. I recently joined the ranks
+                of more than 800 volunteers, completed the necessary classroom and field work, and am now
+                a Docent myself. I have the great pleasure of orienting groups of up to 15 people through
+                50 public acres of the Garden, using dialogic interpretation techniques to help visitors
+                appreciate the wonders of desert plant adaptations and ethnobotany, the study of the
+                relationships between humans and plants. There is always something happening there, and I
+                am thrilled to be part of it. If you are coming to town, we would be happy to show you around.
+              </p>
+            </div>
+            <button class="project-toggle" type="button">Read more →</button>
             <a href="https://www.dbg.org" target="_blank" rel="noopener noreferrer" class="project-link">
               See what's happening at Desert Botanical Garden <i class="fas fa-arrow-up-right-from-square"></i>
             </a>
@@ -151,31 +197,23 @@
 
         <!-- Mom's Recipes -->
         <div class="project-card">
-          <div class="project-icon-panel">
-            <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect x="8" y="20" width="48" height="36" rx="4" fill="white" opacity="0.2" stroke="white" stroke-width="2"/>
-              <rect x="8" y="20" width="48" height="10" rx="4" fill="white" opacity="0.5"/>
-              <line x1="16" y1="38" x2="48" y2="38" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
-              <line x1="16" y1="44" x2="40" y2="44" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
-              <line x1="16" y1="50" x2="44" y2="50" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
-              <line x1="28" y1="8" x2="28" y2="18" stroke="white" stroke-width="2" stroke-linecap="round"/>
-              <circle cx="28" cy="6" r="3" stroke="white" stroke-width="2"/>
-              <line x1="36" y1="6" x2="36" y2="18" stroke="white" stroke-width="2" stroke-linecap="round"/>
-              <line x1="33" y1="6" x2="33" y2="11" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
-              <line x1="39" y1="6" x2="39" y2="11" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
-            </svg>
+          <div class="project-photo">
+            <img src="https://res.cloudinary.com/dlxmgewap/image/upload/v1776652423/recipes.jpg" alt="Mom's recipe box">
           </div>
           <div class="project-body">
             <h2>Good Times, Good Eatin'</h2>
-            <p>
-              When my mother passed away, I inherited her floral-patterned 3x5 file box of recipes.
-              Some are neatly typed, many are handwritten, most have a stain or two from the ingredients,
-              and many were torn from the pages of 1950s and 1960s women's magazines. Her pantry staples
-              were the ingredients of the era: butter, Jell-O, bread crumbs, canned tuna, spaghetti,
-              and love. I have them all scanned and organized by appetizers, entrees, desserts, and such.
-              If you grew up in the 50s and 60s, this is a trip down culinary lane. Have a hankering for
-              something delicious, calories be damned?
-            </p>
+            <div class="project-text-wrap">
+              <p class="project-text">
+                When my mother passed away, I inherited her floral-patterned 3x5 file box of recipes.
+                Some are neatly typed, many are handwritten, most have a stain or two from the ingredients,
+                and many were torn from the pages of 1950s and 1960s women's magazines. Her pantry staples
+                were the ingredients of the era: butter, Jell-O, bread crumbs, canned tuna, spaghetti,
+                and love. I have them all scanned and organized by appetizers, entrees, desserts, and such.
+                If you grew up in the 50s and 60s, this is a trip down culinary lane. Have a hankering for
+                something delicious, calories be damned?
+              </p>
+            </div>
+            <button class="project-toggle" type="button">Read more →</button>
             <a href="Recipes.html" class="project-link">
               Check out Mom's recipes <i class="fas fa-arrow-right"></i>
             </a>
@@ -184,27 +222,21 @@
 
         <!-- Martha Wendel Gallery -->
         <div class="project-card">
-          <div class="project-icon-panel">
-            <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect x="14" y="10" width="36" height="30" rx="3" fill="white" opacity="0.2" stroke="white" stroke-width="2"/>
-              <path d="M14 32 Q22 22 30 28 Q38 34 50 24 L50 40 L14 40 Z" fill="white" opacity="0.35"/>
-              <circle cx="42" cy="18" r="5" fill="white" opacity="0.6"/>
-              <line x1="22" y1="40" x2="18" y2="56" stroke="white" stroke-width="2" stroke-linecap="round"/>
-              <line x1="42" y1="40" x2="46" y2="56" stroke="white" stroke-width="2" stroke-linecap="round"/>
-              <line x1="32" y1="40" x2="32" y2="56" stroke="white" stroke-width="2" stroke-linecap="round"/>
-              <line x1="52" y1="8" x2="58" y2="14" stroke="white" stroke-width="2" stroke-linecap="round"/>
-              <circle cx="51" cy="7" r="2" fill="white" opacity="0.8"/>
-            </svg>
+          <div class="project-photo">
+            <img src="https://res.cloudinary.com/dlxmgewap/image/upload/v1776652423/homestead.jpg" alt="The Wendel homestead">
           </div>
           <div class="project-body">
             <h2>The Art of Grandma Wendel</h2>
-            <p>
-              My mother's mother, Martha Lintner Wendel, set a goal when she was 65 years old: create
-              a painting for each of her children and grandchildren. A few years ago, I began wondering
-              what became of her project and, so far, have identified more than 80 of her paintings,
-              scattered around the country and the world. I combined my new passion for building websites
-              with a love for her art and made a home on the web for her works.
-            </p>
+            <div class="project-text-wrap">
+              <p class="project-text">
+                My mother's mother, Martha Lintner Wendel, set a goal when she was 65 years old: create
+                a painting for each of her children and grandchildren. A few years ago, I began wondering
+                what became of her project and, so far, have identified more than 80 of her paintings,
+                scattered around the country and the world. I combined my new passion for building websites
+                with a love for her art and made a home on the web for her works.
+              </p>
+            </div>
+            <button class="project-toggle" type="button">Read more →</button>
             <a href="https://www.MarthaWendel.com" target="_blank" rel="noopener noreferrer" class="project-link">
               Visit the Martha Wendel Gallery <i class="fas fa-arrow-up-right-from-square"></i>
             </a>
@@ -213,29 +245,20 @@
 
         <!-- Family Tree -->
         <div class="project-card">
-          <div class="project-icon-panel">
-            <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect x="29" y="36" width="6" height="20" rx="2" fill="white"/>
-              <line x1="32" y1="36" x2="16" y2="22" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
-              <line x1="32" y1="36" x2="48" y2="22" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
-              <line x1="32" y1="42" x2="20" y2="34" stroke="white" stroke-width="2" stroke-linecap="round"/>
-              <line x1="32" y1="42" x2="44" y2="34" stroke="white" stroke-width="2" stroke-linecap="round"/>
-              <circle cx="16" cy="20" r="5" fill="white" opacity="0.7"/>
-              <circle cx="48" cy="20" r="5" fill="white" opacity="0.7"/>
-              <circle cx="32" cy="12" r="5" fill="white" opacity="0.5"/>
-              <circle cx="20" cy="32" r="4" fill="white" opacity="0.5"/>
-              <circle cx="44" cy="32" r="4" fill="white" opacity="0.5"/>
-              <line x1="20" y1="56" x2="44" y2="56" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
-            </svg>
+          <div class="project-photo">
+            <img src="https://res.cloudinary.com/dlxmgewap/image/upload/v1776652423/family_tree.jpg" alt="Family tree">
           </div>
           <div class="project-body">
             <h2>My Family Tree</h2>
-            <p>
-              I am a ninth-generation Pennsylvania Lancastrian and proud of it. Over the years I have
-              been adding roots and branches to my family tree. The deepest root traces to Sir Hugo
-              Herr von Bilried, born in the year 1009. Are we related? Possibly. Corrections and
-              additions are always welcome.
-            </p>
+            <div class="project-text-wrap">
+              <p class="project-text">
+                I am a ninth-generation Pennsylvania Lancastrian and proud of it. Over the years I have
+                been adding roots and branches to my family tree. The deepest root traces to Sir Hugo
+                Herr von Bilried, born in the year 1009. Are we related? Possibly. Corrections and
+                additions are always welcome.
+              </p>
+            </div>
+            <button class="project-toggle" type="button">Read more →</button>
             <a href="https://www.ancestry.com/family-tree/tree/48561249?_gl=1%2Ayelai9%2A_up%2AMQ..%2A_gs%2AMQ..&cfpid=20127246406&dtid=100&gbraid=0AAAAADtC4Oee_1qCe_0oVTGnPialxBDbp&gclid=Cj0KCQjws83OBhD4ARIsACblj1-xOOTw3_Hzq3HcoCR71pJ-ynDVBHqZoVN5C4R9JLszDuEln2ToNzYaAoydEALw_wcB&gclsrc=aw.ds" target="_blank" rel="noopener noreferrer" class="project-link">
               Check out my family tree <i class="fas fa-arrow-up-right-from-square"></i>
             </a>
@@ -244,54 +267,43 @@
 
         <!-- Lucy -->
         <div class="project-card" id="lucy">
-          <div class="project-icon-panel">
-            <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M8 14 Q8 12 10 12 L32 16 L32 52 L10 48 Q8 48 8 46 Z" fill="white" opacity="0.25" stroke="white" stroke-width="1.5"/>
-              <path d="M56 14 Q56 12 54 12 L32 16 L32 52 L54 48 Q56 48 56 46 Z" fill="white" opacity="0.4" stroke="white" stroke-width="1.5"/>
-              <line x1="32" y1="16" x2="32" y2="52" stroke="white" stroke-width="2"/>
-              <line x1="37" y1="26" x2="51" y2="25" stroke="white" stroke-width="1.5" stroke-linecap="round" opacity="0.7"/>
-              <line x1="37" y1="31" x2="51" y2="30" stroke="white" stroke-width="1.5" stroke-linecap="round" opacity="0.7"/>
-              <line x1="37" y1="36" x2="48" y2="35" stroke="white" stroke-width="1.5" stroke-linecap="round" opacity="0.7"/>
-              <circle cx="20" cy="32" r="6" fill="white" opacity="0.3"/>
-              <path d="M20 26 L21.5 30 L26 30 L22.5 32.5 L24 36.5 L20 34 L16 36.5 L17.5 32.5 L14 30 L18.5 30 Z" fill="white" opacity="0.7"/>
-            </svg>
+          <div class="project-photo">
+            <img src="https://res.cloudinary.com/dlxmgewap/image/upload/v1776652423/lucy.png" alt="Lucy: A Gift for America">
           </div>
           <div class="project-body">
             <h2>Lucy: A Gift for America</h2>
-            <p>
-              I have been collaborating with a former client and dear friend to write her memoirs,
-              tentatively called <em>Lucy: A Gift for America</em>. The story traces her life from the
-              day her parents, who met in a displaced persons camp in Germany after World War II,
-              smuggled her aboard a flight to America tucked into a shoe box, through the founding and
-              ultimate sale of the business she built with her husband, and her many and varied
-              philanthropic activities today. Look for publication in early 2027.
-            </p>
+            <div class="project-text-wrap">
+              <p class="project-text">
+                I have been collaborating with a former client and dear friend to write her memoirs,
+                tentatively called <em>Lucy: A Gift for America</em>. The story traces her life from the
+                day her parents, who met in a displaced persons camp in Germany after World War II,
+                smuggled her aboard a flight to America tucked into a shoe box, through the founding and
+                ultimate sale of the business she built with her husband, and her many and varied
+                philanthropic activities today. Look for publication in early 2027.
+              </p>
+            </div>
+            <button class="project-toggle" type="button">Read more →</button>
           </div>
         </div>
 
         <!-- Nostalgia / Photomyne -->
         <div class="project-card">
-          <div class="project-icon-panel">
-            <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect x="18" y="16" width="32" height="36" rx="3" fill="white" opacity="0.2" stroke="white" stroke-width="1.5" transform="rotate(-8 34 34)"/>
-              <rect x="14" y="14" width="32" height="36" rx="3" fill="white" opacity="0.3" stroke="white" stroke-width="1.5" transform="rotate(-3 30 32)"/>
-              <rect x="10" y="12" width="32" height="36" rx="3" fill="white" opacity="0.5" stroke="white" stroke-width="2"/>
-              <rect x="14" y="16" width="24" height="20" rx="2" fill="white" opacity="0.2"/>
-              <path d="M14 30 Q18 22 22 26 Q26 30 34 24 L34 36 L14 36 Z" fill="white" opacity="0.4"/>
-              <circle cx="30" cy="20" r="3" fill="white" opacity="0.6"/>
-              <line x1="14" y1="42" x2="34" y2="42" stroke="white" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
-            </svg>
+          <div class="project-photo">
+            <img src="https://res.cloudinary.com/dlxmgewap/image/upload/v1776652423/david.jpg" alt="David as a child">
           </div>
           <div class="project-body">
             <h2>More Nostalgia</h2>
-            <p>
-              I continue to work on digitizing the hundreds of photos I have in boxes and albums that
-              I have been hauling from home to home for the past 40-plus years. So far I am well into
-              my college years (1970&ndash;1974). Thankfully my photo memories are mostly digital for
-              the past couple of decades. I am using an excellent app called Photomyne to do the job.
-              Here is a selection of shots from the 1950s. Yes, I know. I was adorable. And no, I do
-              not know what happened.
-            </p>
+            <div class="project-text-wrap">
+              <p class="project-text">
+                I continue to work on digitizing the hundreds of photos I have in boxes and albums that
+                I have been hauling from home to home for the past 40-plus years. So far I am well into
+                my college years (1970&ndash;1974). Thankfully my photo memories are mostly digital for
+                the past couple of decades. I am using an excellent app called Photomyne to do the job.
+                Here is a selection of shots from the 1950s. Yes, I know. I was adorable. And no, I do
+                not know what happened.
+              </p>
+            </div>
+            <button class="project-toggle" type="button">Read more →</button>
             <a href="https://share.photomyne.com/share?u=8A919F14-A4EC-433B-84AC-BA9EA0255B66&s=461c2ef7-72f4-4c61-8adc-1731f63e4efc" target="_blank" rel="noopener noreferrer" class="project-link">
               See a selection from the 1950s <i class="fas fa-arrow-up-right-from-square"></i>
             </a>
@@ -302,6 +314,38 @@
     </main>
 
     <div id="footer-placeholder"></div>
+
+    <script>
+      // Initialize expand/collapse for project cards
+      document.addEventListener('DOMContentLoaded', function() {
+        const cards = document.querySelectorAll('.project-card');
+
+        cards.forEach(card => {
+          const wrap = card.querySelector('.project-text-wrap');
+          const text = card.querySelector('.project-text');
+          const toggle = card.querySelector('.project-toggle');
+
+          if (!wrap || !text || !toggle) return;
+
+          // Check if the text is actually taller than the collapsed max-height
+          // If not, hide the toggle button — text is short enough to show in full
+          const fullHeight = text.scrollHeight;
+          const collapsedHeight = parseFloat(getComputedStyle(text).maxHeight);
+
+          if (fullHeight <= collapsedHeight + 4) {
+            toggle.classList.add('hidden');
+            wrap.classList.add('expanded'); // show in full, no fade
+            return;
+          }
+
+          toggle.addEventListener('click', function() {
+            const isExpanded = wrap.classList.toggle('expanded');
+            toggle.textContent = isExpanded ? 'Show less ↑' : 'Read more →';
+          });
+        });
+      });
+    </script>
+
     <script src="shared.js"></script>
   </body>
 </html>
