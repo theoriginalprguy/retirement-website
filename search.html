@@ -11,100 +11,122 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="icon" type="image/png" href="Images/favicon.png">
 
-  <!-- Google Custom Search Engine -->
-  <script async src="https://cse.google.com/cse.js?cx=d4eb18e73eff54efb"></script>
+  <!-- Pagefind UI CSS -->
+  <link rel="stylesheet" href="/pagefind/pagefind-ui.css">
 
   <style>
     .search-container {
       max-width: 800px;
       margin: 0 auto;
-      min-height: 60px;
       width: 100%;
       box-sizing: border-box;
     }
 
-    .gcse-search,
-    .gcse-search *,
-    .gsc-control-cse,
-    .gsc-control-cse * {
-      max-width: 100% !important;
-      box-sizing: border-box !important;
+    /* Customize Pagefind UI to match desert theme */
+    :root {
+      --pagefind-ui-scale: 1;
+      --pagefind-ui-primary: var(--accent-vibrant);
+      --pagefind-ui-text: var(--text);
+      --pagefind-ui-background: var(--card);
+      --pagefind-ui-border: var(--border);
+      --pagefind-ui-tag: var(--bg);
+      --pagefind-ui-border-width: 1px;
+      --pagefind-ui-border-radius: var(--radius-lg);
+      --pagefind-ui-image-border-radius: 8px;
+      --pagefind-ui-image-box-ratio: 3 / 2;
+      --pagefind-ui-font: inherit;
     }
 
-    .gsc-control-cse {
-      background: transparent !important;
-      border: none !important;
-      padding: 0 !important;
-    }
-
-    .gsc-input-box {
-      background: var(--card) !important;
-      border: 1px solid var(--border) !important;
-      border-radius: var(--radius-lg) !important;
-    }
-
-    .gsc-input {
+    /* Input styling */
+    .pagefind-ui__search-input {
       background: var(--card) !important;
       color: var(--text) !important;
+      border: 1px solid var(--border) !important;
+      border-radius: var(--radius-lg) !important;
+      font-size: 1rem !important;
+      padding: 14px 18px !important;
     }
 
-    .gsc-search-button-v2 {
-      background: linear-gradient(135deg, var(--accent-vibrant), var(--accent-pink)) !important;
-      border: none !important;
-      border-radius: 999px !important;
-      padding: 10px 20px !important;
+    .pagefind-ui__search-input:focus {
+      outline: none !important;
+      border-color: var(--accent-vibrant) !important;
+      box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.15) !important;
     }
 
-    .gsc-result {
+    /* Clear button */
+    .pagefind-ui__search-clear {
+      color: var(--muted) !important;
+    }
+
+    /* Results */
+    .pagefind-ui__result {
       background: var(--card) !important;
       border: 1px solid var(--border) !important;
       border-radius: var(--radius-lg) !important;
       padding: 18px !important;
       margin-bottom: 16px !important;
       box-shadow: var(--shadow-soft) !important;
+      transition: border-color 0.2s ease !important;
     }
 
-    .gs-title, .gs-title * {
+    .pagefind-ui__result:hover {
+      border-color: var(--accent-vibrant) !important;
+    }
+
+    .pagefind-ui__result-title {
+      color: var(--accent-strong) !important;
+    }
+
+    .pagefind-ui__result-title a {
       color: var(--accent-strong) !important;
       text-decoration: none !important;
     }
 
-    .gs-title:hover, .gs-title *:hover {
+    .pagefind-ui__result-title a:hover {
       color: var(--accent-vibrant) !important;
     }
 
-    .gs-snippet {
+    .pagefind-ui__result-excerpt {
       color: var(--text) !important;
       font-size: 0.95rem !important;
       line-height: 1.6 !important;
     }
 
-    .gsc-url-top {
-      color: var(--muted) !important;
-      font-size: 0.85rem !important;
+    .pagefind-ui__result-excerpt mark {
+      background: rgba(255, 107, 53, 0.2) !important;
+      color: inherit !important;
+      font-weight: 600 !important;
+      padding: 1px 2px !important;
+      border-radius: 2px !important;
     }
 
-    .gsc-webResult.gsc-result:hover {
-      border-color: var(--accent-vibrant) !important;
+    /* Meta info (count, filters) */
+    .pagefind-ui__message {
+      color: var(--muted) !important;
+      font-size: 0.95rem !important;
+      margin-top: 16px !important;
+      margin-bottom: 16px !important;
+    }
+
+    /* Button */
+    .pagefind-ui__button {
+      background: linear-gradient(135deg, var(--accent-vibrant), var(--accent-pink)) !important;
+      color: white !important;
+      border: none !important;
+      border-radius: 999px !important;
+      padding: 10px 24px !important;
+      font-weight: 600 !important;
+      cursor: pointer !important;
+    }
+
+    .pagefind-ui__button:hover {
+      opacity: 0.9 !important;
     }
 
     @media (max-width: 600px) {
       .search-container {
         padding: 0;
         width: 100%;
-      }
-      .gsc-control-cse {
-        padding: 0 !important;
-        width: 100% !important;
-      }
-      .gsc-search-box {
-        width: 100% !important;
-      }
-      .gsc-input-box {
-        width: 100% !important;
-      }
-      .gsc-search-button {
-        margin-left: 8px !important;
       }
     }
   </style>
@@ -120,7 +142,7 @@
         <p class="lede">Search across articles, photos, and projects on this site.</p>
 
         <div class="search-container">
-          <div class="gcse-search"></div>
+          <div id="search"></div>
         </div>
 
         <div class="story-card" style="margin-top: 40px;">
@@ -138,5 +160,26 @@
   </div>
 
   <script src="shared.js"></script>
+
+  <!-- Pagefind UI -->
+  <script src="/pagefind/pagefind-ui.js"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', (event) => {
+      const search = new PagefindUI({
+        element: "#search",
+        showSubResults: true,
+        showImages: false,
+        resetStyles: false,
+        placeholder: "Search this site..."
+      });
+
+      // Auto-search if query parameter is present
+      const urlParams = new URLSearchParams(window.location.search);
+      const query = urlParams.get('q');
+      if (query) {
+        search.triggerSearch(query);
+      }
+    });
+  </script>
 </body>
 </html>
