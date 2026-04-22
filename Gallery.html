@@ -12,7 +12,70 @@
     <style>
       /* Add breathing room between intro text and gallery */
       .gallery-intro {
-        margin-bottom: 40px;
+        margin-bottom: 24px;
+      }
+
+      /* Filter tabs */
+      .gallery-filters {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 32px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .filter-tab {
+        background: var(--card);
+        color: var(--text);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 10px 20px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s, color 0.2s, border-color 0.2s;
+        font-family: inherit;
+      }
+
+      .filter-tab:hover {
+        border-color: var(--accent-vibrant);
+        color: var(--accent-vibrant);
+      }
+
+      .filter-tab.active {
+        background: linear-gradient(135deg, var(--accent-vibrant), var(--accent-pink));
+        color: white;
+        border-color: transparent;
+      }
+
+      .filter-tab .count {
+        display: inline-block;
+        margin-left: 6px;
+        padding: 1px 8px;
+        background: rgba(0, 0, 0, 0.1);
+        border-radius: 999px;
+        font-size: 0.8rem;
+        font-weight: 700;
+      }
+
+      .filter-tab.active .count {
+        background: rgba(255, 255, 255, 0.25);
+      }
+
+      /* Subgroup headers for Elsewhere tab */
+      .subgroup-header {
+        grid-column: 1 / -1;
+        margin: 24px 0 8px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid var(--accent-vibrant);
+        color: var(--accent-strong);
+        font-size: 1.3rem;
+        font-weight: 700;
+      }
+
+      .subgroup-header:first-child {
+        margin-top: 0;
       }
 
       .gallery-item img {
@@ -46,6 +109,15 @@
       .gallery-link:hover {
         background: var(--accent-vibrant);
         color: white;
+      }
+
+      /* Empty state for tabs */
+      .tab-empty {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 48px 24px;
+        color: var(--muted);
+        font-style: italic;
       }
 
       /* Lightbox nav arrows */
@@ -137,6 +209,19 @@
         All observations logged on iNaturalist by David Kirk, Docent at Desert Botanical Garden.
       </p>
 
+      <!-- Filter tabs -->
+      <div class="gallery-filters" id="galleryFilters" role="tablist" aria-label="Filter observations by location">
+        <button class="filter-tab active" data-filter="garden" role="tab" aria-selected="true">
+          The Garden <span class="count" id="count-garden">0</span>
+        </button>
+        <button class="filter-tab" data-filter="arizona" role="tab" aria-selected="false">
+          Arizona <span class="count" id="count-arizona">0</span>
+        </button>
+        <button class="filter-tab" data-filter="elsewhere" role="tab" aria-selected="false">
+          Elsewhere <span class="count" id="count-elsewhere">0</span>
+        </button>
+      </div>
+
       <section class="gallery-grid" id="gallery">
         <p id="gallery-loading">Loading photos...</p>
       </section>
@@ -172,8 +257,26 @@
       const INAT_USER = "theprguy";
       const PER_PAGE  = 200;
 
-      let galleryItems = [];
+      // Desert Botanical Garden bounding box (covers full Garden property + small buffer)
+      const DBG_BOUNDS = {
+        latMin: 33.457,
+        latMax: 33.466,
+        lngMin: -111.948,
+        lngMax: -111.941
+      };
+
+      // Arizona bounding box (approximate state outline)
+      const AZ_BOUNDS = {
+        latMin: 31.33,
+        latMax: 37.00,
+        lngMin: -114.82,
+        lngMax: -109.05
+      };
+
+      let galleryItems = [];   // visible items in current filter (for lightbox nav)
+      let allItems     = [];   // all items ever rendered
       let currentIndex = 0;
+      let currentFilter = 'garden';
 
       async function fetchAllObservations() {
         let page   = 1;
@@ -211,68 +314,201 @@
         return `https://www.inaturalist.org/taxa/${taxon.id}-${slug}`;
       }
 
+      // Parse the "location" string (format: "lat,lng") into [lat, lng] numbers
+      function parseLocation(obs) {
+        if (!obs.location) return null;
+        const parts = obs.location.split(',').map(s => parseFloat(s.trim()));
+        if (parts.length !== 2 || isNaN(parts[0]) || isNaN(parts[1])) return null;
+        return parts;
+      }
+
+      function isInBounds(latLng, bounds) {
+        if (!latLng) return false;
+        const [lat, lng] = latLng;
+        return lat >= bounds.latMin && lat <= bounds.latMax &&
+               lng >= bounds.lngMin && lng <= bounds.lngMax;
+      }
+
+      // Determine which tab an observation belongs to
+      function classifyObservation(obs) {
+        const latLng = parseLocation(obs);
+
+        // Try coordinate-based classification first
+        if (latLng) {
+          if (isInBounds(latLng, DBG_BOUNDS))  return 'garden';
+          if (isInBounds(latLng, AZ_BOUNDS))   return 'arizona';
+          return 'elsewhere';
+        }
+
+        // Fallback: use place_guess text if coordinates are missing/obscured
+        const place = (obs.place_guess || '').toLowerCase();
+        if (place.includes('desert botanical garden')) return 'garden';
+        if (place.includes('arizona') || place.includes(', az')) return 'arizona';
+        if (place) return 'elsewhere';
+
+        // No location data at all - put in Elsewhere as catch-all
+        return 'elsewhere';
+      }
+
+      // Extract a subgroup label for Elsewhere observations (country or US state)
+      function getSubgroupLabel(obs) {
+        const place = obs.place_guess || 'Unknown Location';
+
+        // Try to extract the last comma-separated segment (usually country or state)
+        const segments = place.split(',').map(s => s.trim()).filter(Boolean);
+        if (segments.length === 0) return 'Unknown Location';
+
+        // Use last segment for country, second-to-last for US state when "USA" is last
+        const last = segments[segments.length - 1];
+        if (segments.length >= 2 && /^(usa|united states)$/i.test(last)) {
+          return segments[segments.length - 2];
+        }
+        return last;
+      }
+
+      function capitalizeWords(str) {
+        return str.replace(/\b\w/g, c => c.toUpperCase());
+      }
+
       function buildGallery(observations) {
         const gallery = document.getElementById('gallery');
         const loading = document.getElementById('gallery-loading');
         if (loading) loading.remove();
 
+        // Bucket observations by filter category
+        const buckets = { garden: [], arizona: [], elsewhere: [] };
+
         observations.forEach(obs => {
           if (!obs.photos || obs.photos.length === 0) return;
           if (!obs.taxon) return;
-
-          const photo      = obs.photos[0];
-          const thumbUrl   = photo.url.replace('square', 'medium');
-          const fullUrl    = photo.url.replace('square', 'large');
-
-          const commonName = obs.taxon.preferred_common_name
-                               ? capitalizeWords(obs.taxon.preferred_common_name)
-                               : null;
-          const sciName    = obs.taxon.name || '';
-          const captionText = commonName
-            ? `${commonName} <em>(${sciName})</em>`
-            : `<em>${sciName}</em>`;
-          const titleText   = commonName ? `${commonName} (${sciName})` : sciName;
-          const obsUrl      = obs.uri || '';
-          const taxonUrl    = buildTaxonUrl(obs.taxon) || '';
-
-          const figure = document.createElement('figure');
-          figure.className = 'gallery-item';
-          figure.id = `obs-${obs.id}`;
-          figure.setAttribute('data-full',      fullUrl);
-          figure.setAttribute('data-title',     titleText);
-          figure.setAttribute('data-obs-url',   obsUrl);
-          figure.setAttribute('data-taxon-url', taxonUrl);
-
-          const linkPills = `
-            <div class="gallery-links">
-              ${obsUrl   ? `<a href="${obsUrl}"   class="gallery-link" target="_blank" rel="noopener noreferrer">My observation <i class="fas fa-arrow-up-right-from-square"></i></a>` : ''}
-              ${taxonUrl ? `<a href="${taxonUrl}" class="gallery-link" target="_blank" rel="noopener noreferrer">About this species <i class="fas fa-arrow-up-right-from-square"></i></a>` : ''}
-            </div>
-          `;
-
-          figure.innerHTML = `
-            <img src="${thumbUrl}" alt="${titleText}" loading="lazy">
-            <figcaption class="gallery-caption">${captionText}</figcaption>
-            <span class="gallery-tag">Photo</span>
-            ${linkPills}
-          `;
-
-          figure.querySelectorAll('.gallery-link').forEach(a => {
-            a.addEventListener('click', e => e.stopPropagation());
-          });
-
-          gallery.appendChild(figure);
+          const category = classifyObservation(obs);
+          buckets[category].push(obs);
         });
 
-        galleryItems = Array.from(gallery.querySelectorAll('.gallery-item'));
+        // Update tab counts
+        document.getElementById('count-garden').textContent    = buckets.garden.length;
+        document.getElementById('count-arizona').textContent   = buckets.arizona.length;
+        document.getElementById('count-elsewhere').textContent = buckets.elsewhere.length;
 
-        if (galleryItems.length === 0) {
+        // Render each bucket into the gallery (will be shown/hidden by filter)
+        renderBucket(gallery, buckets.garden,    'garden',    false);
+        renderBucket(gallery, buckets.arizona,   'arizona',   false);
+        renderBucket(gallery, buckets.elsewhere, 'elsewhere', true);  // group by subgroup
+
+        allItems = Array.from(gallery.querySelectorAll('.gallery-item'));
+
+        if (allItems.length === 0) {
           gallery.innerHTML = '<p>No photos found.</p>';
+        }
+
+        // Apply the default filter (garden)
+        applyFilter(currentFilter);
+      }
+
+      function renderBucket(gallery, observations, category, useSubgroups) {
+        if (observations.length === 0) {
+          // Add an empty-state placeholder for this category
+          const empty = document.createElement('p');
+          empty.className = 'tab-empty';
+          empty.setAttribute('data-category', category);
+          empty.textContent = category === 'garden'
+            ? 'No observations from The Garden yet.'
+            : category === 'arizona'
+              ? 'No observations from Arizona outside The Garden yet.'
+              : 'No observations from outside Arizona yet.';
+          gallery.appendChild(empty);
+          return;
+        }
+
+        if (useSubgroups) {
+          // Group by subgroup label (country or state)
+          const groups = {};
+          observations.forEach(obs => {
+            const label = getSubgroupLabel(obs);
+            if (!groups[label]) groups[label] = [];
+            groups[label].push(obs);
+          });
+
+          // Render each subgroup with a header
+          Object.keys(groups).sort().forEach(label => {
+            const header = document.createElement('h2');
+            header.className = 'subgroup-header';
+            header.setAttribute('data-category', category);
+            header.textContent = `${label} (${groups[label].length})`;
+            gallery.appendChild(header);
+
+            groups[label].forEach(obs => appendFigure(gallery, obs, category));
+          });
+        } else {
+          observations.forEach(obs => appendFigure(gallery, obs, category));
         }
       }
 
-      function capitalizeWords(str) {
-        return str.replace(/\b\w/g, c => c.toUpperCase());
+      function appendFigure(gallery, obs, category) {
+        const photo    = obs.photos[0];
+        const thumbUrl = photo.url.replace('square', 'medium');
+        const fullUrl  = photo.url.replace('square', 'large');
+
+        const commonName = obs.taxon.preferred_common_name
+                             ? capitalizeWords(obs.taxon.preferred_common_name)
+                             : null;
+        const sciName     = obs.taxon.name || '';
+        const captionText = commonName
+          ? `${commonName} <em>(${sciName})</em>`
+          : `<em>${sciName}</em>`;
+        const titleText   = commonName ? `${commonName} (${sciName})` : sciName;
+        const obsUrl      = obs.uri || '';
+        const taxonUrl    = buildTaxonUrl(obs.taxon) || '';
+
+        const figure = document.createElement('figure');
+        figure.className = 'gallery-item';
+        figure.id = `obs-${obs.id}`;
+        figure.setAttribute('data-full',      fullUrl);
+        figure.setAttribute('data-title',     titleText);
+        figure.setAttribute('data-obs-url',   obsUrl);
+        figure.setAttribute('data-taxon-url', taxonUrl);
+        figure.setAttribute('data-category',  category);
+
+        const linkPills = `
+          <div class="gallery-links">
+            ${obsUrl   ? `<a href="${obsUrl}"   class="gallery-link" target="_blank" rel="noopener noreferrer">My observation <i class="fas fa-arrow-up-right-from-square"></i></a>` : ''}
+            ${taxonUrl ? `<a href="${taxonUrl}" class="gallery-link" target="_blank" rel="noopener noreferrer">About this species <i class="fas fa-arrow-up-right-from-square"></i></a>` : ''}
+          </div>
+        `;
+
+        figure.innerHTML = `
+          <img src="${thumbUrl}" alt="${titleText}" loading="lazy">
+          <figcaption class="gallery-caption">${captionText}</figcaption>
+          <span class="gallery-tag">Photo</span>
+          ${linkPills}
+        `;
+
+        figure.querySelectorAll('.gallery-link').forEach(a => {
+          a.addEventListener('click', e => e.stopPropagation());
+        });
+
+        gallery.appendChild(figure);
+      }
+
+      function applyFilter(filter) {
+        currentFilter = filter;
+
+        // Update tab active state
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+          const isActive = tab.getAttribute('data-filter') === filter;
+          tab.classList.toggle('active', isActive);
+          tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        });
+
+        // Show/hide items and subgroup headers and empty states
+        document.querySelectorAll('[data-category]').forEach(el => {
+          el.style.display = el.getAttribute('data-category') === filter ? '' : 'none';
+        });
+
+        // Refresh the galleryItems list for lightbox navigation
+        galleryItems = allItems.filter(item =>
+          item.getAttribute('data-category') === filter
+        );
       }
 
       function handleHashDeepLink() {
@@ -280,6 +516,12 @@
         const targetId = window.location.hash.slice(1);
         const figure = document.getElementById(targetId);
         if (!figure) return;
+
+        // Switch to the tab containing this observation first
+        const category = figure.getAttribute('data-category');
+        if (category && category !== currentFilter) {
+          applyFilter(category);
+        }
 
         figure.scrollIntoView({ behavior: 'smooth', block: 'center' });
         const index = galleryItems.indexOf(figure);
@@ -301,6 +543,14 @@
       }
 
       loadGallery();
+
+      // Tab click handlers
+      document.getElementById('galleryFilters').addEventListener('click', function(e) {
+        const tab = e.target.closest('.filter-tab');
+        if (!tab) return;
+        const filter = tab.getAttribute('data-filter');
+        applyFilter(filter);
+      });
 
       // Lightbox
       const lightbox            = document.getElementById('lightbox');
