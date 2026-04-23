@@ -15,6 +15,76 @@
         margin-bottom: 24px;
       }
 
+      /* Search box */
+      .gallery-search {
+        margin-bottom: 20px;
+      }
+
+      .gallery-search-wrapper {
+        position: relative;
+        max-width: 480px;
+      }
+
+      .gallery-search-input {
+        width: 100%;
+        padding: 10px 40px 10px 40px;
+        font-size: 1rem;
+        font-family: inherit;
+        color: var(--text);
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        transition: border-color 0.2s, box-shadow 0.2s;
+        box-sizing: border-box;
+      }
+
+      .gallery-search-input:focus {
+        outline: none;
+        border-color: var(--accent-vibrant);
+        box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.15);
+      }
+
+      .gallery-search-icon {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--muted);
+        pointer-events: none;
+      }
+
+      .gallery-search-clear {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: var(--muted);
+        cursor: pointer;
+        padding: 6px 8px;
+        font-size: 1rem;
+        border-radius: 50%;
+        display: none;
+        line-height: 1;
+      }
+
+      .gallery-search-clear:hover {
+        color: var(--accent-vibrant);
+        background: rgba(0, 0, 0, 0.05);
+      }
+
+      .gallery-search-clear.visible {
+        display: block;
+      }
+
+      .gallery-search-status {
+        margin-top: 8px;
+        font-size: 0.9rem;
+        color: var(--muted);
+        min-height: 1.2em;
+      }
+
       /* Filter tabs */
       .gallery-filters {
         display: flex;
@@ -209,6 +279,25 @@
         All observations logged on iNaturalist by David Kirk, Docent at Desert Botanical Garden.
       </p>
 
+      <!-- Search box -->
+      <div class="gallery-search">
+        <div class="gallery-search-wrapper">
+          <i class="fas fa-search gallery-search-icon" aria-hidden="true"></i>
+          <input
+            type="text"
+            id="gallerySearch"
+            class="gallery-search-input"
+            placeholder="Search by common or scientific name..."
+            aria-label="Search observations by common or scientific name"
+            autocomplete="off"
+          >
+          <button type="button" id="gallerySearchClear" class="gallery-search-clear" aria-label="Clear search" title="Clear search">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="gallery-search-status" id="gallerySearchStatus" aria-live="polite"></div>
+      </div>
+
       <!-- Filter tabs -->
       <div class="gallery-filters" id="galleryFilters" role="tablist" aria-label="Filter observations by location">
         <button class="filter-tab active" data-filter="garden" role="tab" aria-selected="true">
@@ -273,10 +362,14 @@
         lngMax: -109.05
       };
 
-      let galleryItems = [];   // visible items in current filter (for lightbox nav)
+      // Living Collections search URL template (Desert Botanical Garden's public plant database)
+      const LIVING_COLLECTIONS_SEARCH = "https://livingcollections.org/accession/Search?taxon=";
+
+      let galleryItems = [];   // visible items in current filter+search (for lightbox nav)
       let allItems     = [];   // all items ever rendered
       let currentIndex = 0;
       let currentFilter = 'garden';
+      let currentSearch = '';  // persists across tab switches
 
       async function fetchAllObservations() {
         let page   = 1;
@@ -312,6 +405,18 @@
         if (!taxon || !taxon.id) return null;
         const slug = (taxon.name || '').replace(/\s+/g, '-');
         return `https://www.inaturalist.org/taxa/${taxon.id}-${slug}`;
+      }
+
+      // Build a Living Collections search URL using genus + species epithet only.
+      // iNaturalist scientific names may include subspecies, varieties, or cultivars;
+      // the Garden's database is organized at species level, so we pass only the
+      // first two words of the binomial (or just the genus if that's all we have).
+      function buildLivingCollectionsUrl(taxon) {
+        if (!taxon || !taxon.name) return null;
+        const parts = taxon.name.trim().split(/\s+/);
+        if (parts.length === 0) return null;
+        const searchTerm = parts.slice(0, 2).join(' ');
+        return LIVING_COLLECTIONS_SEARCH + encodeURIComponent(searchTerm);
       }
 
       // Parse the "location" string (format: "lat,lng") into [lat, lng] numbers
@@ -411,6 +516,7 @@
           const empty = document.createElement('p');
           empty.className = 'tab-empty';
           empty.setAttribute('data-category', category);
+          empty.setAttribute('data-empty-state', 'true');
           empty.textContent = category === 'garden'
             ? 'No observations from The Garden yet.'
             : category === 'arizona'
@@ -434,6 +540,7 @@
             const header = document.createElement('h2');
             header.className = 'subgroup-header';
             header.setAttribute('data-category', category);
+            header.setAttribute('data-subgroup', label);
             header.textContent = `${label} (${groups[label].length})`;
             gallery.appendChild(header);
 
@@ -460,19 +567,30 @@
         const obsUrl      = obs.uri || '';
         const taxonUrl    = buildTaxonUrl(obs.taxon) || '';
 
+        // Living Collections pill appears only on Garden-classified observations
+        const gardenUrl = category === 'garden'
+          ? buildLivingCollectionsUrl(obs.taxon)
+          : null;
+
+        // Lowercase search haystack for fast case-insensitive matching
+        const searchHaystack = [commonName || '', sciName].join(' ').toLowerCase();
+
         const figure = document.createElement('figure');
         figure.className = 'gallery-item';
         figure.id = `obs-${obs.id}`;
-        figure.setAttribute('data-full',      fullUrl);
-        figure.setAttribute('data-title',     titleText);
-        figure.setAttribute('data-obs-url',   obsUrl);
-        figure.setAttribute('data-taxon-url', taxonUrl);
-        figure.setAttribute('data-category',  category);
+        figure.setAttribute('data-full',        fullUrl);
+        figure.setAttribute('data-title',       titleText);
+        figure.setAttribute('data-obs-url',     obsUrl);
+        figure.setAttribute('data-taxon-url',   taxonUrl);
+        figure.setAttribute('data-garden-url',  gardenUrl || '');
+        figure.setAttribute('data-category',    category);
+        figure.setAttribute('data-search',      searchHaystack);
 
         const linkPills = `
           <div class="gallery-links">
-            ${obsUrl   ? `<a href="${obsUrl}"   class="gallery-link" target="_blank" rel="noopener noreferrer">My observation <i class="fas fa-arrow-up-right-from-square"></i></a>` : ''}
-            ${taxonUrl ? `<a href="${taxonUrl}" class="gallery-link" target="_blank" rel="noopener noreferrer">About this species <i class="fas fa-arrow-up-right-from-square"></i></a>` : ''}
+            ${obsUrl     ? `<a href="${obsUrl}"     class="gallery-link" target="_blank" rel="noopener noreferrer">My observation <i class="fas fa-arrow-up-right-from-square"></i></a>` : ''}
+            ${taxonUrl   ? `<a href="${taxonUrl}"   class="gallery-link" target="_blank" rel="noopener noreferrer">About this species <i class="fas fa-arrow-up-right-from-square"></i></a>` : ''}
+            ${gardenUrl  ? `<a href="${gardenUrl}"  class="gallery-link" target="_blank" rel="noopener noreferrer">Find at The Garden <i class="fas fa-arrow-up-right-from-square"></i></a>` : ''}
           </div>
         `;
 
@@ -490,6 +608,107 @@
         gallery.appendChild(figure);
       }
 
+      // Does this figure match the current search term?
+      function matchesSearch(figure, term) {
+        if (!term) return true;
+        const haystack = figure.getAttribute('data-search') || '';
+        return haystack.includes(term);
+      }
+
+      // Apply tab filter + search together. Only items matching BOTH show.
+      // Also manages the visibility of subgroup headers and empty-state placeholders.
+      function applyVisibility() {
+        const term = currentSearch.trim().toLowerCase();
+
+        // Show/hide gallery items based on category + search
+        allItems.forEach(item => {
+          const categoryMatch = item.getAttribute('data-category') === currentFilter;
+          const searchMatch   = matchesSearch(item, term);
+          item.style.display = (categoryMatch && searchMatch) ? '' : 'none';
+        });
+
+        // Handle subgroup headers (Elsewhere tab): show only if at least one
+        // item in that subgroup is visible after filtering.
+        const subgroupHeaders = document.querySelectorAll('.subgroup-header[data-subgroup]');
+        subgroupHeaders.forEach(header => {
+          const category = header.getAttribute('data-category');
+          if (category !== currentFilter) {
+            header.style.display = 'none';
+            return;
+          }
+          // Count how many items in this subgroup are currently visible
+          const label = header.getAttribute('data-subgroup');
+          const siblings = allItems.filter(item =>
+            item.getAttribute('data-category') === category
+          );
+          // Since items are appended in order after their header, walk forward
+          // from this header until the next header or end, counting visibles.
+          let visibleCount = 0;
+          let node = header.nextElementSibling;
+          while (node && !node.classList.contains('subgroup-header')) {
+            if (node.classList.contains('gallery-item') && node.style.display !== 'none') {
+              visibleCount++;
+            }
+            node = node.nextElementSibling;
+          }
+          if (visibleCount > 0) {
+            header.style.display = '';
+            // Update header count to reflect current visible items
+            header.textContent = `${label} (${visibleCount})`;
+          } else {
+            header.style.display = 'none';
+          }
+        });
+
+        // Handle empty-state placeholders: show if their category is active
+        // AND no items are currently visible in that category.
+        const emptyStates = document.querySelectorAll('[data-empty-state="true"]');
+        emptyStates.forEach(el => {
+          const category = el.getAttribute('data-category');
+          if (category !== currentFilter) {
+            el.style.display = 'none';
+          } else {
+            // Only show the original "no observations yet" message when there's
+            // genuinely nothing in this bucket (not just nothing matching search).
+            const categoryItemCount = allItems.filter(item =>
+              item.getAttribute('data-category') === category
+            ).length;
+            el.style.display = categoryItemCount === 0 ? '' : 'none';
+          }
+        });
+
+        // Refresh galleryItems list for lightbox navigation (visible items only)
+        galleryItems = allItems.filter(item =>
+          item.getAttribute('data-category') === currentFilter &&
+          matchesSearch(item, term) &&
+          item.style.display !== 'none'
+        );
+
+        // Update search status message
+        updateSearchStatus();
+      }
+
+      function updateSearchStatus() {
+        const status = document.getElementById('gallerySearchStatus');
+        const term = currentSearch.trim();
+        if (!term) {
+          status.textContent = '';
+          return;
+        }
+        const totalMatches = allItems.filter(item =>
+          matchesSearch(item, term.toLowerCase())
+        ).length;
+        const currentTabMatches = galleryItems.length;
+
+        if (totalMatches === 0) {
+          status.textContent = `No matches for "${term}".`;
+        } else if (totalMatches === currentTabMatches) {
+          status.textContent = `${totalMatches} match${totalMatches === 1 ? '' : 'es'} for "${term}".`;
+        } else {
+          status.textContent = `${currentTabMatches} match${currentTabMatches === 1 ? '' : 'es'} on this tab, ${totalMatches} total for "${term}". Switch tabs to see others.`;
+        }
+      }
+
       function applyFilter(filter) {
         currentFilter = filter;
 
@@ -500,15 +719,7 @@
           tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
         });
 
-        // Show/hide items and subgroup headers and empty states
-        document.querySelectorAll('[data-category]').forEach(el => {
-          el.style.display = el.getAttribute('data-category') === filter ? '' : 'none';
-        });
-
-        // Refresh the galleryItems list for lightbox navigation
-        galleryItems = allItems.filter(item =>
-          item.getAttribute('data-category') === filter
-        );
+        applyVisibility();
       }
 
       function handleHashDeepLink() {
@@ -521,6 +732,15 @@
         const category = figure.getAttribute('data-category');
         if (category && category !== currentFilter) {
           applyFilter(category);
+        }
+
+        // Clear any active search so the deep-linked item is visible
+        if (currentSearch) {
+          currentSearch = '';
+          const searchInput = document.getElementById('gallerySearch');
+          if (searchInput) searchInput.value = '';
+          document.getElementById('gallerySearchClear').classList.remove('visible');
+          applyVisibility();
         }
 
         figure.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -552,6 +772,30 @@
         applyFilter(filter);
       });
 
+      // Search input handlers (debounced for smoother typing)
+      const searchInput = document.getElementById('gallerySearch');
+      const searchClear = document.getElementById('gallerySearchClear');
+      let searchDebounce = null;
+
+      searchInput.addEventListener('input', function() {
+        const value = this.value;
+        searchClear.classList.toggle('visible', value.length > 0);
+
+        clearTimeout(searchDebounce);
+        searchDebounce = setTimeout(() => {
+          currentSearch = value;
+          applyVisibility();
+        }, 150);
+      });
+
+      searchClear.addEventListener('click', function() {
+        searchInput.value = '';
+        currentSearch = '';
+        searchClear.classList.remove('visible');
+        applyVisibility();
+        searchInput.focus();
+      });
+
       // Lightbox
       const lightbox            = document.getElementById('lightbox');
       const lightboxImage       = document.getElementById('lightboxImage');
@@ -564,9 +808,10 @@
 
       function openLightbox(index) {
         currentIndex = index;
-        const figure   = galleryItems[currentIndex];
-        const obsUrl   = figure.getAttribute('data-obs-url');
-        const taxonUrl = figure.getAttribute('data-taxon-url');
+        const figure    = galleryItems[currentIndex];
+        const obsUrl    = figure.getAttribute('data-obs-url');
+        const taxonUrl  = figure.getAttribute('data-taxon-url');
+        const gardenUrl = figure.getAttribute('data-garden-url');
 
         lightboxImage.src         = figure.getAttribute('data-full');
         lightboxImage.alt         = figure.getAttribute('data-title');
@@ -574,8 +819,9 @@
         lightboxDescription.textContent = '';
 
         lightboxLinks.innerHTML = `
-          ${obsUrl   ? `<a href="${obsUrl}"   class="lightbox-link" target="_blank" rel="noopener noreferrer">My observation <i class="fas fa-arrow-up-right-from-square"></i></a>` : ''}
-          ${taxonUrl ? `<a href="${taxonUrl}" class="lightbox-link" target="_blank" rel="noopener noreferrer">About this species <i class="fas fa-arrow-up-right-from-square"></i></a>` : ''}
+          ${obsUrl    ? `<a href="${obsUrl}"    class="lightbox-link" target="_blank" rel="noopener noreferrer">My observation <i class="fas fa-arrow-up-right-from-square"></i></a>` : ''}
+          ${taxonUrl  ? `<a href="${taxonUrl}"  class="lightbox-link" target="_blank" rel="noopener noreferrer">About this species <i class="fas fa-arrow-up-right-from-square"></i></a>` : ''}
+          ${gardenUrl ? `<a href="${gardenUrl}" class="lightbox-link" target="_blank" rel="noopener noreferrer">Find at The Garden <i class="fas fa-arrow-up-right-from-square"></i></a>` : ''}
         `;
 
         lightbox.classList.add('open');
@@ -613,6 +859,11 @@
       });
 
       document.addEventListener('keydown', function(e) {
+        // Don't hijack arrow keys while the user is typing in the search box
+        if (document.activeElement === searchInput) {
+          if (e.key === 'Escape') searchInput.blur();
+          return;
+        }
         if (!lightbox.classList.contains('open')) return;
         if (e.key === 'Escape')      closeLightbox();
         if (e.key === 'ArrowLeft')   showPrev();
