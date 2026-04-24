@@ -6,4 +6,4 @@ Disallow: /admin.css
 Disallow: /admin.js
 Disallow: /netlify/
 
-Sitemap: https://www.theprguy.com/sitemap.xml
+Sitemap: https://www.dbgdocent.com/sitemap.xml
