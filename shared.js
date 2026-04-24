@@ -1,5 +1,15 @@
 document.addEventListener('DOMContentLoaded', function() {
 
+  // Inject canonical tag for SEO
+  (function() {
+    const canonical = document.createElement('link');
+    canonical.rel = 'canonical';
+    // Normalize: use non-www, strip trailing slash, preserve path
+    const path = window.location.pathname.replace(/\/$/, '') || '/';
+    canonical.href = 'https://dbgdocent.com' + path;
+    document.head.appendChild(canonical);
+  })();
+
   // Load header
   fetch('header.html')
     .then(response => response.text())
