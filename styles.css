@@ -72,19 +72,23 @@ img {
    Floating logo – desktop only, sits in left margin
 ---------------------------------------------------------- */
 .site-logo-floating {
+  /* Logo grows with the left margin: 130px minimum, 240px maximum.
+     The margin is (viewport width - 1040px content column) / 2,
+     and the logo is centered inside it with breathing room on each side. */
+  --logo-size: clamp(130px, calc((100vw - 1040px) / 2 - 48px), 240px);
   position: fixed;
   top: 50%;
+  left: calc(((100vw - 1040px) / 2 - var(--logo-size)) / 2);
   transform: translateY(-50%);
-  /* Right edge of logo sits 20px left of content column */
- left: calc(50% - 520px - 210px)
   z-index: 20;
   display: block;
-  transition: transform 0.3s ease, opacity 0.3s ease;
+  transition: opacity 0.3s ease;
 }
 
 .site-logo-floating img {
-  width: 160px;
-  height: 160px;
+  width: var(--logo-size);
+  height: var(--logo-size);
+  display: block;
   object-fit: contain;
   border-radius: 50%;
   box-shadow: 0 4px 24px rgba(0,0,0,0.18);
@@ -96,8 +100,8 @@ img {
   box-shadow: 0 8px 32px rgba(0,0,0,0.24);
 }
 
-/* Hide floating logo on smaller screens */
-@media (max-width: 1280px) {
+/* Hide floating logo when the margin is too narrow for it */
+@media (max-width: 1360px) {
   .site-logo-floating {
     display: none;
   }
@@ -137,7 +141,7 @@ img {
 }
 
 .site-logo-mobile img {
-  height: 44px;
+  height: 50px;
   width: auto;
   display: block;
   object-fit: contain;
@@ -304,11 +308,9 @@ main {
 }
 
 .footer-logo img {
-  height: auto;
-  width: auto;
+  height: 90px;
+  width: 90px;
   display: block;
-  max-height: 100px;
-  max-width: 400px;
   object-fit: contain;
 }
 
@@ -918,8 +920,8 @@ textarea:focus {
 /* ----------------------------------------------------------
    Responsive
 ---------------------------------------------------------- */
-@media (max-width: 1280px) {
-  /* Below 1280px there is not enough margin for the floating logo
+@media (max-width: 1360px) {
+  /* Below 1360px there is not enough margin for the floating logo
      so we show the logo back in the header instead */
   .site-logo-mobile {
     display: block;
@@ -973,7 +975,7 @@ textarea:focus {
   }
 
   .site-logo-mobile img {
-    height: 40px;
+    height: 44px;
   }
 
   .header-inner {
