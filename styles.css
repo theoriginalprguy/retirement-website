@@ -2,22 +2,31 @@
    Global variables – warm desert light theme with color pops
 ---------------------------------------------------------- */
 :root {
+  /* Palette drawn from the "Retired, not expired." logo.
+     Text colors are checked to meet WCAG AA contrast on the sand background. */
   --bg: #f7f0e4;              /* sand */
   --bg-alt: #f2e3cf;          /* light adobe */
-  --accent: #c86b3c;          /* terracotta */
-  --accent-soft: rgba(200,107,60,0.14);
-  --accent-strong: #9b4120;
 
-  /* Color pops for modern feel */
-  --accent-vibrant: #ff6b35;  /* sunset orange */
-  --accent-purple: #8b5cf6;   /* desert flower purple */
-  --accent-pink: #ec4899;     /* cactus flower pink */
+  --logo-teal: #11758d;       /* sky in the logo */
+  --logo-teal-deep: #0e6378;  /* deeper teal for text and links */
+  --logo-sun: #f0a703;        /* desert sun (decorative only, too light for text) */
+  --logo-terracotta: #b5430e; /* mountains, darkened slightly for readable text */
+  --logo-saguaro: #3f6b2d;    /* saguaro green */
+
+  --accent: var(--logo-terracotta);
+  --accent-soft: rgba(17,117,141,0.12);
+  --accent-strong: var(--logo-teal-deep);
+
+  /* Color pops (names kept from the original theme so every page picks them up) */
+  --accent-vibrant: var(--logo-teal);       /* was sunset orange */
+  --accent-purple: var(--logo-terracotta);  /* was desert flower purple */
+  --accent-pink: var(--logo-saguaro);       /* was cactus flower pink */
 
   --text: #2b2118;            /* deep brown */
-  --muted: #7b6a59;           /* soft clay */
+  --muted: #6f5f4f;           /* soft clay, darkened slightly for readability */
   --card: #fff8ee;            /* light card */
   --border: #e0c9a6;
-  --link: #9b4120;
+  --link: var(--logo-teal-deep);
   --shadow-soft: 0 16px 40px rgba(0,0,0,0.16);
   --radius-lg: 18px;
   --radius-pill: 999px;
@@ -174,7 +183,7 @@ img {
 .site-nav a.active {
   background: var(--accent-soft);
   color: var(--accent-strong);
-  border: 1px solid rgba(200,107,60,0.5);
+  border: 1px solid rgba(17,117,141,0.5);
   box-shadow: 0 0 0 1px rgba(247,240,228,0.9);
 }
 
@@ -203,7 +212,7 @@ img {
   padding: 6px 12px;
   border-radius: 999px;
   border: 1px solid var(--accent-vibrant);
-  background: linear-gradient(to right, var(--accent-vibrant), #ff8c5a);
+  background: linear-gradient(to right, var(--logo-teal), #1a8ca6);
   color: #fffaf3;
   font-size: 0.8rem;
   cursor: pointer;
@@ -212,7 +221,7 @@ img {
 
 .site-search button:hover {
   transform: translateY(-1px);
-  box-shadow: 0 10px 22px rgba(255,107,53,0.45);
+  box-shadow: 0 10px 22px rgba(17,117,141,0.45);
 }
 
 /* Mobile nav toggle */
@@ -356,7 +365,7 @@ main {
 
 .social-links a:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(200,107,60,0.3);
+  box-shadow: 0 4px 12px rgba(17,117,141,0.3);
   background: var(--accent-soft);
 }
 
@@ -427,7 +436,7 @@ main {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(255,107,53,0.1), rgba(139,92,246,0.1));
+  background: linear-gradient(135deg, rgba(17,117,141,0.1), rgba(240,167,3,0.1));
   border-radius: 14px;
 }
 
@@ -615,12 +624,12 @@ h1 {
   border-radius: var(--radius-pill);
   font-size: 0.88rem;
   color: var(--accent-strong);
-  border: 1px solid rgba(200,107,60,0.3);
+  border: 1px solid rgba(17,117,141,0.3);
   margin-top: 8px;
 }
 
 .callout {
-  background: linear-gradient(135deg, var(--accent-soft), rgba(139,92,246,0.08));
+  background: linear-gradient(135deg, var(--accent-soft), rgba(240,167,3,0.08));
   border-left: 3px solid var(--accent-vibrant);
   padding: 14px 18px;
   margin-top: 16px;
@@ -689,7 +698,7 @@ h1 {
   top: 8px;
   padding: 3px 8px;
   border-radius: 999px;
-  background: rgba(139,92,246,0.9);
+  background: var(--logo-terracotta);
   color: white;
   font-size: 0.7rem;
   border: none;
@@ -763,7 +772,7 @@ h1 {
 }
 
 .lightbox-close:hover {
-  background: #ff8c5a;
+  background: var(--logo-terracotta);
   transform: scale(1.05);
 }
 
@@ -856,7 +865,7 @@ input:focus,
 textarea:focus {
   outline: none;
   border-color: var(--accent-vibrant);
-  box-shadow: 0 0 0 3px rgba(255,107,53,0.1);
+  box-shadow: 0 0 0 3px rgba(17,117,141,0.1);
 }
 
 .btn-primary {
@@ -869,12 +878,12 @@ textarea:focus {
   font-weight: 600;
   cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
-  box-shadow: 0 4px 12px rgba(255,107,53,0.3);
+  box-shadow: 0 4px 12px rgba(17,117,141,0.3);
 }
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(255,107,53,0.4);
+  box-shadow: 0 8px 20px rgba(17,117,141,0.4);
 }
 
 /* ----------------------------------------------------------
@@ -1097,7 +1106,7 @@ textarea:focus {
 
 .gsc-search-button:hover {
   transform: translateY(-1px);
-  box-shadow: 0 10px 22px rgba(255,107,53,0.45) !important;
+  box-shadow: 0 10px 22px rgba(17,117,141,0.45) !important;
 }
 
 .gsc-results {

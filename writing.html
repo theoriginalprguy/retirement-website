@@ -3,11 +3,22 @@
   <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <title>Writing | David Kirk</title>
+    <meta name="description" content="Essays, observations, and dispatches from the Sonoran Desert by David Kirk, published on Substack and collected here.">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="David Kirk">
+    <meta property="og:url" content="https://dbgdocent.com/writing.html">
+    <meta property="og:title" content="Writing | David Kirk">
+    <meta property="og:description" content="Essays, observations, and dispatches from the Sonoran Desert by David Kirk, published on Substack and collected here.">
+    <meta property="og:image" content="https://dbgdocent.com/images/share-card.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://dbgdocent.com/images/share-card.jpg">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#ff6b35">
+    <meta name="theme-color" content="#11758d">
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="icon" type="image/png" href="images/favicon.png">
+    <link rel="stylesheet" href="icons.css">
+    <link rel="icon" type="image/png" href="images/favicon.png?v=20261030">
     <style>
       /* Story card with image on left */
       .story-card-with-image {
@@ -307,7 +318,10 @@
     <script>
       const FEED_URL = 'https://davidkirktheprguy.substack.com/feed';
 
+      // Sources tried in order. The first is the site's own free Cloudflare
+      // function (/api/substack); the others are outside services kept as backups.
       const PROXIES = [
+        url => '/api/substack',
         url => `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`,
         url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
         url => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`

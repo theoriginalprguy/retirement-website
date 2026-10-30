@@ -7,7 +7,7 @@
     <!-- Primary Meta Tags -->
     <title>David Kirk | Retired, Not Expired</title>
     <meta name="title" content="David Kirk | Retired, Not Expired">
-    <meta name="description" content="Writing, photos, and projects from David Kirk - a PR professional turned desert explorer sharing essays, photography, and insights from Phoenix, Mexico, and beyond.">
+    <meta name="description" content="Writing, photos, and projects from David Kirk, a retired PR professional and Desert Botanical Garden Docent sharing essays, photography, and observations from Phoenix and beyond.">
     <meta name="keywords" content="David Kirk, PR professional, crisis communications, Desert Botanical Garden, Phoenix, desert life, retirement, writing, photography">
     <meta name="author" content="David Kirk">
 
@@ -15,48 +15,57 @@
     <meta name="google-site-verification" content="wIej4xEdtMZ1IBH4_mWAKaZb9LqbEOwEkVCN-UMF7l0">
 
     <!-- Theme color for mobile browsers -->
-    <meta name="theme-color" content="#ff6b35">
-
-    <!-- Open Graph / Facebook -->
+    <meta name="theme-color" conten    <!-- Social sharing previews (Facebook, Bluesky, LinkedIn, texts) -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://www.dbgdocent.com/">
+    <meta property="og:site_name" content="David Kirk">
+    <meta property="og:url" content="https://dbgdocent.com/">
     <meta property="og:title" content="David Kirk | Retired, Not Expired">
-    <meta property="og:description" content="Writing, photos, and projects from David Kirk - sharing essays, photography, and insights from Phoenix, Mexico, and beyond.">
-    <meta property="og:image" content="https://www.dbgdocent.com/images/dk-logo-header.png">
-    
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://www.dbgdocent.com/">
-    <meta property="twitter:title" content="David Kirk | Retired, Not Expired">
-    <meta property="twitter:description" content="Writing, photos, and projects from David Kirk - sharing essays, photography, and insights from Phoenix, Mexico, and beyond.">
-    <meta property="twitter:image" content="https://www.dbgdocent.com/images/dk-logo-header.png">
-    
-    <!-- Schema.org structured data -->
+    <meta property="og:description" content="Writing, photos, and projects from David Kirk, a retired PR professional and Desert Botanical Garden Docent sharing essays, photography, and observations from Phoenix and beyond.">
+    <meta property="og:image" content="https://dbgdocent.com/images/share-card.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://dbgdocent.com/images/share-card.jpg">
+
+    <!-- Schema.org structured data: tells Google who David is (not visible on the page) -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "Person",
       "name": "David Kirk",
-      "url": "https://www.dbgdocent.com/",
-      "image": "https://www.dbgdocent.com/images/david-kirk-photo.jpg",
+      "url": "https://dbgdocent.com/",
+      "image": "https://dbgdocent.com/images/david-kirk-photo.jpg",
+      "email": "mailto:DBGDocent@gmail.com",
       "jobTitle": "Public Relations Professional (Retired)",
-      "alumniOf": "Public Relations Society of America",
-      "award": "APR, Fellow PRSA",
-      "description": "Retired PR professional, Desert Botanical Garden docent, voice teacher, and writer sharing insights on desert life, communication, and retirement.",
+      "honorificSuffix": "APR, Fellow PRSA",
+      "description": "Retired public relations professional (APR, Fellow PRSA), Desert Botanical Garden Docent, and writer sharing essays and nature observations from the Sonoran Desert and beyond.",
+      "affiliation": {
+        "@type": "Organization",
+        "name": "Desert Botanical Garden",
+        "url": "https://dbg.org/"
+      },
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Phoenix",
+        "addressRegion": "AZ",
+        "addressCountry": "US"
+      },
       "sameAs": [
         "https://www.facebook.com/theprguy",
         "https://www.instagram.com/kirk.d/",
         "https://bsky.app/profile/theoriginalprguy.bsky.social",
-        "https://substack.com/@davidkirktheprguy"
+        "https://substack.com/@davidkirktheprguy",
+        "https://davidkirktheprguy.substack.com/",
+        "https://www.inaturalist.org/people/theprguy"
       ]
     }
     </script>
     
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="icons.css">
     
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="images/favicon.png">
+    <link rel="icon" type="image/png" href="images/favicon.png?v=20261030">
 
     <!-- Two-column layout styles -->
     <style>
@@ -121,7 +130,7 @@
       }
       .weather-icon {
         font-size: 3.5rem;
-        color: #ff6b35;
+        color: var(--logo-sun);
         flex-shrink: 0;
         width: 72px;
         text-align: center;
@@ -311,13 +320,36 @@
         }
       })();
 
-      // Latest Substack post via RSS-to-JSON proxy
-      (async () => {
+      // Latest Substack post. First choice is the site's own feed endpoint
+      // (/api/substack, a free Cloudflare function); if that is unavailable
+      // (for example when previewing locally), fall back to rss2json.com.
+      async function getLatestSubstackPost() {
         try {
+          const res = await fetch('/api/substack');
+          if (!res.ok) throw new Error('Own feed unavailable');
+          const doc = new DOMParser().parseFromString(await res.text(), 'text/xml');
+          const item = doc.getElementsByTagName('item')[0];
+          if (!item) throw new Error('No posts');
+          const get = tag => (item.getElementsByTagName(tag)[0]?.textContent || '').trim();
+          const enclosure = item.getElementsByTagName('enclosure')[0];
+          return {
+            title: get('title'),
+            link: get('link'),
+            pubDate: get('pubDate'),
+            description: get('description'),
+            thumbnail: enclosure ? enclosure.getAttribute('url') : ''
+          };
+        } catch (e) {
           const feedUrl = 'https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fdavidkirktheprguy.substack.com%2Ffeed';
           const res = await fetch(feedUrl);
           const data = await res.json();
-          const post = data.items && data.items[0];
+          return data.items && data.items[0];
+        }
+      }
+
+      (async () => {
+        try {
+          const post = await getLatestSubstackPost();
           if (!post) throw new Error('No posts');
 
           document.getElementById('latest-post-title').textContent = post.title;
