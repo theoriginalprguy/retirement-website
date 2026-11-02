@@ -92,7 +92,7 @@
           }
           .home-columns > .home-col > .column-stack { display: contents; }
           .home-columns .column-stack > * { height: 100%; }
-          .home-columns .column-stack > a > .overview-card,
+          .home-columns .column-stack > * > .overview-card,
           .home-columns .column-stack > .overview-card {
             height: 100%;
             display: flex;
@@ -111,6 +111,57 @@
         font-size: 0.85rem;
         color: var(--muted);
         margin: -4px 0 10px;
+      }
+
+      /* Gallery card: one featured photo from The Garden */
+      .featured-photo {
+        margin: 0 0 0.6rem;
+      }
+      .featured-photo-meta {
+        font-size: 0.85rem;
+        color: var(--muted);
+        margin: 0 0 0.6rem;
+      }
+      .featured-photo-meta em { font-style: italic; }
+
+      /* Projects card: mini list with small photos */
+      .projects-card h2 a:hover { color: var(--accent-strong); }
+      .project-mini {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin: 2px 0 12px;
+      }
+      .project-mini a {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 4px 6px;
+        margin: 0 -6px;
+        border-radius: 10px;
+        color: var(--text);
+        font-size: 0.93rem;
+        font-weight: 500;
+        transition: background 0.2s ease, color 0.2s ease;
+      }
+      .project-mini a:hover,
+      .project-mini a:focus-visible {
+        background: var(--accent-soft);
+        color: var(--accent-strong);
+      }
+      .project-mini img {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        object-fit: cover;
+        flex-shrink: 0;
+        border: 1px solid var(--border);
+      }
+      .project-mini .ext {
+        font-size: 0.75rem;
+        color: var(--muted);
+        margin-left: auto;
       }
 
       /* Mom's Recipes feature, full width under both columns */
@@ -315,23 +366,35 @@
                 </article>
               </a>
 
-              <a href="Gallery.html" class="overview-card-link">
+              <a href="Gallery.html#obs-358967142" class="overview-card-link">
                 <article class="overview-card">
-                  <div class="overview-image overview-image-gallery"></div>
+                  <div class="now-eyebrow">FROM THE GALLERY</div>
+                  <div class="now-photo-wrap featured-photo">
+                    <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/654894809/medium.jpg" alt="Trichocereus cactus with large red flowers in bloom at Desert Botanical Garden" loading="lazy" width="500" height="375">
+                  </div>
+                  <p class="featured-photo-meta"><em>Trichocereus</em> in bloom · Desert Botanical Garden · May 6, 2026</p>
                   <h2>Gallery</h2>
                   <p>A visual diary of desert life, travel moments, and the occasional mystery object.</p>
                   <span class="card-link">Browse photos →</span>
                 </article>
               </a>
 
-              <a href="Projects.html" class="overview-card-link">
-                <article class="overview-card">
+              <div class="overview-card-link">
+                <article class="overview-card projects-card">
                   <div class="overview-image overview-image-projects"></div>
-                  <h2>Projects</h2>
+                  <h2><a href="Projects.html">Projects</a></h2>
                   <p>Talks, tours, collaborations, and side quests that keep things interesting.</p>
-                  <span class="card-link">See current projects →</span>
+                  <ul class="project-mini">
+                    <li><a href="https://www.dbg.org" target="_blank" rel="noopener noreferrer"><img src="https://res.cloudinary.com/dlxmgewap/image/upload/w_80,h_80,c_fill,q_auto,f_auto/v1776652423/DBGGallery.jpg" alt="" loading="lazy" width="40" height="40">Desert Botanical Garden<span class="ext" aria-label="opens in a new tab">↗</span></a></li>
+                    <li><a href="Recipes.html"><img src="https://res.cloudinary.com/dlxmgewap/image/upload/w_80,h_80,c_fill,q_auto,f_auto/v1776652423/recipes.jpg" alt="" loading="lazy" width="40" height="40">Mom's Recipes</a></li>
+                    <li><a href="https://www.MarthaWendel.com" target="_blank" rel="noopener noreferrer"><img src="https://res.cloudinary.com/dlxmgewap/image/upload/w_80,h_80,c_fill,q_auto,f_auto/v1776652423/homestead.jpg" alt="" loading="lazy" width="40" height="40">Martha Wendel Gallery<span class="ext" aria-label="opens in a new tab">↗</span></a></li>
+                    <li><a href="https://www.ancestry.com/family-tree/tree/48561249" target="_blank" rel="noopener noreferrer"><img src="https://res.cloudinary.com/dlxmgewap/image/upload/w_80,h_80,c_fill,q_auto,f_auto/v1776652423/family_tree.jpg" alt="" loading="lazy" width="40" height="40">My Family Tree<span class="ext" aria-label="opens in a new tab">↗</span></a></li>
+                    <li><a href="Projects.html#lucy"><img src="https://res.cloudinary.com/dlxmgewap/image/upload/w_80,h_80,c_fill,q_auto,f_auto/v1776652423/lucy.png" alt="" loading="lazy" width="40" height="40">Lucy: A Gift for America</a></li>
+                    <li><a href="https://share.photomyne.com/share?u=8A919F14-A4EC-433B-84AC-BA9EA0255B66&s=461c2ef7-72f4-4c61-8adc-1731f63e4efc" target="_blank" rel="noopener noreferrer"><img src="https://res.cloudinary.com/dlxmgewap/image/upload/w_80,h_80,c_fill,q_auto,f_auto/v1776652423/david.jpg" alt="" loading="lazy" width="40" height="40">More Nostalgia<span class="ext" aria-label="opens in a new tab">↗</span></a></li>
+                  </ul>
+                  <a href="Projects.html" class="card-link">See all projects →</a>
                 </article>
-              </a>
+              </div>
             </div>
           </div>
 
@@ -532,7 +595,8 @@
           const res = await fetchWithTimeout(url);
           if (!res.ok) throw new Error('HTTP ' + res.status);
           const data = await res.json();
-          const withPhotos = (data.results || []).filter(o => o.photos && o.photos.length);
+          // Skip the photo already featured on the Gallery card
+          const withPhotos = (data.results || []).filter(o => o.photos && o.photos.length && o.id !== 358967142);
           if (!withPhotos.length) throw new Error('No observations with photos');
 
           const pick = withPhotos[Math.floor(Math.random() * withPhotos.length)];
