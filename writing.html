@@ -6,7 +6,7 @@
     <meta name="description" content="Essays, observations, and dispatches from the Sonoran Desert by David Kirk, published on Substack and collected here.">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="David Kirk">
-    <meta property="og:url" content="https://dbgdocent.com/writing.html">
+    <meta property="og:url" content="https://dbgdocent.com/writing">
     <meta property="og:title" content="Writing | David Kirk">
     <meta property="og:description" content="Essays, observations, and dispatches from the Sonoran Desert by David Kirk, published on Substack and collected here.">
     <meta property="og:image" content="https://dbgdocent.com/images/share-card.jpg">
@@ -175,6 +175,18 @@
         text-decoration: underline;
       }
 
+      .archive-note {
+        color: var(--muted);
+        font-size: 0.95rem;
+        margin: 4px 0 18px;
+      }
+      .archive-note a,
+      .loading-message a {
+        color: var(--link);
+        text-decoration: underline;
+        font-weight: 600;
+      }
+
       .substack-cta {
         margin-top: 40px;
         text-align: center;
@@ -298,13 +310,17 @@
       </div>
 
       <h2 style="margin-top: 40px;">Recent posts</h2>
+      <p class="archive-note">
+        The ten most recent essays are shown here. Older ones live in the
+        <a href="https://davidkirktheprguy.substack.com/archive" target="_blank" rel="noopener noreferrer">full archive on Substack</a>.
+      </p>
       <p id="loading-message" class="loading-message">Loading latest posts...</p>
       <div class="post-list" id="post-list"></div>
 
       <div class="substack-cta">
-        <p>Read the full archive and subscribe for free on Substack.</p>
-        <a href="https://davidkirktheprguy.substack.com" target="_blank" rel="noopener noreferrer" class="btn-substack">
-          Visit on Substack
+        <p>Looking for an older essay? The full archive is on Substack, where you can also subscribe for free.</p>
+        <a href="https://davidkirktheprguy.substack.com/archive" target="_blank" rel="noopener noreferrer" class="btn-substack">
+          Browse all essays
         </a>
       </div>
     </main>
@@ -318,18 +334,24 @@
     <script>
       const FEED_URL = 'https://davidkirktheprguy.substack.com/feed';
 
-      // Sources tried in order. The first is the site's own free Cloudflare
-      // function (/api/substack); the others are outside services kept as backups.
+      // Substack's feed is read through rss2json.com (free). Tested October 30, 2026:
+      // Substack refuses requests from Cloudflare servers, and corsproxy.io and
+      // allorigins.win no longer work. If rss2json fails, visitors see a friendly
+      // link to Substack instead.
       const PROXIES = [
-        url => '/api/substack',
-        url => `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`,
-        url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
-        url => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`
+        url => `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`
       ];
+
+      // Give up after 10 seconds instead of showing "Loading..." forever
+      function fetchWithTimeout(resource, ms = 10000) {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), ms);
+        return fetch(resource, { signal: controller.signal }).finally(() => clearTimeout(timer));
+      }
 
       async function fetchWithProxy(proxyFn, feedUrl) {
         const proxyUrl = proxyFn(feedUrl);
-        const response = await fetch(proxyUrl);
+        const response = await fetchWithTimeout(proxyUrl);
         if (!response.ok) throw new Error('HTTP ' + response.status);
         const text = await response.text();
 
@@ -385,7 +407,7 @@
         const postList = document.getElementById('post-list');
 
         if (!posts || posts.length === 0) {
-          loading.textContent = 'Posts unavailable right now. Visit Substack to read the latest.';
+          loading.innerHTML = 'Posts are unavailable right now. <a href="https://davidkirktheprguy.substack.com/archive" target="_blank" rel="noopener noreferrer">Read them on Substack</a>.';
           return;
         }
 
@@ -437,8 +459,8 @@
             continue;
           }
         }
-        document.getElementById('loading-message').textContent =
-          'Posts unavailable right now. Visit Substack to read the latest.';
+        document.getElementById('loading-message').innerHTML =
+          'Posts are unavailable right now. <a href="https://davidkirktheprguy.substack.com/archive" target="_blank" rel="noopener noreferrer">Read them on Substack</a>.';
       }
 
       loadPosts();
@@ -460,4 +482,4 @@
 
     <script src="shared.js"></script>
   </body>
-</html>
+</html>

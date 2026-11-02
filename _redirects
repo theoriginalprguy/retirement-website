@@ -1,0 +1,40 @@
+# dbgdocent.com redirects (Cloudflare Pages)
+# Page files use capital letters (About.html), and Cloudflare treats
+# /about and /About as different addresses. These rules let lowercase,
+# all-caps, and trailing-slash versions reach the right page.
+#
+# Rules with a trailing slash use a 301 redirect to the real address.
+# Rules without one quietly serve the page (200), which cannot loop
+# whatever way Cloudflare compares capital letters.
+
+/about/      /About     301
+/about.html  /About     301
+/about       /About     200
+/ABOUT       /About     200
+
+/gallery/      /Gallery   301
+/gallery.html  /Gallery   301
+/gallery       /Gallery   200
+/GALLERY       /Gallery   200
+
+/projects/      /Projects  301
+/projects.html  /Projects  301
+/projects       /Projects  200
+/PROJECTS       /Projects  200
+
+/recipes/      /Recipes   301
+/recipes.html  /Recipes   301
+/recipes       /Recipes   200
+/RECIPES       /Recipes   200
+
+/contact/      /Contact   301
+/contact.html  /Contact   301
+/contact       /Contact   200
+/CONTACT       /Contact   200
+
+/Writing    /writing   200
+/WRITING    /writing   200
+/Search     /search    200
+/SEARCH     /search    200
+/home       /          301
+/index      /          301

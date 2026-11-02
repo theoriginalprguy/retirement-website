@@ -52,8 +52,8 @@ body {
   background-image:
     linear-gradient(
       to bottom,
-      rgba(247,240,228,0.75),
-      rgba(247,240,228,0.75)
+      rgba(247,240,228,0.86),
+      rgba(247,240,228,0.86)
     ),
     url("images/desert-bg.jpg");
   background-size: cover;
@@ -301,8 +301,8 @@ main {
   max-width: 1040px;
   margin: 0 auto;
   padding: 16px 20px 26px;
-  font-size: 0.82rem;
-  color: var(--muted);
+  font-size: 0.92rem;
+  color: var(--text);
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
@@ -324,7 +324,27 @@ main {
 }
 
 .footer-contact {
-  font-size: 0.82rem;
+  font-size: 0.92rem;
+}
+
+.footer-links {
+  font-size: 0.92rem;
+  margin-top: 4px;
+}
+
+.footer-links a {
+  color: var(--accent-strong);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.footer-links a:hover {
+  color: var(--logo-terracotta);
+}
+
+.footer-links span {
+  margin: 0 6px;
+  color: var(--muted);
 }
 
 .footer-contact a {
@@ -370,8 +390,8 @@ main {
 }
 
 .footer-copy {
-  font-size: 0.82rem;
-  color: var(--muted);
+  font-size: 0.92rem;
+  color: var(--text);
 }
 
 /* ----------------------------------------------------------
@@ -596,9 +616,10 @@ h1 {
 }
 
 .profile-photo {
-  width: 100%;
-  max-width: 800px;
+  width: 220px;
+  max-width: 100%;
   height: auto;
+  aspect-ratio: 3 / 4;
   border-radius: 14px;
   object-fit: cover;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
@@ -965,8 +986,8 @@ textarea:focus {
   }
 
   .profile-photo {
-    width: 150px;
-    height: 150px;
+    width: 180px;
+    height: 240px;
   }
 
   .about-intro h1 {
@@ -1252,4 +1273,4 @@ textarea:focus {
     font-size: 0.88rem;
     color: var(--text);
   }
-}
+}

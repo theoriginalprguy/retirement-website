@@ -15,7 +15,9 @@
     <meta name="google-site-verification" content="wIej4xEdtMZ1IBH4_mWAKaZb9LqbEOwEkVCN-UMF7l0">
 
     <!-- Theme color for mobile browsers -->
-    <meta name="theme-color" conten    <!-- Social sharing previews (Facebook, Bluesky, LinkedIn, texts) -->
+    <meta name="theme-color" content="#11758d">
+
+    <!-- Social sharing previews (Facebook, Bluesky, LinkedIn, texts) -->
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="David Kirk">
     <meta property="og:url" content="https://dbgdocent.com/">
@@ -34,7 +36,7 @@
       "@type": "Person",
       "name": "David Kirk",
       "url": "https://dbgdocent.com/",
-      "image": "https://dbgdocent.com/images/david-kirk-photo.jpg",
+      "image": "https://dbgdocent.com/images/david-kirk-portrait.jpg",
       "email": "mailto:DBGDocent@gmail.com",
       "jobTitle": "Public Relations Professional (Retired)",
       "honorificSuffix": "APR, Fellow PRSA",
@@ -72,15 +74,98 @@
       .home-columns {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 2rem;
+        column-gap: 2rem;
         max-width: 1200px;
         margin: 2rem auto 0;
         padding: 0 1.5rem;
       }
+      /* Desktop: each column shares the same four rows (heading + three cards),
+         so cards sit side by side at matching heights instead of staggering. */
+      @supports (grid-template-rows: subgrid) {
+        @media (min-width: 861px) {
+          .home-columns { grid-template-rows: auto auto auto auto; }
+          .home-columns > .home-col {
+            display: grid;
+            grid-row: span 4;
+            grid-template-rows: subgrid;
+            row-gap: 1.25rem;
+          }
+          .home-columns > .home-col > .column-stack { display: contents; }
+          .home-columns .column-stack > * { height: 100%; }
+          .home-columns .column-stack > a > .overview-card,
+          .home-columns .column-stack > .overview-card {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+          }
+          .home-columns .column-stack .card-link { margin-top: auto; }
+        }
+      }
       @media (max-width: 860px) {
         .home-columns {
           grid-template-columns: 1fr;
+          row-gap: 2rem;
         }
+      }
+      .now-meta {
+        font-size: 0.85rem;
+        color: var(--muted);
+        margin: -4px 0 10px;
+      }
+
+      /* Mom's Recipes banner, full width under both columns */
+      .recipes-banner {
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        max-width: 1200px;
+        margin: 2rem auto 0;
+        padding: 0 1.5rem;
+      }
+      .recipes-banner a {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-soft);
+        padding: 18px 22px;
+        transition: transform 0.3s ease, border-color 0.3s ease;
+      }
+      .recipes-banner a:hover {
+        transform: translateY(-3px);
+        border-color: var(--accent-vibrant);
+      }
+      .recipes-banner-icon {
+        flex-shrink: 0;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(160deg, var(--logo-terracotta), #d46a2c);
+        color: #fff;
+        font-size: 1.6rem;
+      }
+      .recipes-banner h2 {
+        font-size: 1.15rem;
+        margin: 0 0 2px;
+      }
+      .recipes-banner p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+      .recipes-banner .card-link {
+        margin-left: auto;
+        white-space: nowrap;
+      }
+      @media (max-width: 600px) {
+        .recipes-banner a { flex-wrap: wrap; }
+        .recipes-banner .card-link { margin-left: 0; }
       }
       .column-heading {
         text-align: center;
@@ -104,7 +189,7 @@
         letter-spacing: 0.12em;
         text-transform: uppercase;
         font-weight: 700;
-        opacity: 0.75;
+        color: var(--accent-purple);
         margin-bottom: 0.65rem;
       }
       .now-photo-wrap {
@@ -150,14 +235,18 @@
         opacity: 0.85;
       }
       .weather-highlow {
-        font-size: 0.85rem;
-        opacity: 0.7;
+        font-size: 0.9rem;
+        color: var(--muted);
         margin: 0;
       }
       .weather-location {
-        font-size: 0.75rem;
-        opacity: 0.6;
+        font-size: 0.85rem;
+        color: var(--muted);
         margin-top: 0.75rem;
+      }
+      .weather-location a {
+        color: var(--link);
+        text-decoration: underline;
       }
     </style>
   </head>
@@ -176,7 +265,7 @@
         <div class="home-columns">
 
           <!-- Column 1: What's Here -->
-          <div>
+          <div class="home-col">
             <h2 class="column-heading">What's Here</h2>
             <div class="column-stack">
               <a href="writing.html" class="overview-card-link">
@@ -209,7 +298,7 @@
           </div>
 
           <!-- Column 2: Now and New -->
-          <div>
+          <div class="home-col">
             <h2 class="column-heading">Now and New</h2>
             <div class="column-stack">
 
@@ -217,7 +306,7 @@
               <article class="overview-card" id="weather-card">
                 <div class="now-eyebrow">CURRENT WEATHER</div>
                 <div class="weather-card-body">
-                  <div class="weather-icon" id="weather-icon">
+                  <div class="weather-icon" id="weather-icon" aria-hidden="true">
                     <i class="fas fa-spinner fa-spin"></i>
                   </div>
                   <div class="weather-info">
@@ -226,7 +315,7 @@
                     <p class="weather-highlow" id="weather-highlow"></p>
                   </div>
                 </div>
-                <p class="weather-location">Ahwatukee, Phoenix</p>
+                <p class="weather-location" id="weather-location">Ahwatukee, Phoenix</p>
               </article>
 
               <!-- Latest essay -->
@@ -236,8 +325,8 @@
                   <div class="now-photo-wrap" id="latest-post-image-wrap" style="display:none;">
                     <img id="latest-post-img" alt="" loading="lazy" />
                   </div>
-                  <h2 id="latest-post-title">Loading latest post...</h2>
-                  <p id="latest-post-meta"></p>
+                  <h2 id="latest-post-title">Loading latest essay...</h2>
+                  <p id="latest-post-meta" class="now-meta"></p>
                   <span class="card-link">Read on Substack →</span>
                 </article>
               </a>
@@ -245,17 +334,30 @@
               <!-- Latest photo, links into Gallery with hash -->
               <a href="Gallery.html" class="overview-card-link" id="latest-photo-card">
                 <article class="overview-card">
-                  <div class="now-eyebrow">LATEST PHOTO</div>
+                  <div class="now-eyebrow">RECENT PHOTO</div>
                   <div class="now-photo-wrap">
                     <img id="latest-photo-img" alt="" loading="lazy" />
                   </div>
-                  <p id="latest-photo-caption">Loading latest observation...</p>
+                  <h2 id="latest-photo-caption">Loading a recent photo...</h2>
+                  <p id="latest-photo-meta" class="now-meta"></p>
                   <span class="card-link">See in the Gallery →</span>
                 </article>
               </a>
 
             </div>
           </div>
+        </div>
+
+        <!-- Mom's Recipes -->
+        <div class="recipes-banner">
+          <a href="Recipes.html">
+            <div class="recipes-banner-icon" aria-hidden="true"><i class="fas fa-utensils"></i></div>
+            <div>
+              <h2>Mom's Recipes</h2>
+              <p>The family recipe box, scanned and sorted: hundreds of cards in her own hand.</p>
+            </div>
+            <span class="card-link">Open the recipe box →</span>
+          </a>
         </div>
       </main>
       
@@ -266,6 +368,14 @@
 
     <!-- Now and New data fetchers -->
     <script>
+      // Every outside request gives up after 10 seconds, so a card never
+      // sits on "Loading..." forever.
+      function fetchWithTimeout(resource, ms = 10000) {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), ms);
+        return fetch(resource, { signal: controller.signal }).finally(() => clearTimeout(timer));
+      }
+
       // Weather via Open-Meteo (no API key, free)
       (async () => {
         try {
@@ -275,7 +385,8 @@
             `&current=temperature_2m,weather_code` +
             `&daily=temperature_2m_max,temperature_2m_min` +
             `&temperature_unit=fahrenheit&timezone=America%2FPhoenix`;
-          const res = await fetch(url);
+          const res = await fetchWithTimeout(url);
+          if (!res.ok) throw new Error('HTTP ' + res.status);
           const data = await res.json();
 
           const temp = Math.round(data.current.temperature_2m);
@@ -308,53 +419,43 @@
           };
           const info = codeMap[code] || { icon: 'fa-cloud', label: 'Conditions unavailable' };
 
+          // Open-Meteo reports local Phoenix time, e.g. "2026-11-02T13:15"
+          let asOf = '';
+          if (data.current.time) {
+            const [h, m] = data.current.time.split('T')[1].split(':').map(Number);
+            asOf = `${(h % 12) || 12}:${String(m).padStart(2, '0')} ${h < 12 ? 'a.m.' : 'p.m.'}`;
+          }
+
           document.getElementById('weather-icon').innerHTML = `<i class="fas ${info.icon}"></i>`;
           document.getElementById('weather-temp').textContent = `${temp}°F`;
           document.getElementById('weather-condition').textContent = info.label;
           document.getElementById('weather-highlow').textContent = `High ${hi}° / Low ${lo}°`;
+          document.getElementById('weather-location').innerHTML =
+            `Ahwatukee, Phoenix${asOf ? ` · as of ${asOf}` : ''} · ` +
+            `<a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">Open-Meteo</a>`;
         } catch (e) {
           document.getElementById('weather-icon').innerHTML = '<i class="fas fa-cloud"></i>';
           document.getElementById('weather-temp').textContent = '--°';
-          document.getElementById('weather-condition').textContent = 'Weather unavailable';
-          document.getElementById('weather-highlow').textContent = '';
+          document.getElementById('weather-condition').textContent = 'Weather is unavailable right now.';
+          document.getElementById('weather-highlow').textContent = 'Please check back later.';
         }
       })();
 
-      // Latest Substack post. First choice is the site's own feed endpoint
-      // (/api/substack, a free Cloudflare function); if that is unavailable
-      // (for example when previewing locally), fall back to rss2json.com.
-      async function getLatestSubstackPost() {
-        try {
-          const res = await fetch('/api/substack');
-          if (!res.ok) throw new Error('Own feed unavailable');
-          const doc = new DOMParser().parseFromString(await res.text(), 'text/xml');
-          const item = doc.getElementsByTagName('item')[0];
-          if (!item) throw new Error('No posts');
-          const get = tag => (item.getElementsByTagName(tag)[0]?.textContent || '').trim();
-          const enclosure = item.getElementsByTagName('enclosure')[0];
-          return {
-            title: get('title'),
-            link: get('link'),
-            pubDate: get('pubDate'),
-            description: get('description'),
-            thumbnail: enclosure ? enclosure.getAttribute('url') : ''
-          };
-        } catch (e) {
-          const feedUrl = 'https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fdavidkirktheprguy.substack.com%2Ffeed';
-          const res = await fetch(feedUrl);
-          const data = await res.json();
-          return data.items && data.items[0];
-        }
-      }
-
+      // Latest Substack essay, read through rss2json.com (free).
+      // Substack refuses requests from Cloudflare, so there is no site-side feed.
       (async () => {
         try {
-          const post = await getLatestSubstackPost();
+          const feedUrl = 'https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fdavidkirktheprguy.substack.com%2Ffeed';
+          const res = await fetchWithTimeout(feedUrl);
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          const data = await res.json();
+          if (data.status !== 'ok') throw new Error('rss2json error');
+          const post = data.items && data.items[0];
           if (!post) throw new Error('No posts');
 
           document.getElementById('latest-post-title').textContent = post.title;
-          const date = new Date(post.pubDate).toLocaleDateString('en-US',
-            { year: 'numeric', month: 'long', day: 'numeric' });
+          const date = new Date(post.pubDate.replace(' ', 'T') + 'Z').toLocaleDateString('en-US',
+            { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'America/Phoenix' });
           document.getElementById('latest-post-meta').textContent = date;
           document.getElementById('latest-post-card').href = post.link;
 
@@ -366,40 +467,54 @@
           if (imgUrl) {
             const img = document.getElementById('latest-post-img');
             img.src = imgUrl;
-            img.alt = post.title;
+            img.alt = '';
             document.getElementById('latest-post-image-wrap').style.display = 'block';
           }
         } catch (e) {
           document.getElementById('latest-post-title').textContent = 'Read the latest essays';
-          document.getElementById('latest-post-meta').textContent = 'Visit the Substack archive';
+          document.getElementById('latest-post-meta').textContent = 'The newest essay could not load just now. Visit the archive on Substack.';
+          document.getElementById('latest-post-card').href = 'https://davidkirktheprguy.substack.com/archive';
         }
       })();
 
-      // Random pick from last 20 iNaturalist observations, links into Gallery
+      // Random pick from my 20 most recent iNaturalist observations, links into Gallery
       (async () => {
         try {
           const url = 'https://api.inaturalist.org/v1/observations' +
             '?user_login=theprguy&photos=true&order_by=observed_on&order=desc&per_page=20';
-          const res = await fetch(url);
+          const res = await fetchWithTimeout(url);
+          if (!res.ok) throw new Error('HTTP ' + res.status);
           const data = await res.json();
           const withPhotos = (data.results || []).filter(o => o.photos && o.photos.length);
           if (!withPhotos.length) throw new Error('No observations with photos');
 
           const pick = withPhotos[Math.floor(Math.random() * withPhotos.length)];
           const photoUrl = pick.photos[0].url.replace('/square.', '/medium.');
-          const speciesName = pick.taxon && (pick.taxon.preferred_common_name || pick.taxon.name) || 'Observation';
+          const commonName = pick.taxon && pick.taxon.preferred_common_name;
+          const sciName = pick.taxon && pick.taxon.name;
+          const speciesName = commonName || sciName || 'Observation';
+
+          // Date and place, e.g. "October 28, 2026 · Desert Botanical Garden, Phoenix, AZ"
+          const bits = [];
+          if (pick.observed_on) {
+            bits.push(new Date(pick.observed_on + 'T12:00:00').toLocaleDateString('en-US',
+              { year: 'numeric', month: 'long', day: 'numeric' }));
+          }
+          if (pick.place_guess) bits.push(pick.place_guess);
 
           const img = document.getElementById('latest-photo-img');
           img.src = photoUrl;
           img.alt = speciesName;
           document.getElementById('latest-photo-caption').textContent = speciesName;
+          document.getElementById('latest-photo-meta').textContent = bits.join(' · ');
           document.getElementById('latest-photo-card').href = `Gallery.html#obs-${pick.id}`;
         } catch (e) {
           document.getElementById('latest-photo-caption').textContent = 'Browse the full gallery';
+          document.getElementById('latest-photo-meta').textContent = 'A recent photo could not load just now.';
           const img = document.getElementById('latest-photo-img');
-          if (img) img.remove();
+          if (img) img.closest('.now-photo-wrap').remove();
         }
       })();
     </script>
   </body>
-</html>
+</html>

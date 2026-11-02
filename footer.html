@@ -1,36 +1,41 @@
 <footer class="site-footer">
   <div class="footer-inner">
     <div class="footer-left">
-      <a href="index.html" class="footer-logo">
-        <img src="images/dk-logo-footer.png?v=20261030" alt="Retired, not expired. David Kirk logo">
+      <a href="index.html" class="footer-logo" aria-label="David Kirk, home page">
+        <img src="images/dk-logo-footer.png?v=20261030" alt="" width="90" height="90">
       </a>
-      <p class="footer-contact">
-        David Kirk, APR, Fellow PRSA |
-        <a href="mailto:DBGDocent@gmail.com">DBGDocent@gmail.com</a>
-      </p>
+      <div>
+        <p class="footer-contact">
+          David Kirk, APR, Fellow PRSA |
+          <a href="mailto:DBGDocent@gmail.com">DBGDocent@gmail.com</a>
+        </p>
+        <p class="footer-links">
+          <a href="Recipes.html">Mom's Recipes</a>
+          <span aria-hidden="true">·</span>
+          <a href="https://davidkirktheprguy.substack.com" target="_blank" rel="noopener noreferrer">Essay archive on Substack</a>
+          <span aria-hidden="true">·</span>
+          <a href="https://www.inaturalist.org/people/theprguy" target="_blank" rel="noopener noreferrer">iNaturalist</a>
+        </p>
+      </div>
     </div>
     <div class="footer-right">
       <!-- Social media icons -->
       <div class="social-links">
         <a href="https://www.facebook.com/theprguy" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
-          <i class="fab fa-facebook"></i>
+          <i class="fab fa-facebook" aria-hidden="true"></i>
         </a>
         <a href="https://www.instagram.com/kirk.d/?hl=en" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
-          <i class="fab fa-instagram"></i>
+          <i class="fab fa-instagram" aria-hidden="true"></i>
         </a>
         <a href="https://bsky.app/profile/theoriginalprguy.bsky.social" target="_blank" rel="noopener noreferrer" aria-label="Bluesky">
-          <i class="fab fa-bluesky"></i>
+          <i class="fab fa-bluesky" aria-hidden="true"></i>
         </a>
         <a href="https://substack.com/@davidkirktheprguy" target="_blank" rel="noopener noreferrer" aria-label="Substack">
-          <i class="fab fa-substack"></i>
+          <i class="fab fa-substack" aria-hidden="true"></i>
         </a>
       </div>
-      <p class="footer-copy">© <span id="footer-year"></span> David Kirk</p>
+      <!-- Year is filled in by shared.js -->
+      <p class="footer-copy">&copy; <span id="footer-year">2026</span> David Kirk</p>
     </div>
   </div>
 </footer>
-
-<script>
-// Update footer year
-document.getElementById("footer-year").textContent = new Date().getFullYear();
-</script>

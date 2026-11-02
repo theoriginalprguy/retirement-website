@@ -3,11 +3,11 @@
 
     <!-- Logo - visible in header on mobile/tablet only -->
     <a href="index.html" class="site-logo site-logo-mobile">
-      <img src="images/dk-logo-header.png?v=20261030" alt="Retired, not expired. David Kirk logo">
+      <img src="images/dk-logo-header.png?v=20261030" alt="Retired, not expired. David Kirk, home page">
     </a>
 
     <!-- Navigation -->
-    <nav class="site-nav">
+    <nav class="site-nav" aria-label="Main">
       <ul>
         <li><a href="index.html">Home</a></li>
         <li><a href="About.html">About</a></li>
@@ -30,16 +30,16 @@
     </nav>
 
     <!-- Search bar -->
-<form class="site-search" action="/search.html" method="get">
-  <label class="sr-only" for="site-search-input">Search</label>
-  <input id="site-search-input" name="q" placeholder="Search..." type="search" required>
-  <button type="submit">
-    <i class="fas fa-search"></i>
-  </button>
-</form>
+    <form class="site-search" action="/search.html" method="get" role="search">
+      <label class="sr-only" for="site-search-input">Search this site</label>
+      <input id="site-search-input" name="q" placeholder="Search..." type="search" required>
+      <button type="submit" aria-label="Search">
+        <i class="fas fa-search" aria-hidden="true"></i>
+      </button>
+    </form>
 
     <!-- Mobile nav toggle -->
-    <button class="nav-toggle" aria-label="Toggle navigation">
+    <button class="nav-toggle" aria-label="Open or close the menu" aria-expanded="false">
       <span class="nav-toggle-bar"></span>
       <span class="nav-toggle-bar"></span>
       <span class="nav-toggle-bar"></span>
@@ -48,7 +48,9 @@
   </div>
 </header>
 
-<!-- Floating logo - desktop only, sits in left margin -->
-<a href="index.html" class="site-logo-floating" aria-label="Home">
-  <img src="images/dk-logo-header.png?v=20261030" alt="Retired, not expired. David Kirk logo">
+<!-- Floating logo - desktop only, sits in left margin.
+     Decorative repeat of the header logo, so screen readers and the
+     keyboard skip it (the nav already has a Home link). -->
+<a href="index.html" class="site-logo-floating" aria-hidden="true" tabindex="-1">
+  <img src="images/dk-logo-header.png?v=20261030" alt="">
 </a>

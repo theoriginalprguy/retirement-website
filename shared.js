@@ -1,14 +1,39 @@
 document.addEventListener('DOMContentLoaded', function() {
 
-  // Inject canonical tag for SEO
-  (function() {
+  // The site's pages and the exact address each one is served at.
+  // Cloudflare treats capital letters as different addresses, so this map
+  // lets the canonical tag and the nav highlight work no matter how the
+  // visitor typed the URL (/about, /About, /About.html, /about/).
+  const PAGES = {
+    '':         '/',
+    'index':    '/',
+    'about':    '/About',
+    'gallery':  '/Gallery',
+    'projects': '/Projects',
+    'recipes':  '/Recipes',
+    'contact':  '/Contact',
+    'writing':  '/writing',
+    'search':   '/search'
+  };
+
+  // "/About.html" -> "about", "/about/" -> "about", "/" -> ""
+  function pageKey(path) {
+    return path.replace(/\/+$/, '').split('/').pop().replace(/\.html$/i, '').toLowerCase();
+  }
+
+  const is404 = document.body.dataset.page === '404';
+  const currentKey = pageKey(window.location.pathname);
+
+  // Inject canonical tag for SEO (skipped on the 404 page)
+  if (!is404) {
     const canonical = document.createElement('link');
     canonical.rel = 'canonical';
-    // Normalize: use non-www, strip trailing slash, preserve path
-    const path = window.location.pathname.replace(/\/$/, '') || '/';
-    canonical.href = 'https://dbgdocent.com' + path;
+    const cleanPath = PAGES[currentKey] !== undefined
+      ? PAGES[currentKey]
+      : (window.location.pathname.replace(/\/$/, '') || '/');
+    canonical.href = 'https://dbgdocent.com' + cleanPath;
     document.head.appendChild(canonical);
-  })();
+  }
 
   // Load header
   fetch('header.html')
@@ -16,14 +41,17 @@ document.addEventListener('DOMContentLoaded', function() {
     .then(data => {
       document.getElementById('header-placeholder').innerHTML = data;
 
-      // Set active navigation link based on current page
-      const currentPage = window.location.pathname.split('/').pop() || 'index.html';
-      const navLinks = document.querySelectorAll('.site-nav a');
-      navLinks.forEach(link => {
-        if (link.getAttribute('href') === currentPage) {
-          link.classList.add('active');
-        }
-      });
+      // Highlight the current page in the nav (nothing on the 404 page)
+      if (!is404) {
+        document.querySelectorAll('.site-nav a').forEach(link => {
+          const href = link.getAttribute('href') || '';
+          if (/^https?:/i.test(href) || href.includes('#')) return;
+          if (pageKey(href) === (currentKey === '' ? 'index' : currentKey)) {
+            link.classList.add('active');
+            link.setAttribute('aria-current', 'page');
+          }
+        });
+      }
 
       // Mobile nav toggle
       const toggle = document.querySelector('.nav-toggle');
@@ -33,6 +61,7 @@ document.addEventListener('DOMContentLoaded', function() {
         toggle.addEventListener('click', function() {
           nav.classList.toggle('nav-open');
           toggle.classList.toggle('active');
+          toggle.setAttribute('aria-expanded', nav.classList.contains('nav-open') ? 'true' : 'false');
         });
 
         // On mobile, tapping "Projects" toggles its submenu instead of navigating
@@ -56,6 +85,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!isDropdownToggle) {
               nav.classList.remove('nav-open');
               toggle.classList.remove('active');
+              toggle.setAttribute('aria-expanded', 'false');
               document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('dropdown-open'));
             }
           });
@@ -66,16 +96,21 @@ document.addEventListener('DOMContentLoaded', function() {
           if (!nav.contains(e.target) && !toggle.contains(e.target)) {
             nav.classList.remove('nav-open');
             toggle.classList.remove('active');
+            toggle.setAttribute('aria-expanded', 'false');
             document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('dropdown-open'));
           }
         });
       }
     });
 
-  // Load footer
+  // Load footer, then fill in the copyright year.
+  // (A <script> inside footer.html never runs when inserted this way,
+  // which is why the year used to be blank.)
   fetch('footer.html')
     .then(response => response.text())
     .then(data => {
       document.getElementById('footer-placeholder').innerHTML = data;
+      const year = document.getElementById('footer-year');
+      if (year) year.textContent = new Date().getFullYear();
     });
 });
