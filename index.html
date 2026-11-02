@@ -63,8 +63,8 @@
     }
     </script>
     
-    <link rel="stylesheet" href="styles.css?v=20261102">
-    <link rel="stylesheet" href="icons.css?v=20261102">
+    <link rel="stylesheet" href="styles.css?v=20261102b">
+    <link rel="stylesheet" href="icons.css?v=20261102b">
     
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="images/favicon.png?v=20261030">
@@ -113,59 +113,91 @@
         margin: -4px 0 10px;
       }
 
-      /* Mom's Recipes banner, full width under both columns */
-      .recipes-banner {
-        display: flex;
-        align-items: center;
-        gap: 1.25rem;
+      /* Mom's Recipes feature, full width under both columns */
+      .recipes-feature {
         max-width: 1200px;
-        margin: 2rem auto 0;
+        margin: 2.5rem auto 0;
         padding: 0 1.5rem;
       }
-      .recipes-banner a {
-        flex: 1;
-        display: flex;
+      .recipes-feature > a {
+        display: grid;
+        grid-template-columns: minmax(260px, 1fr) 1.2fr;
         align-items: center;
-        gap: 1.25rem;
+        gap: 2.5rem;
         background: var(--card);
         border: 1px solid var(--border);
         border-radius: var(--radius-lg);
         box-shadow: var(--shadow-soft);
-        padding: 18px 22px;
-        transition: transform 0.3s ease, border-color 0.3s ease;
+        padding: 32px 36px;
+        overflow: hidden;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
       }
-      .recipes-banner a:hover {
-        transform: translateY(-3px);
+      .recipes-feature > a:hover {
         border-color: var(--accent-vibrant);
+        box-shadow: 0 20px 50px rgba(0,0,0,0.2);
       }
-      .recipes-banner-icon {
-        flex-shrink: 0;
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: linear-gradient(160deg, var(--logo-terracotta), #d46a2c);
+
+      /* Three cards fanned out like they were just pulled from the box */
+      .recipe-stack {
+        position: relative;
+        height: 380px;
+      }
+      .recipe-stack img {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 66%;
+        max-width: 260px;
+        height: auto;
+        aspect-ratio: 3 / 4;
+        object-fit: cover;
+        background: #efe3cf;
+        border-radius: 4px;
+        border: 1px solid rgba(0,0,0,0.08);
+        box-shadow: 0 10px 24px rgba(43,33,24,0.25);
+        transition: transform 0.4s ease;
+      }
+      .recipe-stack .card-back-left  { transform: translate(-95%, -50%) rotate(-9deg); }
+      .recipe-stack .card-back-right { transform: translate(-5%, -48%) rotate(8deg); }
+      .recipe-stack .card-front      { transform: translate(-50%, -52%) rotate(-1.5deg); z-index: 2; }
+      .recipes-feature > a:hover .card-back-left  { transform: translate(-108%, -50%) rotate(-12deg); }
+      .recipes-feature > a:hover .card-back-right { transform: translate(8%, -48%) rotate(11deg); }
+      .recipes-feature > a:hover .card-front      { transform: translate(-50%, -55%) rotate(0deg) scale(1.03); }
+
+      .recipes-feature-text .now-eyebrow { margin-bottom: 0.5rem; }
+      .recipes-feature-text h2 {
+        font-size: 1.9rem;
+        margin: 0 0 0.75rem;
+      }
+      .recipes-feature-text p {
+        color: var(--text);
+        font-size: 1.02rem;
+        line-height: 1.7;
+        margin: 0 0 1.25rem;
+      }
+      .recipes-feature-button {
+        display: inline-block;
+        background: linear-gradient(135deg, var(--logo-terracotta), #d0611f);
         color: #fff;
-        font-size: 1.6rem;
+        font-weight: 600;
+        padding: 10px 22px;
+        border-radius: var(--radius-pill);
       }
-      .recipes-banner h2 {
-        font-size: 1.15rem;
-        margin: 0 0 2px;
+      .recipes-feature > a:hover .recipes-feature-button { filter: brightness(1.08); }
+
+      @media (prefers-reduced-motion: reduce) {
+        .recipe-stack img { transition: none; }
       }
-      .recipes-banner p {
-        margin: 0;
-        color: var(--muted);
-        font-size: 0.95rem;
-      }
-      .recipes-banner .card-link {
-        margin-left: auto;
-        white-space: nowrap;
-      }
-      @media (max-width: 600px) {
-        .recipes-banner a { flex-wrap: wrap; }
-        .recipes-banner .card-link { margin-left: 0; }
+      @media (max-width: 760px) {
+        .recipes-feature > a {
+          grid-template-columns: 1fr;
+          gap: 1.5rem;
+          padding: 24px 20px 28px;
+          text-align: center;
+        }
+        .recipe-stack { height: 300px; }
+        .recipe-stack img { width: 50%; }
+        .recipes-feature-text h2 { font-size: 1.6rem; }
       }
       .column-heading {
         text-align: center;
@@ -348,23 +380,32 @@
           </div>
         </div>
 
-        <!-- Mom's Recipes -->
-        <div class="recipes-banner">
+        <!-- Mom's Recipes feature -->
+        <section class="recipes-feature">
           <a href="Recipes.html">
-            <div class="recipes-banner-icon" aria-hidden="true"><i class="fas fa-utensils"></i></div>
-            <div>
-              <h2>Mom's Recipes</h2>
-              <p>The family recipe box, scanned and sorted: hundreds of cards in her own hand.</p>
+            <div class="recipe-stack" aria-hidden="true">
+              <img class="card-back-left" src="https://res.cloudinary.com/dlxmgewap/image/upload/w_460,h_613,c_fill,g_north,q_auto,f_auto/Dorothys-Cinnamon-Apples_lj16fl.png" alt="" loading="lazy" width="230" height="307">
+              <img class="card-back-right" src="https://res.cloudinary.com/dlxmgewap/image/upload/w_460,h_613,c_fill,g_north,q_auto,f_auto/Rocky-Mountain-Toffee-Wafers_shujkq.jpg" alt="" loading="lazy" width="230" height="307">
+              <img class="card-front" src="https://res.cloudinary.com/dlxmgewap/image/upload/w_460,h_613,c_fill,g_north,q_auto,f_auto/Scotcheroos_s7uesp.jpg" alt="" loading="lazy" width="230" height="307">
             </div>
-            <span class="card-link">Open the recipe box →</span>
+            <div class="recipes-feature-text">
+              <div class="now-eyebrow">FROM THE FAMILY KITCHEN</div>
+              <h2>Mom's Recipes</h2>
+              <p>
+                Her recipe box, scanned card by card: typed, handwritten, splattered,
+                and well loved. Hundreds of recipes, sorted from appetizers to vegetables,
+                each one just as she kept it.
+              </p>
+              <span class="recipes-feature-button">Open the recipe box →</span>
+            </div>
           </a>
-        </div>
+        </section>
       </main>
       
       <div id="footer-placeholder"></div>
     </div>
     
-    <script src="shared.js?v=20261102"></script>
+    <script src="shared.js?v=20261102b"></script>
 
     <!-- Now and New data fetchers -->
     <script>
