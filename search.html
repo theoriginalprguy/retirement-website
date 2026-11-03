@@ -186,10 +186,13 @@
         showSubResults: true,
         showImages: false,
         resetStyles: false,
-        // Shorter hint on phones so it is not cut off
-        placeholder: window.matchMedia('(max-width: 600px)').matches
-          ? "See Search Tips below."
-          : "See Search Tips below for essays, recipes, and photos."
+        // Hint inside the search box (this version of Pagefind reads it from
+        // "translations"). Shorter on phones so it is not cut off.
+        translations: {
+          placeholder: window.matchMedia('(max-width: 600px)').matches
+            ? "See Search Tips below."
+            : "See Search Tips below for essays, recipes, and photos."
+        }
       });
 
       // Auto-search if query parameter is present
