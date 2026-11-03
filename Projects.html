@@ -58,6 +58,23 @@
         display: block;
       }
 
+      /* Book covers show whole, never cropped */
+      .project-photo.book-cover {
+        background: #e9e1d3;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 18px;
+      }
+
+      .project-photo.book-cover img {
+        width: 100%;
+        height: auto;
+        object-fit: contain;
+        border-radius: 4px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+      }
+
       .project-body {
         padding: 28px 32px;
         display: flex;
@@ -159,6 +176,13 @@
         }
         .project-photo img {
           height: 100%;
+        }
+        .project-photo.book-cover {
+          height: auto;
+        }
+        .project-photo.book-cover img {
+          width: 200px;
+          height: auto;
         }
         .project-body {
           padding: 24px 22px;
@@ -278,8 +302,8 @@
 
         <!-- Lucy -->
         <div class="project-card" id="lucy">
-          <div class="project-photo">
-            <img src="https://res.cloudinary.com/dlxmgewap/image/upload/v1776652423/lucy.png" alt="Lucy: A Gift for America">
+          <div class="project-photo book-cover">
+            <img src="images/lucy-cover.jpg?v=20261103" alt="Book cover of Lucy: A Gift for America, as told by Ludmilla Bartkow Malmberg, crafted in collaboration with David George Kirchner" width="600" height="900" loading="lazy">
           </div>
           <div class="project-body">
             <h2>Lucy: A Gift for America</h2>
