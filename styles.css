@@ -396,12 +396,42 @@ main {
   background: var(--accent-soft);
 }
 
-/* Bottom strip: copyright */
+/* Bottom strip: copyright and weather */
 .footer-bottom {
   max-width: 1040px;
   margin: 0 auto;
   padding: 12px 20px 22px;
   border-top: 1px solid rgba(224,201,166,0.6);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px 20px;
+}
+
+.footer-weather {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.footer-weather[hidden] { display: none; }
+
+.footer-weather i {
+  color: #c98a00;
+  font-size: 1.05rem;
+}
+
+.footer-weather strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.footer-weather a {
+  color: var(--link);
+  text-decoration: underline;
 }
 
 .footer-copy {

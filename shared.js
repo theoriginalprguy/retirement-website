@@ -112,5 +112,42 @@ document.addEventListener('DOMContentLoaded', function() {
       document.getElementById('footer-placeholder').innerHTML = data;
       const year = document.getElementById('footer-year');
       if (year) year.textContent = new Date().getFullYear();
+      loadFooterWeather();
     });
+
+  // Small weather line in the footer: current conditions in Ahwatukee from
+  // Open-Meteo (free, no key). Stays hidden if the service does not answer.
+  function loadFooterWeather() {
+    const box = document.getElementById('footer-weather');
+    if (!box) return;
+    const url = 'https://api.open-meteo.com/v1/forecast?latitude=33.3384&longitude=-111.9837' +
+      '&current=temperature_2m,weather_code&temperature_unit=fahrenheit&timezone=America%2FPhoenix';
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 10000);
+    fetch(url, { signal: controller.signal })
+      .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(data => {
+        const code = data.current.weather_code;
+        const map = [
+          [[0], 'fa-sun', 'clear'], [[1], 'fa-sun', 'mostly clear'],
+          [[2], 'fa-cloud-sun', 'partly cloudy'], [[3], 'fa-cloud', 'overcast'],
+          [[45, 48], 'fa-smog', 'foggy'], [[51, 53, 55], 'fa-cloud-rain', 'drizzle'],
+          [[61, 63, 65, 80, 81, 82], 'fa-cloud-showers-heavy', 'rain'],
+          [[71, 73, 75], 'fa-snowflake', 'snow'], [[95, 96, 99], 'fa-cloud-bolt', 'thunderstorms']
+        ];
+        const hit = map.find(m => m[0].includes(code)) || [null, 'fa-cloud', ''];
+        const temp = Math.round(data.current.temperature_2m);
+        let asOf = '';
+        if (data.current.time) {
+          const [h, m] = data.current.time.split('T')[1].split(':').map(Number);
+          asOf = ` at ${(h % 12) || 12}:${String(m).padStart(2, '0')} ${h < 12 ? 'a.m.' : 'p.m.'}`;
+        }
+        box.innerHTML = `<i class="fas ${hit[1]}" aria-hidden="true"></i>` +
+          `<span>Ahwatukee: <strong>${temp}°F</strong>${hit[2] ? ', ' + hit[2] : ''}${asOf} · ` +
+          `<a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">Open-Meteo</a></span>`;
+        box.hidden = false;
+      })
+      .catch(() => { /* leave it hidden */ })
+      .finally(() => clearTimeout(timer));
+  }
 });
