@@ -95,14 +95,14 @@
       }
       .hero-art {
         position: absolute;
-        top: 0;
-        right: 36px;
-        width: 300px;
-        height: 200px;
+        top: 26px;
+        right: 40px;
+        width: 290px;
+        height: auto;
         pointer-events: none;
       }
       @media (max-width: 900px) {
-        .hero-art { width: 220px; height: 147px; right: 16px; }
+        .hero-art { width: 210px; right: 20px; }
       }
       @media (max-width: 700px) {
         .hero-art { display: none; }
@@ -501,28 +501,8 @@
 
           <!-- Banner -->
           <section class="hero-banner" aria-labelledby="hero-title">
-          <svg class="hero-art" viewBox="0 0 300 200" aria-hidden="true" focusable="false">
-            <defs>
-              <linearGradient id="ridge-fade" x1="0" x2="1" y1="0" y2="0">
-                <stop offset="0" stop-color="#b5430e" stop-opacity="0"/>
-                <stop offset="0.35" stop-color="#b5430e" stop-opacity="1"/>
-              </linearGradient>
-              <linearGradient id="ridge-fade-dark" x1="0" x2="1" y1="0" y2="0">
-                <stop offset="0" stop-color="#8f3409" stop-opacity="0"/>
-                <stop offset="0.3" stop-color="#8f3409" stop-opacity="1"/>
-              </linearGradient>
-            </defs>
-            <circle cx="176" cy="92" r="64" fill="#f0a703"/>
-            <path d="M40 200 C80 168 120 160 170 166 C220 172 255 158 300 140 L300 200 Z" fill="url(#ridge-fade)"/>
-            <path d="M0 200 C60 184 110 180 160 186 C210 192 260 182 300 172 L300 200 Z" fill="url(#ridge-fade-dark)"/>
-            <g fill="#3f6b2d">
-              <rect x="166" y="62" width="22" height="122" rx="11"/>
-              <rect x="136" y="104" width="16" height="44" rx="8"/>
-              <rect x="136" y="136" width="40" height="16" rx="8"/>
-              <rect x="202" y="84" width="16" height="54" rx="8"/>
-              <rect x="180" y="126" width="38" height="16" rx="8"/>
-            </g>
-          </svg>
+          <!-- Scene from the official logo, lettering removed -->
+          <img class="hero-art" src="images/logo-scene.png?v=20261103" alt="" width="533" height="337">
             <div class="hero-content">
               <div class="hero-kicker">David Kirk · Phoenix, Arizona</div>
               <h1 id="hero-title">Off the payroll, <span>still on the job.</span></h1>
@@ -531,16 +511,16 @@
                 busy, curious, and sharp.
               </p>
               <ul class="hero-tiles">
-                <li><div>
+                <li><a href="About.html">
                   <span class="tile-num" id="tile-retired">&nbsp;</span>
                   <span class="tile-label">Days off the payroll</span>
                   <span class="tile-note">Since February 1, 2024</span>
-                </div></li>
-                <li><div>
+                </a></li>
+                <li><a href="About.html">
                   <span class="tile-num" id="tile-volunteer">&nbsp;</span>
                   <span class="tile-label">Days as a volunteer</span>
                   <span class="tile-note">At Desert Botanical Garden</span>
-                </div></li>
+                </a></li>
                 <li><a href="Gallery.html">
                   <span class="tile-num" id="tile-garden">131</span>
                   <span class="tile-label">Photos logged</span>
