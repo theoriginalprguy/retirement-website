@@ -26,6 +26,8 @@
 /recipes.html  /Recipes   301
 /recipes       /Recipes   200
 /RECIPES       /Recipes   200
+/recipe/       /Recipes   301
+/recipe        /Recipes   301
 
 /contact/      /Contact   301
 /contact.html  /Contact   301
