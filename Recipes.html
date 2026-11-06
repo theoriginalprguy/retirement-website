@@ -188,6 +188,37 @@
         font-weight: 600;
         text-align: center;
       }
+      .recipe-sides {
+        font-size: 0.72rem;
+        font-weight: 500;
+        color: var(--text-muted, var(--text));
+        opacity: 0.75;
+        display: block;
+        margin-top: 2px;
+      }
+      .lightbox-sides {
+        display: none;
+        gap: 6px;
+        margin-top: 10px;
+      }
+      .lightbox-sides.show { display: flex; }
+      .lightbox-sides button {
+        font: inherit;
+        font-size: 0.9rem;
+        font-weight: 600;
+        padding: 6px 16px;
+        border-radius: 999px;
+        border: 1px solid rgba(255,255,255,0.6);
+        background: transparent;
+        color: white;
+        cursor: pointer;
+      }
+      .lightbox-sides button[aria-pressed="true"] {
+        background: white;
+        color: #1d1d1d;
+        border-color: white;
+      }
+      .lightbox-sides button:focus-visible { outline: 2px solid white; outline-offset: 2px; }
       @media (max-width: 600px) {
         .category-grid { grid-template-columns: repeat(2, 1fr); }
         .recipe-grid   { grid-template-columns: repeat(2, 1fr); }
@@ -226,6 +257,10 @@
         </button>
         <img src="" alt="" class="recipe-lightbox-img" id="lightbox-img">
         <div class="recipe-lightbox-title" id="lightbox-title"></div>
+        <div class="lightbox-sides" id="lightbox-sides" role="group" aria-label="Card side">
+          <button type="button" data-side="0" aria-pressed="true">Front</button>
+          <button type="button" data-side="1" aria-pressed="false">Back</button>
+        </div>
       </div>
     </div>
 
@@ -561,9 +596,54 @@
       ];
 
       // ── Helpers ────────────────────────────────────────────
+      // Possessives lost their apostrophes in the file names.
+      const NAME_FIXES = {
+        'AJs': "A.J.'s", 'Dorothys': "Dorothy's", 'Leslies': "Leslie's",
+        'Lez s': "Lez's", 'Loveys': "Lovey's", 'Marthas': "Martha's", 'Worlds': "World's"
+      };
+      function fixName(name) {
+        for (const [bad, good] of Object.entries(NAME_FIXES)) {
+          name = name.replace(new RegExp('^' + bad + '\\b'), good);
+        }
+        return name;
+      }
+
       function cleanName(publicId) {
         const filename = publicId.split('/').pop();
-        return filename.replace(/_[a-zA-Z0-9]{4,8}$/i, '').replace(/-/g, ' ');
+        return fixName(filename.replace(/_[a-zA-Z0-9]{4,8}$/i, '').replace(/-/g, ' '));
+      }
+
+      // ── Two-sided cards ────────────────────────────────────
+      // File names mark sides as -a/-b, -1a/-1b or -1-a/-1-b.
+      // Returns the shared base name and 0 (front) or 1 (back).
+      function sideInfo(id) {
+        const stem = id.split('/').pop().replace(/_[a-zA-Z0-9]{4,8}$/i, '');
+        const m = stem.match(/^(.+?)(?:-(\d+)-?|-)([ab])$/);
+        if (!m) return { base: stem, side: 0 };
+        return { base: m[1] + (m[2] ? '-' + m[2] : ''), side: m[3] === 'a' ? 0 : 1 };
+      }
+
+      // Group a section's images into recipes, sorted by name.
+      function groupRecipes(files) {
+        const map = new Map();
+        files.forEach(f => {
+          const { base, side } = sideInfo(f.id);
+          if (!map.has(base)) {
+            map.set(base, { name: fixName(base.replace(/-/g, ' ')), sides: [] });
+          }
+          map.get(base).sides[side] = f;
+        });
+        const groups = [...map.values()].map(g => ({ name: g.name, sides: g.sides.filter(Boolean) }));
+        return groups.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
+      }
+
+      function findGroup(recipe) {
+        for (const key of Object.keys(RECIPES)) {
+          if (RECIPES[key].includes(recipe)) {
+            return groupRecipes(RECIPES[key]).find(g => g.sides.includes(recipe));
+          }
+        }
+        return null;
       }
 
       function thumbUrl(id, fmt) {
@@ -647,7 +727,8 @@
           if (cat) {
             showCategorySection(cat, false);
           }
-          openLightbox(fullUrl(recipe.id, recipe.fmt), cleanName(recipe.id), false);
+          const group = findGroup(recipe);
+          openLightbox(group, Math.max(0, group.sides.indexOf(recipe)));
           return;
         }
 
@@ -692,10 +773,10 @@
             heading.style.cssText = 'grid-column:1/-1;font-size:1.1rem;font-weight:700;color:var(--accent-strong);margin-top:16px;padding-bottom:6px;border-bottom:2px solid var(--border);';
             heading.textContent = sub.label;
             grid.appendChild(heading);
-            files.forEach(f => grid.appendChild(makeRecipeCard(f)));
+            groupRecipes(files).forEach(g => grid.appendChild(makeRecipeCard(g)));
           });
         } else {
-          (RECIPES[cat.key] || []).forEach(f => grid.appendChild(makeRecipeCard(f)));
+          groupRecipes(RECIPES[cat.key] || []).forEach(g => grid.appendChild(makeRecipeCard(g)));
         }
       }
 
@@ -705,8 +786,8 @@
         grid.innerHTML = '';
         CATEGORIES.forEach(cat => {
           const count = cat.subcategories
-            ? cat.subcategories.reduce((t, s) => t + (RECIPES[s.key] || []).length, 0)
-            : (RECIPES[cat.key] || []).length;
+            ? cat.subcategories.reduce((t, s) => t + groupRecipes(RECIPES[s.key] || []).length, 0)
+            : groupRecipes(RECIPES[cat.key] || []).length;
           const card = document.createElement('div');
           card.className = 'category-card';
           card.innerHTML = `
@@ -721,13 +802,13 @@
       }
 
       // ── Make a recipe card ─────────────────────────────────
-      function makeRecipeCard(f) {
-        const name = cleanName(f.id);
+      function makeRecipeCard(g) {
+        const f = g.sides[0];
         const card = document.createElement('div');
         card.className = 'recipe-card';
         card.innerHTML = `
-          <img src="${thumbUrl(f.id, f.fmt)}" alt="${name}" class="recipe-thumb" loading="lazy">
-          <div class="recipe-name">${name}</div>`;
+          <img src="${thumbUrl(f.id, f.fmt)}" alt="${g.name}" class="recipe-thumb" loading="lazy">
+          <div class="recipe-name">${g.name}${g.sides.length > 1 ? '<span class="recipe-sides">Front and back</span>' : ''}</div>`;
         card.addEventListener('click', () => {
           navigateTo('recipe/' + f.id);
         });
@@ -735,12 +816,30 @@
       }
 
       // ── Lightbox ───────────────────────────────────────────
-      function openLightbox(url, name, pushState = true) {
-        document.getElementById('lightbox-img').src = url;
-        document.getElementById('lightbox-img').alt = name;
-        document.getElementById('lightbox-title').textContent = name;
+      let currentGroup = null;
+      function openLightbox(group, sideIdx = 0) {
+        currentGroup = group;
+        const f = group.sides[sideIdx];
+        const two = group.sides.length > 1;
+        const label = two ? (sideIdx === 0 ? ' (front)' : ' (back)') : '';
+        document.getElementById('lightbox-img').src = fullUrl(f.id, f.fmt);
+        document.getElementById('lightbox-img').alt = group.name + label;
+        document.getElementById('lightbox-title').textContent = group.name;
+        const sides = document.getElementById('lightbox-sides');
+        sides.classList.toggle('show', two);
+        sides.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.side === sideIdx)));
         document.getElementById('recipe-lightbox').classList.add('open');
       }
+
+      document.getElementById('lightbox-sides').addEventListener('click', e => {
+        const b = e.target.closest('button');
+        if (!b || !currentGroup) return;
+        e.stopPropagation();
+        const idx = +b.dataset.side;
+        if (!currentGroup.sides[idx]) return;
+        setHash('recipe/' + currentGroup.sides[idx].id, false); // shareable link to this side
+        openLightbox(currentGroup, idx);
+      });
 
       function closeLightboxSilent() {
         document.getElementById('recipe-lightbox').classList.remove('open');
