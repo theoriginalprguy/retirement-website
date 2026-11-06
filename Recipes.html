@@ -273,7 +273,6 @@
         'appetizers-and-dips': [
           {id:'recipes/appetizers-and-dips/Cheese-Dip-3_fkjv6o',fmt:'jpg'},
           {id:'recipes/appetizers-and-dips/Bacon-Dressing_btrttp',fmt:'jpg'},
-          {id:'recipes/appetizers-and-dips/Salmon-Ring_dcl5rh',fmt:'jpg'},
           {id:'recipes/appetizers-and-dips/Topping-for-Party-Loaf_tki55b',fmt:'jpg'},
           {id:'recipes/appetizers-and-dips/Spinach-Balls-b_mowavq',fmt:'jpg'},
           {id:'recipes/appetizers-and-dips/Spinach-Balls-a_vl1bo3',fmt:'jpg'},
@@ -459,6 +458,7 @@
           {id:'recipes/entrees/Poultry/Chicken-Breasts-1a_nshqof',fmt:'jpg'},
         ],
         'entrees/Seafood': [
+          {id:'recipes/entrees/Seafood/Salmon-Ring_dcl5rh',fmt:'jpg'},
           {id:'recipes/entrees/Seafood/Tuna-Souffle_oiclme',fmt:'jpg'},
           {id:'recipes/entrees/Seafood/Sea-Food-Special-b_f59ejx',fmt:'jpg'},
           {id:'recipes/entrees/Seafood/Sea-Food-Special-a_ow779n',fmt:'jpg'},
@@ -518,7 +518,6 @@
           {id:'recipes/salads-and-sides/Lemon-Parsley-Stuffing_kur4mm',fmt:'jpg'},
         ],
         'sandwiches': [
-          {id:'recipes/sandwiches/Sandwiches-3_mkmc7b',fmt:'jpg'},
           {id:'recipes/sandwiches/Sandwiches-2_sclo18',fmt:'jpg'},
           {id:'recipes/sandwiches/Hot-Crab-Meat-Sandwich-a_j5i1f7',fmt:'jpg'},
           {id:'recipes/sandwiches/Sandwiches-1_gesgjv',fmt:'jpg'},
@@ -677,8 +676,10 @@
         }
         // Fallback for older shared links to removed duplicate images:
         // match on the title part of the id, ignoring the random suffix.
-        const stem = id => id.replace(/_[a-zA-Z0-9]{4,8}$/i, '');
-        const target = stem(publicId);
+        const stem = id => id.split('/').pop().replace(/_[a-zA-Z0-9]{4,8}$/i, '');
+        // Removed duplicate cards point to the copy that was kept.
+        const ALIASES = { 'Sandwiches-3': 'Sandwiches-1' };
+        const target = ALIASES[stem(publicId)] || stem(publicId);
         for (const key of Object.keys(RECIPES)) {
           const found = RECIPES[key].find(r => stem(r.id) === target);
           if (found) return found;
@@ -722,7 +723,7 @@
           if (!recipe) { showCategoryGrid(); return; }
 
           // Determine which category to display behind the lightbox
-          const catKey = publicId.split('/').slice(1, -1).join('/'); // strip leading 'recipes/' and filename
+          const catKey = recipe.id.split('/').slice(1, -1).join('/'); // strip leading 'recipes/' and filename
           const cat = findCategory(catKey);
           if (cat) {
             showCategorySection(cat, false);
